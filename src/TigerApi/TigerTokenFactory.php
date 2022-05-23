@@ -2,19 +2,19 @@
 
 namespace TigerApi;
 
-use Core\Auth\BaseDecodedTokenData;
-use Core\Auth\ICanDecodeAuthToken;
-use Core\Auth\ICanGenerateAuthTokenForUser;
-use Core\Auth\ICanGenerateRefreshTokenForUser;
-use Core\Auth\ICanGetTokenPrivateKey;
-use Core\Auth\ICanGetTokenPublicKey;
-use Core\Auth\ICanDecodeRefreshToken;
-use Core\Exceptions\InvalidTokenException;
-use Core\ValueObject\VO_BaseId;
-use Core\ValueObject\VO_Duration;
-use Core\ValueObject\VO_TokenPlainStr;
-use Core\ValueObject\VO_TokenPrivateKey;
-use Core\ValueObject\VO_TokenPublicKey;
+use TigerCore\Auth\BaseDecodedTokenData;
+use TigerCore\Auth\ICanDecodeAuthToken;
+use TigerCore\Auth\ICanGenerateAuthTokenForUser;
+use TigerCore\Auth\ICanGenerateRefreshTokenForUser;
+use TigerCore\Auth\ICanGetTokenPrivateKey;
+use TigerCore\Auth\ICanGetTokenPublicKey;
+use TigerCore\Auth\ICanDecodeRefreshToken;
+use TigerCore\Exceptions\InvalidTokenException;
+use TigerCore\ValueObject\VO_BaseId;
+use TigerCore\ValueObject\VO_Duration;
+use TigerCore\ValueObject\VO_TokenPlainStr;
+use TigerCore\ValueObject\VO_TokenPrivateKey;
+use TigerCore\ValueObject\VO_TokenPublicKey;
 
 abstract class TigerTokenFactory implements ICanGenerateRefreshTokenForUser , ICanGenerateAuthTokenForUser, ICanGetTokenPublicKey, ICanGetTokenPrivateKey, ICanDecodeRefreshToken, ICanDecodeAuthToken {
 

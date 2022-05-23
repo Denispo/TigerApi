@@ -8,7 +8,8 @@
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
-  "require-dev": {
-    "denispo/tigercore": "^v0.0.1"
+  "require": {
+    "php": ">=8.0",
+    "denispo/tigercore": "^v0.0"
   }
 }

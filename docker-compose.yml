@@ -1,0 +1,20 @@
+version: "3.2"
+services:
+
+  php:
+    environment:
+      TZ: "Europe/Prague"
+    build: ./../_docker/php/
+    networks:
+      - backend
+#      - frontend
+    volumes:
+      - .:/var/www/
+
+networks:
+#  frontend:
+  backend:
+
+
+#volumes:
+#  form:

@@ -2,15 +2,15 @@
 
 namespace TigerApi;
 
-use Core\Constants\PasswordValidity;
-use Core\Payload\AuthTokenPayload;
-use Core\Payload\RefreshTokenPayload;
-use Core\Request\BaseLoginUserRequest;
-use Core\Response\ICanAddToPayload;
-use Core\Response\UnauthorizedException;
-use Core\ValueObject\VO_BaseId;
-use Core\ValueObject\VO_Password;
-use Core\ValueObject\VO_TokenPlainStr;
+use TigerCore\Constants\PasswordValidity;
+use TigerCore\Payload\AuthTokenPayload;
+use TigerCore\Payload\RefreshTokenPayload;
+use TigerCore\Request\BaseLoginUserRequest;
+use TigerCore\Response\ICanAddToPayload;
+use TigerCore\Response\UnauthorizedException;
+use TigerCore\ValueObject\VO_BaseId;
+use TigerCore\ValueObject\VO_Password;
+use TigerCore\ValueObject\VO_TokenPlainStr;
 
 
 abstract class TigerLoginUserRequest extends BaseLoginUserRequest {

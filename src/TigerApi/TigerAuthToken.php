@@ -2,8 +2,8 @@
 
 namespace TigerApi;
 
-use Core\Auth\BaseJwtTokenForUser;
-use Core\ValueObject\VO_Timestamp;
+use TigerCore\Auth\BaseJwtTokenForUser;
+use TigerCore\ValueObject\VO_Timestamp;
 
 
 class TigerAuthToken extends BaseJwtTokenForUser {

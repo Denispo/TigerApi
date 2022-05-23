@@ -2,9 +2,9 @@
 
 namespace TigerApi;
 
-use Core\BaseRestRouter;
-use Core\Constants\RequestMethod;
-use Core\ICanAddRequest;
+use TigerCore\BaseRestRouter;
+use TigerCore\Constants\RequestMethod;
+use TigerCore\ICanAddRequest;
 
 abstract class TigerRouter extends BaseRestRouter {
 

@@ -2,18 +2,18 @@
 
 namespace TigerApi;
 
-use Core\Auth\ICanGenerateAuthTokenForUser;
-use Core\Auth\ICanDecodeRefreshToken;
-use Core\Auth\ICurrentUser;
-use Core\Exceptions\InvalidTokenException;
-use Core\Payload\AuthTokenPayload;
-use Core\Request\BaseRequest;
-use Core\Request\IOnAddToPayload;
-use Core\Request\ICanMatch;
-use Core\Request\RequestData;
-use Core\Response\BaseResponseException;
-use Core\Response\ICanAddToPayload;
-use Core\ValueObject\VO_TokenPlainStr;
+use TigerCore\Auth\ICanGenerateAuthTokenForUser;
+use TigerCore\Auth\ICanDecodeRefreshToken;
+use TigerCore\Auth\ICurrentUser;
+use TigerCore\Exceptions\InvalidTokenException;
+use TigerCore\Payload\AuthTokenPayload;
+use TigerCore\Request\BaseRequest;
+use TigerCore\Request\IOnAddToPayload;
+use TigerCore\Request\ICanMatch;
+use TigerCore\Request\RequestData;
+use TigerCore\Response\BaseResponseException;
+use TigerCore\Response\ICanAddToPayload;
+use TigerCore\ValueObject\VO_TokenPlainStr;
 
 abstract class TigerGetAuthTokenRequest extends BaseRequest implements ICanMatch, IOnAddToPayload {
 

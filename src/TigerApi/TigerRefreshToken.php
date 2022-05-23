@@ -2,8 +2,9 @@
 
 namespace TigerApi;
 
+
 use Core\Auth\BaseJwtTokenForUser;
-use Core\ValueObject\VO_Timestamp;
+use TigerCore\ValueObject\VO_Timestamp;
 
 
 class TigerRefreshToken extends BaseJwtTokenForUser {

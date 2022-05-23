@@ -2,9 +2,9 @@
 
 namespace TigerApi;
 
-use Core\Payload\IBasePayload;
-use Core\Response\BaseResponse;
-use Core\Response\ICanGetPayload;
+use TigerCore\Payload\IBasePayload;
+use TigerCore\Response\BaseResponse;
+use TigerCore\Response\ICanGetPayload;
 
 class TigerApiResponse extends BaseResponse implements ICanGetPayload {
 
