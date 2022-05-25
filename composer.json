@@ -10,6 +10,6 @@
   "prefer-stable": true,
   "require": {
     "php": ">=8.0",
-    "denispo/tigercore": "^v0.0"
+    "denispo/tigercore": "dev-master"
   }
 }
