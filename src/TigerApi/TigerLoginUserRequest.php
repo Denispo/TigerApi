@@ -29,12 +29,10 @@ abstract class TigerLoginUserRequest extends BaseLoginUserRequest {
     return PasswordValidity::createFromBoolean($isValid);
   }
 
-  protected function onLoginComplete(VO_BaseId $userId):void {
+  protected function onLoginComplete(VO_BaseId $userId, ICanAddToPayload $payload):void {
     $this->authToken = $this->onGetAuthToken($userId);
     $this->refreshToken = $this->onGetRefreshToken($userId);
-  }
 
-  public function onAddPayload(ICanAddToPayload $payload): void {
     if ($this->authToken->isEmpty() || $this->refreshToken->isEmpty()) {
       throw new UnauthorizedException('Can not generate auth or refresh tokens');
     } else {
@@ -43,4 +41,5 @@ abstract class TigerLoginUserRequest extends BaseLoginUserRequest {
     }
 
   }
+
 }

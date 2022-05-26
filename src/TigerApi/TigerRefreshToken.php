@@ -3,7 +3,7 @@
 namespace TigerApi;
 
 
-use Core\Auth\BaseJwtTokenForUser;
+use TigerCore\Auth\BaseJwtTokenForUser;
 use TigerCore\ValueObject\VO_Timestamp;
 
 
