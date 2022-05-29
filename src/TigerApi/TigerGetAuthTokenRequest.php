@@ -19,7 +19,7 @@ use TigerCore\ValueObject\VO_TokenPlainStr;
 abstract class TigerGetAuthTokenRequest extends BaseRequest implements ICanMatch, IOnAddToPayload {
 
   #[RequestData('refreshtoken')]
-  public string $refreshToken;
+  public VO_TokenPlainStr $refreshToken;
 
   //---------------------------------------------
 
@@ -32,7 +32,7 @@ abstract class TigerGetAuthTokenRequest extends BaseRequest implements ICanMatch
 
   public function onMatch(ICurrentUser $currentUser, ICanAddToPayload $payload): void {
     try {
-      $parsedRefreshToken = $this->refreshTokenDecoder->decodeRefreshToken(new VO_TokenPlainStr($this->refreshToken));
+      $parsedRefreshToken = $this->refreshTokenDecoder->decodeRefreshToken($this->refreshToken);
     } catch (InvalidTokenException $e) {
       throw new BaseResponseException($e->getMessage());
     }
