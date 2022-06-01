@@ -5,20 +5,19 @@ namespace TigerApi;
 use TigerCore\Auth\ICanGenerateAuthTokenForUser;
 use TigerCore\Auth\ICanDecodeRefreshToken;
 use TigerCore\Auth\ICurrentUser;
-use TigerCore\Constants\TokenError;
 use TigerCore\Exceptions\InvalidTokenException;
 use TigerCore\Payload\AuthTokenPayload;
 use TigerCore\Request\BaseRequest;
 use TigerCore\Request\IOnAddToPayload;
 use TigerCore\Request\ICanMatch;
-use TigerCore\Request\RequestData;
+use TigerCore\Request\RequestParam;
 use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\ICanAddToPayload;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
 abstract class TigerGetAuthTokenRequest extends BaseRequest implements ICanMatch, IOnAddToPayload {
 
-  #[RequestData('refreshtoken')]
+  #[RequestParam('refreshtoken')]
   public VO_TokenPlainStr $refreshToken;
 
   //---------------------------------------------
