@@ -34,14 +34,22 @@ abstract class TigerTokenFactory implements ICanGenerateRefreshTokenForUser , IC
   /**
    * @param VO_TokenPlainStr $refreshToken
    * @return BaseDecodedTokenData
-   * @throws InvalidTokenException
    */
   public function decodeRefreshToken(VO_TokenPlainStr $refreshToken): BaseDecodedTokenData {
-    return (new TigerRefreshToken($this->onGetPrivateKey(), $this->onGetPublicKey()))->parseToken($refreshToken);
+    try {
+      return (new TigerRefreshToken($this->onGetPrivateKey(), $this->onGetPublicKey()))->parseToken($refreshToken);
+    } catch (\Exception) {
+      return new BaseDecodedTokenData(new VO_BaseId(0), []);
+    }
+
   }
 
   public function decodeAuthToken(VO_TokenPlainStr $authToken): BaseDecodedTokenData {
-    return (new TigerAuthToken($this->onGetPrivateKey(), $this->onGetPublicKey()))->parseToken($authToken);
+    try {
+      return (new TigerAuthToken($this->onGetPrivateKey(), $this->onGetPublicKey()))->parseToken($authToken);
+    } catch (\Exception) {
+      return new BaseDecodedTokenData(new VO_BaseId(0), []);
+    }
   }
 
   public function getPrivateKey(): VO_TokenPrivateKey {
