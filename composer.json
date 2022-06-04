@@ -2,9 +2,7 @@
   "name": "denispo/tigerapi",
   "description": "tiger api skeleton for tiger apps",
   "autoload": {
-    "autoload": {
-      "classmap": ["src/"]
-    }
+    "classmap": ["src/"]
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
