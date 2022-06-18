@@ -9,13 +9,12 @@ use TigerCore\Exceptions\InvalidTokenException;
 use TigerCore\Payload\AuthTokenPayload;
 use TigerCore\Request\BaseRequest;
 use TigerCore\Request\IOnAddToPayload;
-use TigerCore\Request\ICanMatch;
 use TigerCore\Request\RequestParam;
 use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\ICanAddToPayload;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
-abstract class TigerGetAuthTokenRequest extends BaseRequest implements ICanMatch, IOnAddToPayload {
+abstract class TigerGetAuthTokenRequest extends BaseRequest implements IOnAddToPayload {
 
   #[RequestParam('refreshtoken')]
   public VO_TokenPlainStr $refreshToken;
