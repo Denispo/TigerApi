@@ -3,7 +3,6 @@
 namespace TigerApi;
 
 use TigerCore\Constants\PasswordValidity;
-use TigerCore\Payload\AuthTokenPayload;
 use TigerCore\Payload\RefreshTokenPayload;
 use TigerCore\Request\BaseLoginUserRequest;
 use TigerCore\Response\ICanAddToPayload;
@@ -15,11 +14,7 @@ use TigerCore\ValueObject\VO_TokenPlainStr;
 
 abstract class TigerLoginUserRequest extends BaseLoginUserRequest {
 
-  private VO_TokenPlainStr $authToken;
-  private VO_TokenPlainStr $refreshToken;
-
   protected abstract function onGetPasswordHash(VO_BaseId $userId): string;
-  protected abstract function onGetAuthToken(VO_BaseId $userId):VO_TokenPlainStr;
   protected abstract function onGetRefreshToken(VO_BaseId $userId):VO_TokenPlainStr;
 
 
@@ -30,14 +25,12 @@ abstract class TigerLoginUserRequest extends BaseLoginUserRequest {
   }
 
   protected function onLoginComplete(VO_BaseId $userId, ICanAddToPayload $payload):void {
-    $this->authToken = $this->onGetAuthToken($userId);
-    $this->refreshToken = $this->onGetRefreshToken($userId);
+    $refreshToken = $this->onGetRefreshToken($userId);
 
-    if ($this->authToken->isEmpty() || $this->refreshToken->isEmpty()) {
-      throw new UnauthorizedException('Can not generate auth or refresh tokens');
+    if ($refreshToken->isEmpty()) {
+      throw new UnauthorizedException('Can not generate refresh token');
     } else {
-      $payload->addToPayload(new AuthTokenPayload($this->authToken));
-      $payload->addToPayload(new RefreshTokenPayload($this->refreshToken));
+      $payload->addToPayload(new RefreshTokenPayload($refreshToken));
     }
 
   }
