@@ -2,6 +2,7 @@
 
 namespace TigerApi;
 
+use Nette\Http\IRequest;
 use TigerCore\Auth\ICanGenerateAuthTokenForUser;
 use TigerCore\Auth\ICanDecodeRefreshToken;
 use TigerCore\Auth\ICurrentUser;
@@ -28,7 +29,7 @@ abstract class TigerGetAuthTokenRequest extends BaseRequest implements IOnAddToP
     private ICanGenerateAuthTokenForUser $authTokenGenerator) {
   }
 
-  public function onMatch(ICurrentUser $currentUser, ICanAddToPayload $payload): void {
+  public function onMatch(ICurrentUser $currentUser, ICanAddToPayload $payload, IRequest $httpRequest): void {
     try {
       $parsedRefreshToken = $this->refreshTokenDecoder->decodeRefreshToken($this->refreshToken);
     } catch (InvalidTokenException $e) {
