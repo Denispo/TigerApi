@@ -8,7 +8,7 @@ use TigerCore\Response\ICanGetPayload;
 
 class TigerApiResponse extends BaseResponse implements ICanGetPayload, ICanAddParamError {
 
-  public function addToPayload(IBasePayload $payload) {
+  public function addPayload(IBasePayload $payload) {
     $key = $payload->getPayloadKey();
     if ($key->isValid()) {
       $this->payload[][$key->getValue()]['data'] = $payload->getPayloadData();
