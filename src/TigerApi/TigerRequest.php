@@ -14,7 +14,7 @@ abstract class TigerRequest extends BaseRequest {
 
   abstract protected function onGetMask():VO_RouteMask;
   abstract protected function onSecurityCheck(ICurrentUser $currentUser):RequestSecurityCheck;
-  abstract protected function onValidateParams(ICanSetRequestParamIsInvalid $paramError);
+  abstract protected function onValidateParams(ICanSetRequestParamIsInvalid $validator);
   abstract protected function onProcessRequest(ICanAddPayload $payload, IRequest $httpRequest):void;
 
 
