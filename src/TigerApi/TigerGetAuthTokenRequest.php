@@ -4,22 +4,19 @@ namespace TigerApi;
 
 use Nette\Http\IRequest;
 use TigerCore\Auth\BaseDecodedTokenData;
-use TigerCore\Auth\ICanGenerateAuthTokenForUser;
-use TigerCore\Auth\ICanDecodeRefreshToken;
-use TigerCore\Auth\ICurrentUser;
 use TigerCore\Exceptions\InvalidTokenException;
 use TigerCore\Payload\AuthTokenPayload;
-use TigerCore\Request\BaseRequest;
 use TigerCore\Request\RequestParam;
+use TigerCore\Requests\RP_String;
 use TigerCore\Response\BaseResponseException;
-use TigerCore\Response\ICanAddToPayload;
+use TigerCore\Response\ICanAddPayload;
 use TigerCore\ValueObject\VO_BaseId;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
-abstract class TigerGetAuthTokenRequest extends BaseRequest {
+abstract class TigerGetAuthTokenRequest extends TigerPublicRequest {
 
   #[RequestParam('refreshtoken')]
-  public VO_TokenPlainStr $refreshToken;
+  public RP_String $refreshToken;
 
   //---------------------------------------------
 
@@ -34,24 +31,36 @@ abstract class TigerGetAuthTokenRequest extends BaseRequest {
 
   abstract protected function onGenerateNewAuthTokenForUser(VO_BaseId $userId):VO_TokenPlainStr;
 
-  public function onMatch(ICurrentUser $currentUser, ICanAddToPayload $payload, IRequest $httpRequest): void {
-    try {
-      $parsedRefreshToken = $this->onGetDecodedRefreshToken($this->refreshToken);
-    } catch (InvalidTokenException $e) {
-      throw new BaseResponseException($e->getMessage());
-    }
+   protected function onValidateParams(ICanSetRequestParamIsInvalid $validator) {
+     if ($this->refreshToken->isEmpty()) {
+       $validator->setRequestParamIsInvalid($this->refreshToken, 'Token is empty');
+     }
+   }
 
-    if (!$parsedRefreshToken->getUserId()->isValid()) {
-      throw new BaseResponseException('invalid user id in token');
-    }
+  /**
+   * @param ICanAddPayload $payload
+   * @param IRequest $httpRequest
+   * @return void
+   * @throws BaseResponseException
+   * @throws \ReflectionException
+   */
+   protected function onProcessRequest(ICanAddPayload $payload, IRequest $httpRequest): void {
+     try {
+       $parsedRefreshToken = $this->onGetDecodedRefreshToken(new VO_TokenPlainStr($this->refreshToken->getValueAsString()));
+     } catch (InvalidTokenException $e) {
+       throw new BaseResponseException($e->getMessage());
+     }
 
-    $authToken = $this->onGenerateNewAuthTokenForUser($parsedRefreshToken->getUserId());
+     if (!$parsedRefreshToken->getUserId()->isValid()) {
+       throw new BaseResponseException('invalid user id in token');
+     }
 
-    if (!$authToken->isEmpty()) {
-      $payload->addToPayload(new AuthTokenPayload($this->authToken));
-    }  else {
-      throw new BaseResponseException('Can not generate Auth token');
-    }
-  }
+     $authToken = $this->onGenerateNewAuthTokenForUser($parsedRefreshToken->getUserId());
 
-}
+     if (!$authToken->isEmpty()) {
+       $payload->addPayload(new AuthTokenPayload($this->authToken));
+     }  else {
+       throw new BaseResponseException('Can not generate Auth token');
+     }
+   }
+ }
