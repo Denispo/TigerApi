@@ -2,14 +2,9 @@
 
 namespace TigerApi;
 
-use TigerCore\Auth\BaseDecodedTokenData;
-use TigerCore\Auth\ICanDecodeAuthToken;
-use TigerCore\Auth\ICanGenerateAuthTokenForUser;
-use TigerCore\Auth\ICanGenerateRefreshTokenForUser;
+use TigerCore\Auth\BaseTokenClaims;
 use TigerCore\Auth\ICanGetTokenPrivateKey;
 use TigerCore\Auth\ICanGetTokenPublicKey;
-use TigerCore\Auth\ICanDecodeRefreshToken;
-use TigerCore\Exceptions\InvalidTokenException;
 use TigerCore\ValueObject\VO_BaseId;
 use TigerCore\ValueObject\VO_Duration;
 use TigerCore\ValueObject\VO_TokenPlainStr;
@@ -33,22 +28,22 @@ abstract class TigerTokenFactory implements ICanGenerateRefreshTokenForUser , IC
 
   /**
    * @param VO_TokenPlainStr $refreshToken
-   * @return BaseDecodedTokenData
+   * @return BaseTokenClaims
    */
-  public function decodeRefreshToken(VO_TokenPlainStr $refreshToken): BaseDecodedTokenData {
+  public function decodeRefreshToken(VO_TokenPlainStr $refreshToken): BaseTokenClaims {
     try {
       return (new TigerRefreshToken($this->onGetPrivateKey(), $this->onGetPublicKey()))->parseToken($refreshToken);
     } catch (\Exception) {
-      return new BaseDecodedTokenData(new VO_BaseId(0), []);
+      return new BaseTokenClaims(new VO_BaseId(0), []);
     }
 
   }
 
-  public function decodeAuthToken(VO_TokenPlainStr $authToken): BaseDecodedTokenData {
+  public function decodeAuthToken(VO_TokenPlainStr $authToken): BaseTokenClaims {
     try {
       return (new TigerAuthToken($this->onGetPrivateKey(), $this->onGetPublicKey()))->parseToken($authToken);
     } catch (\Exception) {
-      return new BaseDecodedTokenData(new VO_BaseId(0), []);
+      return new BaseTokenClaims(new VO_BaseId(0), []);
     }
   }
 
