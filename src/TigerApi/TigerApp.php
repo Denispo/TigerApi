@@ -2,22 +2,18 @@
 
 namespace TigerApi;
 
-use Nette\Http\IResponse;
 use TigerCore\Auth\ICurrentUser;
 use TigerCore\BaseApp;
-use TigerCore\ICanMatchRoutes;
 use Nette\Http\IRequest;
 use TigerCore\Response\BaseResponseException;
-use TigerCore\Response\ICanGetPayload;
 
 abstract class TigerApp extends BaseApp {
 
-
-  protected abstract function onGetRouter():ICanMatchRoutes;
-  protected abstract function onGetPayloadGetter():ICanGetPayload;
+  protected abstract function onGetAppSettings():TigerAppSettings;
 
   public function run(IRequest $httpRequest, ICurrentUser $currentUser) {
-    $router = $this->onGetRouter();
+    $appSettings = $this->onGetAppSettings();
+    $router = $appSettings->router;
     try {
       $router->match($httpRequest, $currentUser);
     } catch (BaseResponseException $e) {
@@ -31,7 +27,7 @@ abstract class TigerApp extends BaseApp {
     $httpResponse->setHeader('Access-Control-Allow-Origin','*');
     $httpResponse->setContentType('application/json','utf-8');
 
-    $json = json_encode($this->onGetPayloadGetter()->getPayload());
+    $json = json_encode($appSettings->payloadGetter->getPayload());
 
     $error = json_last_error();
 
