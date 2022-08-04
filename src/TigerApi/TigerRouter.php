@@ -8,7 +8,7 @@ use TigerCore\ICanAddRequest;
 abstract class TigerRouter extends BaseRestRouter {
 
   protected abstract function onGetUserLoginRequest():TigerLoginUserRequest;
-  protected abstract function onGetAuthTokenRequest():TigerGnerateAuthTokenFromRefreshTokenRequest;
+  protected abstract function onGetAuthTokenRequest():TigerGenerateAuthTokenFromRefreshTokenRequest;
 
   protected function onGetRoutes(ICanAddRequest $r) {
     $r->addRequest('POST', $this->onGetUserLoginRequest());
