@@ -2,14 +2,13 @@
 
 namespace TigerApi;
 
-use TigerCore\Auth\BaseDecodedTokenData;
 use TigerCore\Auth\ICurrentUser;
 use TigerCore\ValueObject\VO_BaseId;
 
 class TigerJwtUser implements ICurrentUser
 {
 
-  public function __construct(private BaseDecodedTokenData $tokenData)
+  public function __construct(private TigerAuthTokenClaims $tokenData)
   {
 
   }
