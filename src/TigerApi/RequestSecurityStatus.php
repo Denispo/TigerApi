@@ -5,7 +5,7 @@ namespace TigerApi;
 use TigerCore\Constants\BaseConst;
 use TigerCore\Constants\IBaseConst;
 
-class RequestSecurityCheck extends BaseConst implements IBaseConst {
+class RequestSecurityStatus extends BaseConst implements IBaseConst {
 
   const REQUEST_NOTALLOWED_NA = 0;
   const REQUEST_ALLOWED = 1;

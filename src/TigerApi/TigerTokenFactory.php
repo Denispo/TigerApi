@@ -2,7 +2,7 @@
 
 namespace TigerApi;
 
-use TigerCore\Auth\BaseTokenClaims;
+use TigerCore\Auth\ICanAddCustomTokenClaim;
 use TigerCore\Auth\ICanGetTokenPrivateKey;
 use TigerCore\Auth\ICanGetTokenPublicKey;
 use TigerCore\ValueObject\VO_BaseId;
@@ -17,33 +17,41 @@ abstract class TigerTokenFactory implements ICanGenerateRefreshTokenForUser , IC
   protected abstract function onGetPublicKey():VO_TokenPublicKey;
   protected abstract function onGetAuthTokenDuration():VO_Duration;
   protected abstract function onGetRefreshTokenDuration():VO_Duration;
+  protected abstract function onAddAuthTokenCustomClaims(ICanAddCustomTokenClaim $claimCollector):void;
+  protected abstract function onAddRefreshTokenCustomClaims(ICanAddCustomTokenClaim $claimCollector):void;
 
   public function generateAuthToken(VO_BaseId $userId): VO_TokenPlainStr {
-    return (new TigerAuthToken($this->onGetPrivateKey(), $this->onGetPublicKey()))->getTokenStr($userId);
+    $claims = new TigerAuthTokenClaims();
+    $this->onAddAuthTokenCustomClaims($claims);
+    $claims->setUserId($userId);
+    return (new TigerAuthToken($this->onGetPrivateKey(), $this->onGetPublicKey()))->generateToken($this->onGetAuthTokenDuration(), $claims);
   }
 
   public function generateRefreshToken(VO_BaseId $userId): VO_TokenPlainStr {
-    return (new TigerRefreshToken($this->onGetPrivateKey(), $this->onGetPublicKey()))->getTokenStr($userId);
+    $claims = new TigerAuthTokenClaims();
+    $this->onAddRefreshTokenCustomClaims($claims);
+    $claims->setUserId($userId);
+    return (new TigerRefreshToken($this->onGetPrivateKey(), $this->onGetPublicKey()))->generateToken($this->onGetRefreshTokenDuration(), $claims);
   }
 
   /**
    * @param VO_TokenPlainStr $refreshToken
-   * @return BaseTokenClaims
+   * @return TigerAuthTokenClaims
    */
-  public function decodeRefreshToken(VO_TokenPlainStr $refreshToken): BaseTokenClaims {
+  public function decodeRefreshToken(VO_TokenPlainStr $refreshToken): TigerAuthTokenClaims {
     try {
-      return (new TigerRefreshToken($this->onGetPrivateKey(), $this->onGetPublicKey()))->parseToken($refreshToken);
+      return (new TigerRefreshToken($this->onGetPrivateKey(), $this->onGetPublicKey()))->decodeToken($refreshToken);
     } catch (\Exception) {
-      return new BaseTokenClaims(new VO_BaseId(0), []);
+      return new TigerAuthTokenClaims();
     }
 
   }
 
-  public function decodeAuthToken(VO_TokenPlainStr $authToken): BaseTokenClaims {
+  public function decodeAuthToken(VO_TokenPlainStr $authToken): TigerAuthTokenClaims {
     try {
-      return (new TigerAuthToken($this->onGetPrivateKey(), $this->onGetPublicKey()))->parseToken($authToken);
+      return (new TigerAuthToken($this->onGetPrivateKey(), $this->onGetPublicKey()))->decodeToken($authToken);
     } catch (\Exception) {
-      return new BaseTokenClaims(new VO_BaseId(0), []);
+      return new TigerAuthTokenClaims();
     }
   }
 
