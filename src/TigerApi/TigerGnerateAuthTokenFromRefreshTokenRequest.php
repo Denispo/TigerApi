@@ -3,7 +3,6 @@
 namespace TigerApi;
 
 use Nette\Http\IRequest;
-use TigerCore\Auth\BaseDecodedTokenData;
 use TigerCore\Exceptions\InvalidTokenException;
 use TigerCore\Payload\AuthTokenPayload;
 use TigerCore\Request\RequestParam;
@@ -13,7 +12,7 @@ use TigerCore\Response\ICanAddPayload;
 use TigerCore\ValueObject\VO_BaseId;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
-abstract class TigerGetAuthTokenRequest extends TigerPublicRequest {
+abstract class TigerGnerateAuthTokenFromRefreshTokenRequest extends TigerPublicRequest {
 
   #[RequestParam('refreshtoken')]
   public RP_String $refreshToken;
@@ -24,10 +23,10 @@ abstract class TigerGetAuthTokenRequest extends TigerPublicRequest {
 
   /**
    * @param VO_TokenPlainStr $refreshToken
-   * @return BaseDecodedTokenData
+   * @return TigerAuthTokenClaims
    * @throws  InvalidTokenException
    */
-  abstract protected function onGetDecodedRefreshToken(VO_TokenPlainStr $refreshToken):BaseDecodedTokenData;
+  abstract protected function onGetDecodedRefreshToken(VO_TokenPlainStr $refreshToken):TigerAuthTokenClaims;
 
   abstract protected function onGenerateNewAuthTokenForUser(VO_BaseId $userId):VO_TokenPlainStr;
 
