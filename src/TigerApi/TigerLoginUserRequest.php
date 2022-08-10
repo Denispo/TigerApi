@@ -37,6 +37,13 @@ use TigerCore\ValueObject\VO_TokenPlainStr;
     return PasswordValidity::createFromBoolean($isValid);
   }
 
+   /**
+    * @param VO_BaseId $userId
+    * @param ICanAddPayload $payload
+    * @return void
+    * @throws UnauthorizedException
+    * @throws \ReflectionException
+    */
   protected function onLoginComplete(VO_BaseId $userId, ICanAddPayload $payload):void {
     $refreshToken = $this->onGetRefreshToken($userId);
 
@@ -51,6 +58,13 @@ use TigerCore\ValueObject\VO_TokenPlainStr;
    protected function onValidateParams(ICanSetRequestParamIsInvalid $validator) {
    }
 
+   /**
+    * @param ICanAddPayload $payload
+    * @param IRequest $httpRequest
+    * @return void
+    * @throws UnauthorizedException
+    * @throws \ReflectionException
+    */
    protected function onProcessRequest(ICanAddPayload $payload, IRequest $httpRequest): void {
 
      $userEmail = new VO_Email($this->userName->getValueAsString());
