@@ -2,10 +2,11 @@
 
 namespace TigerApi;
 
+use TigerCore\Auth\ICanGetCurrentUser;
 use TigerCore\Auth\ICurrentUser;
 use TigerCore\ValueObject\VO_BaseId;
 
-class TigerJwtUser implements ICurrentUser
+class TigerJwtUser implements ICurrentUser, ICanGetCurrentUser
 {
 
   public function __construct(private TigerAuthTokenClaims $tokenData)
@@ -21,5 +22,9 @@ class TigerJwtUser implements ICurrentUser
   public function getUserId(): VO_BaseId
   {
     return $this->tokenData->getUserId();
+  }
+
+  public function getCurrentUser(): ICurrentUser {
+    return $this;
   }
 }

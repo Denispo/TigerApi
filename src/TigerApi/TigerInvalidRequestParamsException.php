@@ -2,13 +2,17 @@
 
 namespace TigerApi;
 
-use TigerCore\Response\BaseResponseException;
+use TigerCore\Response\UnprocessableEntityException;
 
-class TigerInvalidRequestParamsException extends BaseResponseException {
+class TigerInvalidRequestParamsException extends UnprocessableEntityException {
 
   public function __construct(public ICanGetInvalidRequestParams $invalidParams) {
-    parent::__construct();
-
+    $params = $invalidParams->getInvalidRequestParams();
+    $response = new TigerApiResponse();
+    foreach ($params as $oneParam) {
+      $response->addPayload(new InvalidRequestParamPayload($oneParam));
+    }
+    parent::__construct($response);
   }
 
 }

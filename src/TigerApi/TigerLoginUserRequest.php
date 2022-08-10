@@ -5,11 +5,9 @@ namespace TigerApi;
 use Nette\Http\IRequest;
 use TigerCore\Constants\PasswordValidity;
 use TigerCore\Payload\RefreshTokenPayload;
-use TigerCore\Request\IOnInvalidPassword;
 use TigerCore\Request\RequestParam;
 use TigerCore\Requests\RP_String;
 use TigerCore\Response\ICanAddPayload;
-use TigerCore\Response\InvalidCredentialsException;
 use TigerCore\Response\UnauthorizedException;
 use TigerCore\ValueObject\VO_BaseId;
 use TigerCore\ValueObject\VO_Email;
@@ -66,16 +64,13 @@ use TigerCore\ValueObject\VO_TokenPlainStr;
      $userId = $this->onGetUserIdByCredentials($this->userName->getValueAsString(), $userEmail);
 
      if (!$userId->isValid()) {
-       throw new InvalidCredentialsException();
+       throw new UnauthorizedException();
      }
 
      $passwordValidity = $this->onVerifyPassword(new VO_Password($this->userPassword->getValueAsString()), $userId);
 
      if ($passwordValidity->IsSetTo(PasswordValidity::PWD_INVALID)) {
-       if ($this instanceof IOnInvalidPassword) {
-         $this->onInvalidPassword($userId);
-       }
-       throw new InvalidCredentialsException();
+       throw new UnauthorizedException();
      }
 
      $this->onLoginComplete($userId, $payload);
