@@ -8,6 +8,7 @@
   "prefer-stable": true,
   "require": {
     "php": ">=8.0",
-    "denispo/tigercore": "dev-master"
+    "denispo/tigercore": "dev-master",
+    "nette/robot-loader": "^3.4"
   }
 }
