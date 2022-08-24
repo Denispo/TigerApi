@@ -7,6 +7,7 @@ use Throwable;
 use TigerCore\Auth\ICanGetCurrentUser;
 use TigerCore\BaseApp;
 use Nette\Http\IRequest;
+use TigerCore\ICanMatchRoutes;
 use TigerCore\Response\BaseResponseException;
 
 abstract class TigerApp extends BaseApp {
@@ -49,9 +50,8 @@ abstract class TigerApp extends BaseApp {
 
   }
 
-  public function run(IRequest $httpRequest, ICanGetCurrentUser $currentUser) {
+  public function run(IRequest $httpRequest, ICanGetCurrentUser $currentUser, ICanMatchRoutes $router) {
     $appSettings = $this->onGetAppSettings();
-    $router = $appSettings->router;
 
     $httpResponse = new \Nette\Http\Response();
     $httpResponse->setHeader('Access-Control-Allow-Origin','*');

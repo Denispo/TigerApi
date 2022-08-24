@@ -7,6 +7,7 @@ use TigerCore\Auth\ICurrentUser;
 use TigerCore\Request\BaseRequest;
 use TigerCore\Request\MatchedRequestData;
 use TigerCore\Response\ICanAddPayload;
+use TigerCore\Response\ICanGetPayload;
 use TigerCore\Response\NotFoundException;
 use TigerCore\Response\UnauthorizedException;
 use TigerCore\ValueObject\VO_RouteMask;
@@ -24,7 +25,7 @@ abstract class TigerRequest extends BaseRequest {
     return $this->onGetMask();
   }
 
-  public function runMatchedRequest(MatchedRequestData $requestData): void {
+  public function runMatchedRequest(MatchedRequestData $requestData): ICanGetPayload {
     $securityCheck = $this->onSecurityCheck($requestData->getCurrentUser());
     if (!$securityCheck->IsSetTo(RequestSecurityStatus::REQUEST_ALLOWED)) {
       if ($securityCheck->IsSetTo(RequestSecurityStatus::REQUEST_NOTALLOWED_USER_IS_UNAUTHORIZED)) {
