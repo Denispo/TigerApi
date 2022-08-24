@@ -14,7 +14,6 @@ use TigerCore\Response\BaseResponseException;
 
 abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
 
-  private bool $appIsInitialized = false;
   private RobotLoader $loader;
   private IRequest|null $httpRequest = null;
 
@@ -51,10 +50,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
    * @throws Throwable
    * @return void
    */
-  public function initialize(string $tempDirectory, string $appSourceDirectoryRoot, string $defaultTimeZone = 'Europe/Prague'):void {
-    if ($this->appIsInitialized) {
-      return;
-    }
+  public function __construct(string $tempDirectory, string $appSourceDirectoryRoot, string $defaultTimeZone = 'Europe/Prague') {
 
     $this->loader = new RobotLoader();
 
@@ -66,9 +62,6 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
     $this->loader->register(); // Run the RobotLoader
 
     date_default_timezone_set($defaultTimeZone);
-
-
-    $this->appIsInitialized = true;
 
   }
 
