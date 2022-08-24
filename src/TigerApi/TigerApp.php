@@ -2,25 +2,47 @@
 
 namespace TigerApi;
 
+use JetBrains\PhpStorm\NoReturn;
 use Nette\Loaders\RobotLoader;
 use Throwable;
 use TigerCore\Auth\ICanGetCurrentUser;
+use TigerCore\Auth\ICurrentUser;
 use TigerCore\BaseApp;
 use Nette\Http\IRequest;
 use TigerCore\ICanMatchRoutes;
 use TigerCore\Response\BaseResponseException;
 
-abstract class TigerApp extends BaseApp {
+abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
 
   private string $indexPhpRootDir = '';
   private bool $appIsInitialized = false;
   private RobotLoader $loader;
+  private IRequest|null $httpRequest = null;
 
   protected abstract function onGetAppSettings():TigerAppSettings;
+
+  protected abstract function onGetCurrentUser(IRequest $httpRequest):ICurrentUser;
 
   //protected abstract function onGetIndexPhpRootDir():string;
   //protected abstract function onGetTempDir(string $indexPhpRootDir):string;
   protected abstract function onHandleUnexpectedException(Throwable $exception);
+
+  #[NoReturn]
+  private function doHandleUnexpectedException(Throwable $exception) {
+    $this->onHandleUnexpectedException($exception);
+    exit;
+  }
+
+  public function getCurrentUser():ICurrentUser {
+    try {
+      if (!$this->httpRequest) {
+        throw new TigerAppIsNotRunningException();
+      }
+    } catch (TigerAppIsNotRunningException $e ) {
+      $this->doHandleUnexpectedException($e);
+    }
+    return $this->onGetCurrentUser($this->httpRequest);
+  }
 
   /**
    * @param string $tempDirectory
@@ -50,7 +72,7 @@ abstract class TigerApp extends BaseApp {
 
   }
 
-  public function run(IRequest $httpRequest, ICanGetCurrentUser $currentUser, ICanMatchRoutes $router) {
+  public function run(IRequest $httpRequest, ICanMatchRoutes $router) {
     $appSettings = $this->onGetAppSettings();
 
     $httpResponse = new \Nette\Http\Response();
@@ -58,7 +80,7 @@ abstract class TigerApp extends BaseApp {
     $httpResponse->setContentType('application/json','utf-8');
 
     try {
-      $router->match($httpRequest, $currentUser);
+      $router->match($httpRequest, $this);
       $json = json_encode($appSettings->payloadGetter->getPayload());
       $error = json_last_error();
     } catch (BaseResponseException $e) {
