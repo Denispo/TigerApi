@@ -4,9 +4,9 @@ namespace TigerApi;
 
 use TigerCore\Payload\IBasePayload;
 use TigerCore\Response\BaseResponse;
-use TigerCore\Response\ICanGetPayload;
+use TigerCore\Response\ICanGetPayloadData;
 
-class TigerApiResponse extends BaseResponse implements ICanGetPayload {
+class TigerApiResponse extends BaseResponse implements ICanGetPayloadData {
 
   public function addPayload(IBasePayload $payload) {
     $key = $payload->getPayloadKey();
@@ -15,7 +15,7 @@ class TigerApiResponse extends BaseResponse implements ICanGetPayload {
     }
   }
 
-  public function getPayload(): array {
+  public function getPayloadData(): array {
     return $this->payload;
   }
 

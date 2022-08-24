@@ -3,13 +3,13 @@
 namespace TigerApi;
 
 use TigerCore\ICanMatchRoutes;
-use TigerCore\Response\ICanGetPayload;
+use TigerCore\Response\ICanGetPayloadData;
 
 class TigerAppSettings {
 
   public function __construct(
     public ICanMatchRoutes $router,
-    public ICanGetPayload $payloadGetter
+    public ICanGetPayloadData $payloadGetter
   ) {
 
   }
