@@ -14,7 +14,6 @@ use TigerCore\Response\BaseResponseException;
 
 abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
 
-  private string $indexPhpRootDir = '';
   private bool $appIsInitialized = false;
   private RobotLoader $loader;
   private IRequest|null $httpRequest = null;
@@ -26,6 +25,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
   //protected abstract function onGetIndexPhpRootDir():string;
   //protected abstract function onGetTempDir(string $indexPhpRootDir):string;
   protected abstract function onHandleUnexpectedException(Throwable $exception);
+  protected abstract function onGetRouter():ICanMatchRoutes;
 
   #[NoReturn]
   private function doHandleUnexpectedException(Throwable $exception) {
@@ -72,7 +72,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
 
   }
 
-  public function run(IRequest $httpRequest, ICanMatchRoutes $router) {
+  public function run(IRequest $httpRequest) {
     $appSettings = $this->onGetAppSettings();
 
     $httpResponse = new \Nette\Http\Response();
@@ -80,7 +80,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
     $httpResponse->setContentType('application/json','utf-8');
 
     try {
-      $router->match($httpRequest, $this);
+      $this->onGetRouter()->match($httpRequest, $this);
       $json = json_encode($appSettings->payloadGetter->getPayloadData());
       $error = json_last_error();
     } catch (BaseResponseException $e) {
