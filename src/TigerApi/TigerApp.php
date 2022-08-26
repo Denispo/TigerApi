@@ -11,20 +11,18 @@ use TigerCore\BaseApp;
 use Nette\Http\IRequest;
 use TigerCore\ICanMatchRoutes;
 use TigerCore\Response\BaseResponseException;
+use TigerCore\Response\ICanGetPayloadData;
 
 abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
 
   private RobotLoader $loader;
   private IRequest|null $httpRequest = null;
 
-  protected abstract function onGetAppSettings():TigerAppSettings;
-
   protected abstract function onGetCurrentUser(IRequest $httpRequest):ICurrentUser;
 
-  //protected abstract function onGetIndexPhpRootDir():string;
-  //protected abstract function onGetTempDir(string $indexPhpRootDir):string;
   protected abstract function onHandleUnexpectedException(Throwable $exception);
   protected abstract function onGetRouter():ICanMatchRoutes;
+  protected abstract function onGetPayloadGetter():ICanGetPayloadData;
 
   #[NoReturn]
   private function doHandleUnexpectedException(Throwable $exception) {
@@ -66,7 +64,6 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
   }
 
   public function run(IRequest $httpRequest) {
-    $appSettings = $this->onGetAppSettings();
 
     $httpResponse = new \Nette\Http\Response();
     $httpResponse->setHeader('Access-Control-Allow-Origin','*');
@@ -75,7 +72,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
 
     try {
       $this->onGetRouter()->match($httpRequest, $this);
-      $json = json_encode($appSettings->payloadGetter->getPayloadData());
+      $json = json_encode($this->onGetPayloadGetter()->getPayloadData());
       $error = json_last_error();
     } catch (BaseResponseException $e) {
       $errorResponse = new \Nette\Http\Response();
