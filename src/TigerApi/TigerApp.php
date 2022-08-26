@@ -61,6 +61,8 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
 
     date_default_timezone_set($defaultTimeZone);
 
+   // set_exception_handler([$this,'_exception_handler']);
+
   }
 
   public function run(IRequest $httpRequest) {
