@@ -70,6 +70,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
 
     $httpResponse = new \Nette\Http\Response();
     $httpResponse->setHeader('Access-Control-Allow-Origin','*');
+    $httpResponse->setHeader('Access-Control-Allow-Headers','*');
     $httpResponse->setContentType('application/json','utf-8');
 
     try {
