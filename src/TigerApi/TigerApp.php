@@ -53,22 +53,12 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
   }
 
   /**
-   * @param string $tempDirectory
-   * @param string $appSourceDirectoryRoot
    * @param string $defaultTimeZone
    * @throws Throwable
    * @return void
    */
-  public function __construct(string $tempDirectory, string $appSourceDirectoryRoot, string $defaultTimeZone = 'Europe/Prague') {
+  public function __construct(string $defaultTimeZone = 'Europe/Prague') {
 
-    $this->loader = new RobotLoader();
-
-    // directories to be indexed by RobotLoader (including subdirectories)
-    $this->loader->addDirectory($appSourceDirectoryRoot);
-
-    // use 'temp' directory for cache
-    $this->loader->setTempDirectory($tempDirectory);
-    $this->loader->register(); // Run the RobotLoader
 
     date_default_timezone_set($defaultTimeZone);
 
