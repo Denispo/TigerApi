@@ -12,6 +12,7 @@ use Nette\Http\IRequest;
 use TigerCore\ICanMatchRoutes;
 use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\ICanGetPayloadData;
+use TigerCore\Response\MethodNotAllowedException;
 
 abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
 
@@ -87,9 +88,12 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
       $this->onGetRouter()->match($httpRequest, $this);
       $json = json_encode($this->onGetPayloadGetter()->getPayloadData());
       $error = json_last_error();
+    } catch (MethodNotAllowedException $e){
+      $httpResponse->setHeader('Access-Control-Allow-Methods', implode(', ',$e->getAllowedMethods()));
+      $httpResponse->setCode($e->getCode());
+      exit;
     } catch (BaseResponseException $e) {
-      $errorResponse = new \Nette\Http\Response();
-      $errorResponse->setCode($e->getCode());
+      $httpResponse->setCode($e->getCode());
       $json = json_encode([$e->getPayloadKey()->getValue() => $e->getPayloadData()]);
       $error = json_last_error();
     }
