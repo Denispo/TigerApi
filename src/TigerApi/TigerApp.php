@@ -21,6 +21,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
   protected abstract function onGetCurrentUser(IRequest $httpRequest):ICurrentUser;
 
   protected abstract function onHandleUnexpectedException(Throwable $exception);
+  protected abstract function onHandleError(int $errNo, string $errMsg, string $file, int $line);
   protected abstract function onGetRouter():ICanMatchRoutes;
   protected abstract function onGetPayloadGetter():ICanGetPayloadData;
 
@@ -39,6 +40,15 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
       $this->doHandleUnexpectedException($e);
     }
     return $this->onGetCurrentUser($this->httpRequest);
+  }
+
+  #[NoReturn]
+  public function _exception_handler(Throwable $exception) {
+    $this->doHandleUnexpectedException($exception);
+  }
+
+  public function _error_handler(int $errNo, string $errMsg, string $file, int $line) {
+    $this->onHandleError($errNo, $errMsg, $file, $line);
   }
 
   /**
@@ -61,7 +71,8 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
 
     date_default_timezone_set($defaultTimeZone);
 
-   // set_exception_handler([$this,'_exception_handler']);
+    set_exception_handler([$this,'_exception_handler']);
+    set_error_handler([$this,'_error_handler']);
 
   }
 
