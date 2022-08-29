@@ -68,6 +68,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
   }
 
   public function run(IRequest $httpRequest) {
+    $this->httpRequest = $httpRequest;
 
     $httpResponse = new \Nette\Http\Response();
     $httpResponse->setHeader('Access-Control-Allow-Origin','*');
