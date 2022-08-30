@@ -13,10 +13,6 @@ class TigerPhpMailer implements ICanSendEmail {
     $this->mailer = new SendmailMailer();
   }
 
-  public function getMailer(): Mailer {
-    return $this->mailer;
-  }
-
   public function send(TigerMailMessage $mail): void {
     $this->mailer->send($mail);
   }
