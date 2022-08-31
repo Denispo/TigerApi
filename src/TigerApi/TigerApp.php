@@ -7,6 +7,7 @@ use Nette\Loaders\RobotLoader;
 use Throwable;
 use TigerApi\Error\ICanHandlePhpError;
 use TigerApi\Error\ICanHandleUncaughtException;
+use TigerApi\Logger\IBaseLogger;
 use TigerApi\Logger\ICanLogError;
 use TigerApi\Logger\ICanLogException;
 use TigerApi\Logger\ICanLogNotice;
@@ -82,11 +83,11 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
   }
 
   /**
+   * @param IBaseLogger $logger
    * @param string $defaultTimeZone
-   * @throws Throwable
-   * @return void
+   * @throws \ReflectionException
    */
-  public function __construct(string $defaultTimeZone = 'Europe/Prague') {
+  public function __construct(IBaseLogger $logger,string $defaultTimeZone = 'Europe/Prague') {
     set_exception_handler([$this,'_exception_handler']);
     set_error_handler([$this,'_error_handler']);
 
@@ -96,7 +97,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
     $class = new \ReflectionClass(Log::class);
     $method = $class->getMethod('_init');
     $method->setAccessible(true);
-    $method->invokeArgs(null,[$this->onGetErrorLogger(), $this->onGetWarningLogger(), $this->onGetNoticeLogger(), $this->onGetExceptionLogger()]);
+    $method->invokeArgs(null,[$logger, $logger, $logger, $logger]);
     $method->setAccessible(false);
   }
 
