@@ -2,42 +2,62 @@
 
 namespace TigerApi\Logger;
 
-final class Log {
-
-  private static ICanLogError $errorLogger;
-  private static ICanLogWarning $warningLogger;
-  private static ICanLogNotice $infoLogger;
-  private static ICanLogException $exceptionLogger;
+class Log {
 
   /**
-   * V TigerApp se na chvili zmeni na Public, aby ji mohl TigerApp zavolat... ehm...
-   * @param ICanLogError $errorLogger
-   * @param ICanLogWarning $warningLogger
-   * @param ICanLogNotice $noticeLogger
-   * @param ICanLogException $exceptionLogger
+   * @var ICanLogError|ICanLogError[]
+   */
+  private static ICanLogError|array $errorLogger = [];
+  /**
+   * @var ICanLogWarning|ICanLogWarning[]
+   */
+  private static ICanLogWarning|array $warningLogger = [];
+  /**
+   * @var ICanLogNotice|ICanLogNotice[]
+   */
+  private static ICanLogNotice|array $infoLogger = [];
+  /**
+   * @var ICanLogException|ICanLogException[]
+   */
+  private static ICanLogException|array $exceptionLogger = [];
+
+  /**
+   * If array, all loggers within array will be called sequentialy
+   * @param ICanLogError|ICanLogError[] $errorLogger
+   * @param ICanLogWarning|ICanLogWarning[] $warningLogger
+   * @param ICanLogNotice|ICanLogNotice[] $noticeLogger
+   * @param ICanLogException|ICanLogException[] $exceptionLogger
    * @return void
    */
-  private static function _init(ICanLogError $errorLogger, ICanLogWarning $warningLogger, ICanLogNotice $noticeLogger, ICanLogException $exceptionLogger):void {
-    self::$errorLogger = $errorLogger;
-    self::$warningLogger = $warningLogger;
-    self::$infoLogger = $noticeLogger;
-    self::$exceptionLogger = $exceptionLogger;
+  public static function _init(ICanLogError|array $errorLogger, ICanLogWarning|array $warningLogger, ICanLogNotice|array $noticeLogger, ICanLogException|array $exceptionLogger):void {
+    self::$errorLogger = is_array($errorLogger) ? $errorLogger : [$errorLogger];
+    self::$warningLogger = is_array($warningLogger) ? $warningLogger : [$warningLogger];;
+    self::$infoLogger = is_array($noticeLogger) ? $noticeLogger : [$noticeLogger];;
+    self::$exceptionLogger = is_array($exceptionLogger) ? $exceptionLogger : [$exceptionLogger];;
   }
-  
+
   public static function Error(BaseLogData $logData):void {
-    self::$errorLogger->logError($logData);
+    foreach (self::$errorLogger as $oneLogger) {
+      $oneLogger->logError($logData);
+    }
   }
 
   public static function Warning(BaseLogData $logData):void {
-    self::$warningLogger->logWarning($logData);
+    foreach (self::$warningLogger as $oneLogger) {
+      $oneLogger->logWarning($logData);
+    }
   }
 
   public static function Notice(BaseLogData $logData):void {
-    self::$infoLogger->logNotice($logData);
+    foreach (self::$infoLogger as $oneLogger) {
+      $oneLogger->logNotice($logData);
+    }
   }
 
   public static function Exception(\Throwable $exception):void {
-    self::$exceptionLogger->logException($exception);
+    foreach (self::$exceptionLogger as $oneLogger) {
+      $oneLogger->logException($exception);
+    }
   }
 
 }

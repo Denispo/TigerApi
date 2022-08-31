@@ -33,10 +33,25 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
   protected abstract function onGetRouter():ICanMatchRoutes;
   protected abstract function onGetPayloadGetter():ICanGetPayloadData;
 
-  protected abstract function onGetErrorLogger():ICanLogError;
-  protected abstract function onGetWarningLogger():ICanLogWarning;
-  protected abstract function onGetNoticeLogger():ICanLogNotice;
-  protected abstract function onGetExceptionLogger():ICanLogException;
+  /**
+   * @return ICanLogError|ICanLogError[]
+   */
+  protected abstract function onGetErrorLogger():ICanLogError|array;
+
+  /**
+   * @return ICanLogWarning|ICanLogWarning[]
+   */
+  protected abstract function onGetWarningLogger():ICanLogWarning|array;
+
+  /**
+   * @return ICanLogNotice|ICanLogNotice[]
+   */
+  protected abstract function onGetNoticeLogger():ICanLogNotice|array;
+
+  /**
+   * @return ICanLogException|ICanLogException[]
+   */
+  protected abstract function onGetExceptionLogger():ICanLogException|array;
 
   #[NoReturn]
   private function doHandleUnexpectedException(Throwable $exception) {
