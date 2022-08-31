@@ -4,7 +4,7 @@ namespace TigerApi\Logger;
 
 interface ICanLogWarning {
 
-  public function logWarning(BaseLogData $logData);
+  public function logWarning(LogDataWarning $logData);
 
 
 }

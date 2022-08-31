@@ -4,7 +4,7 @@ namespace TigerApi\Logger;
 
 interface ICanLogError {
 
-  public function logError(BaseLogData $logData);
+  public function logError(LogDataError $logData);
 
 
 }
