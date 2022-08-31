@@ -29,7 +29,7 @@ class Log {
    * @param ICanLogException|ICanLogException[] $exceptionLogger
    * @return void
    */
-  public static function _init(ICanLogError|array $errorLogger, ICanLogWarning|array $warningLogger, ICanLogNotice|array $noticeLogger, ICanLogException|array $exceptionLogger):void {
+  private static function _init(ICanLogError|array $errorLogger, ICanLogWarning|array $warningLogger, ICanLogNotice|array $noticeLogger, ICanLogException|array $exceptionLogger):void {
     self::$errorLogger = is_array($errorLogger) ? $errorLogger : [$errorLogger];
     self::$warningLogger = is_array($warningLogger) ? $warningLogger : [$warningLogger];;
     self::$infoLogger = is_array($noticeLogger) ? $noticeLogger : [$noticeLogger];;
