@@ -4,7 +4,7 @@ namespace TigerApi\Logger;
 
 interface ICanLogException {
 
-  public function logException(\Throwable $exception);
+  public function logException(LogDataException $logData);
 
 
 }

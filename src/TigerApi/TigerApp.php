@@ -11,6 +11,7 @@ use TigerApi\Logger\BaseLogData;
 use TigerApi\Logger\IBaseLogger;
 use TigerApi\Logger\Log;
 use TigerApi\Logger\LogDataError;
+use TigerApi\Logger\LogDataException;
 use TigerApi\Logger\LogDataNotice;
 use TigerApi\Logger\LogDataWarning;
 use TigerCore\Auth\ICanGetCurrentUser;
@@ -37,7 +38,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser, IBaseLogg
   protected abstract function onLogNotice(LogDataNotice $baseLogData):void;
   protected abstract function onLogError(LogDataError $baseLogData):void;
   protected abstract function onLogWarning(LogDataWarning $baseLogData):void;
-  protected abstract function onLogException(\Throwable $exception):void;
+  protected abstract function onLogException(LogDataException $logData):void;
 
 
   #[NoReturn]
@@ -98,8 +99,8 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser, IBaseLogg
     $this->onLogNotice($logData);
   }
 
-  public function logException(\Throwable $exception):void {
-    $this->onLogException($exception);
+  public function logException(LogDataException $logData):void {
+    $this->onLogException($logData);
   }
 
   public function run(IRequest $httpRequest) {

@@ -12,7 +12,7 @@ class TigerFileLogger implements IBaseLogger {
     //$logData->
   }
 
-  public function logException(\Throwable $exception) {
+  public function logException(LogDataException $logData) {
     // TODO: Implement logException() method.
   }
 
