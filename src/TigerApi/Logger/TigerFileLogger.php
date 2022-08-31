@@ -2,7 +2,7 @@
 
 namespace TigerApi\Logger;
 
-class TigerFileLogger implements IBaseLogger {
+class TigerFileLogger implements IAmBaseLogger {
 
   public function __construct(private string $pathToLogFolder) {
 

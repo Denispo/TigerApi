@@ -7,8 +7,7 @@ use Nette\Loaders\RobotLoader;
 use Throwable;
 use TigerApi\Error\ICanHandlePhpError;
 use TigerApi\Error\ICanHandleUncaughtException;
-use TigerApi\Logger\BaseLogData;
-use TigerApi\Logger\IBaseLogger;
+use TigerApi\Logger\_LogBridge;
 use TigerApi\Logger\Log;
 use TigerApi\Logger\LogDataError;
 use TigerApi\Logger\LogDataException;
@@ -23,10 +22,33 @@ use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\ICanGetPayloadData;
 use TigerCore\Response\MethodNotAllowedException;
 
-abstract class TigerApp extends BaseApp implements ICanGetCurrentUser, IBaseLogger{
+abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
 
   private RobotLoader $loader;
   private IRequest|null $httpRequest = null;
+
+  /*
+   $_logBridge slouzi pro to, aby potomek TigerApp mohl pouzivat onLogNotice atd.
+   Kdyby byla v TigerApp metoda public function logError(LogDataError $logData), kterou bychom predavali do Log::_init()
+   public function logError(LogDataError $logData) {
+     $this->onLogError($logData);
+   }
+   Potom by potomek mohl tuto metodu volat v obsluze udalosti (protoze ji vydi, protoze je public) onLogError.
+  napr. v potomkovi
+  class App extend TigerApp
+  protected function onLogError(LogDataError $baseLogData):void;{
+    $this->logError($baseLogData);
+  }
+
+  Coz by v TygerApp zavolalo zase onLogError a program by se zacyklil
+
+  Cil je, aby potomek nevidel nic, co nemuze volat.
+
+  */
+  /**
+   * @var _LogBridge
+   */
+  private _LogBridge $_logBridge;
 
   protected abstract function onGetCurrentUser(IRequest $httpRequest):ICurrentUser;
 
@@ -79,28 +101,19 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser, IBaseLogg
 
     date_default_timezone_set($defaultTimeZone);
 
+    $this->_logBridge = new _LogBridge(
+      function (LogDataError $baseLogData){$this->onLogError($baseLogData);},
+      function (LogDataWarning $baseLogData){$this->onLogWarning($baseLogData);},
+      function (LogDataNotice $baseLogData){$this->onLogNotice($baseLogData);},
+      function (LogDataException $baseLogData){$this->onLogException($baseLogData);}
+    );
+
     // Abychom mohli zavolat Log::_init, musime metode _init zmenit na chvili private na public
     $class = new \ReflectionClass(Log::class);
     $method = $class->getMethod('_init');
     $method->setAccessible(true);
-    $method->invokeArgs(null, [$this]);
+    $method->invokeArgs(null, [$this->_logBridge]);
     $method->setAccessible(false);
-  }
-
-  public function logWarning(LogDataWarning $logData):void {
-    $this->onLogWarning($logData);
-  }
-
-  public function logError(LogDataError $logData):void {
-    $this->onLogError($logData);
-  }
-
-  public function logNotice(LogDataNotice $logData):void {
-    $this->onLogNotice($logData);
-  }
-
-  public function logException(LogDataException $logData):void {
-    $this->onLogException($logData);
   }
 
   public function run(IRequest $httpRequest) {

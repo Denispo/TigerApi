@@ -4,9 +4,9 @@ namespace TigerApi\Logger;
 
 class Log {
 
-  private static IBaseLogger $logger;
+  private static IAmBaseLogger $logger;
 
-  private static function _init(IBaseLogger $logger):void {
+  private static function _init(IAmBaseLogger $logger):void {
     self::$logger = $logger;
   }
 
