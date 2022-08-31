@@ -7,11 +7,8 @@ use Nette\Loaders\RobotLoader;
 use Throwable;
 use TigerApi\Error\ICanHandlePhpError;
 use TigerApi\Error\ICanHandleUncaughtException;
+use TigerApi\Logger\BaseLogData;
 use TigerApi\Logger\IBaseLogger;
-use TigerApi\Logger\ICanLogError;
-use TigerApi\Logger\ICanLogException;
-use TigerApi\Logger\ICanLogNotice;
-use TigerApi\Logger\ICanLogWarning;
 use TigerApi\Logger\Log;
 use TigerCore\Auth\ICanGetCurrentUser;
 use TigerCore\Auth\ICurrentUser;
@@ -22,7 +19,7 @@ use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\ICanGetPayloadData;
 use TigerCore\Response\MethodNotAllowedException;
 
-abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
+abstract class TigerApp extends BaseApp implements ICanGetCurrentUser, IBaseLogger{
 
   private RobotLoader $loader;
   private IRequest|null $httpRequest = null;
@@ -34,25 +31,11 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
   protected abstract function onGetRouter():ICanMatchRoutes;
   protected abstract function onGetPayloadGetter():ICanGetPayloadData;
 
-  /**
-   * @return ICanLogError|ICanLogError[]
-   */
-  protected abstract function onGetErrorLogger():ICanLogError|array;
+  protected abstract function onLogNotice(BaseLogData $baseLogData):void;
+  protected abstract function onLogError(BaseLogData $baseLogData):void;
+  protected abstract function onLogWarning(BaseLogData $baseLogData):void;
+  protected abstract function onLogException(\Throwable $exception):void;
 
-  /**
-   * @return ICanLogWarning|ICanLogWarning[]
-   */
-  protected abstract function onGetWarningLogger():ICanLogWarning|array;
-
-  /**
-   * @return ICanLogNotice|ICanLogNotice[]
-   */
-  protected abstract function onGetNoticeLogger():ICanLogNotice|array;
-
-  /**
-   * @return ICanLogException|ICanLogException[]
-   */
-  protected abstract function onGetExceptionLogger():ICanLogException|array;
 
   #[NoReturn]
   private function doHandleUnexpectedException(Throwable $exception) {
@@ -83,11 +66,10 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
   }
 
   /**
-   * @param IBaseLogger $logger
    * @param string $defaultTimeZone
    * @throws \ReflectionException
    */
-  public function __construct(IBaseLogger $logger,string $defaultTimeZone = 'Europe/Prague') {
+  public function __construct(string $defaultTimeZone = 'Europe/Prague') {
     set_exception_handler([$this,'_exception_handler']);
     set_error_handler([$this,'_error_handler']);
 
@@ -97,8 +79,24 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
     $class = new \ReflectionClass(Log::class);
     $method = $class->getMethod('_init');
     $method->setAccessible(true);
-    $method->invokeArgs(null,[$logger, $logger, $logger, $logger]);
+    $method->invokeArgs(null, [$this]);
     $method->setAccessible(false);
+  }
+
+  public function logWarning(BaseLogData $logData):void {
+    $this->onLogWarning($logData);
+  }
+
+  public function logError(BaseLogData $logData):void {
+    $this->onLogError($logData);
+  }
+
+  public function logNotice(BaseLogData $logData):void {
+    $this->onLogNotice($logData);
+  }
+
+  public function logException(\Throwable $exception):void {
+    $this->onLogException($exception);
   }
 
   public function run(IRequest $httpRequest) {
