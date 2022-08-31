@@ -9,7 +9,15 @@ final class Log {
   private static ICanLogNotice $infoLogger;
   private static ICanLogException $exceptionLogger;
 
-  public static function _init(ICanLogError $errorLogger, ICanLogWarning $warningLogger, ICanLogNotice $noticeLogger, ICanLogException $exceptionLogger):void {
+  /**
+   * V TigerApp se na chvili zmeni na Public, aby ji mohl TigerApp zavolat... ehm...
+   * @param ICanLogError $errorLogger
+   * @param ICanLogWarning $warningLogger
+   * @param ICanLogNotice $noticeLogger
+   * @param ICanLogException $exceptionLogger
+   * @return void
+   */
+  private static function _init(ICanLogError $errorLogger, ICanLogWarning $warningLogger, ICanLogNotice $noticeLogger, ICanLogException $exceptionLogger):void {
     self::$errorLogger = $errorLogger;
     self::$warningLogger = $warningLogger;
     self::$infoLogger = $noticeLogger;

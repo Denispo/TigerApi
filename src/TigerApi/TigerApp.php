@@ -7,6 +7,11 @@ use Nette\Loaders\RobotLoader;
 use Throwable;
 use TigerApi\Error\ICanHandlePhpError;
 use TigerApi\Error\ICanHandleUncaughtException;
+use TigerApi\Logger\ICanLogError;
+use TigerApi\Logger\ICanLogException;
+use TigerApi\Logger\ICanLogNotice;
+use TigerApi\Logger\ICanLogWarning;
+use TigerApi\Logger\Log;
 use TigerCore\Auth\ICanGetCurrentUser;
 use TigerCore\Auth\ICurrentUser;
 use TigerCore\BaseApp;
@@ -27,6 +32,11 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
   protected abstract function onGetErrorHandler():ICanHandlePhpError;
   protected abstract function onGetRouter():ICanMatchRoutes;
   protected abstract function onGetPayloadGetter():ICanGetPayloadData;
+
+  protected abstract function onGetErrorLogger():ICanLogError;
+  protected abstract function onGetWarningLogger():ICanLogWarning;
+  protected abstract function onGetNoticeLogger():ICanLogNotice;
+  protected abstract function onGetExceptionLogger():ICanLogException;
 
   #[NoReturn]
   private function doHandleUnexpectedException(Throwable $exception) {
@@ -62,13 +72,17 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
    * @return void
    */
   public function __construct(string $defaultTimeZone = 'Europe/Prague') {
-
-
-    date_default_timezone_set($defaultTimeZone);
-
     set_exception_handler([$this,'_exception_handler']);
     set_error_handler([$this,'_error_handler']);
 
+    date_default_timezone_set($defaultTimeZone);
+
+    // Abychom mohli zavolat Log::_init, musime metode _init zmenit na chvili private na public
+    $class = new \ReflectionClass(Log::class);
+    $method = $class->getMethod('_init');
+    $method->setAccessible(true);
+    $method->invokeArgs(null,[$this->onGetErrorLogger(), $this->onGetWarningLogger(), $this->onGetNoticeLogger(), $this->onGetExceptionLogger()]);
+    $method->setAccessible(false);
   }
 
   public function run(IRequest $httpRequest) {
