@@ -8,7 +8,7 @@ class TigerFileLogger implements IBaseLogger {
 
   }
 
-  public function logError(BaseLogData $logData) {
+  public function logError(LogDataError $logData) {
     //$logData->
   }
 
@@ -16,11 +16,11 @@ class TigerFileLogger implements IBaseLogger {
     // TODO: Implement logException() method.
   }
 
-  public function logNotice(BaseLogData $logData) {
+  public function logNotice(LogDataNotice $logData) {
     // TODO: Implement logNotice() method.
   }
 
-  public function logWarning(BaseLogData $logData) {
+  public function logWarning(LogDataWarning $logData) {
     // TODO: Implement logWarning() method.
   }
 }
