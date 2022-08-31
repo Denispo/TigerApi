@@ -2,13 +2,25 @@
 
 namespace TigerApi\Logger;
 
-class TigerFileLogger extends BaseLogger implements ICanLogError {
+class TigerFileLogger implements IBaseLogger {
 
-  public function __construct(private string $path) {
+  public function __construct(private string $pathToLogFolder) {
 
   }
 
   public function logError(BaseLogData $logData) {
     //$logData->
+  }
+
+  public function logException(\Throwable $exception) {
+    // TODO: Implement logException() method.
+  }
+
+  public function logNotice(BaseLogData $logData) {
+    // TODO: Implement logNotice() method.
+  }
+
+  public function logWarning(BaseLogData $logData) {
+    // TODO: Implement logWarning() method.
   }
 }
