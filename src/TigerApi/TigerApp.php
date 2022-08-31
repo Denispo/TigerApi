@@ -5,6 +5,8 @@ namespace TigerApi;
 use JetBrains\PhpStorm\NoReturn;
 use Nette\Loaders\RobotLoader;
 use Throwable;
+use TigerApi\Error\ICanHandlePhpError;
+use TigerApi\Error\ICanHandleUncaughtException;
 use TigerCore\Auth\ICanGetCurrentUser;
 use TigerCore\Auth\ICurrentUser;
 use TigerCore\BaseApp;
@@ -21,14 +23,15 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
 
   protected abstract function onGetCurrentUser(IRequest $httpRequest):ICurrentUser;
 
-  protected abstract function onHandleUnexpectedException(Throwable $exception);
-  protected abstract function onHandleError(int $errNo, string $errMsg, string $file, int $line);
+  protected abstract function onGetUnexpectedExceptionHandler():ICanHandleUncaughtException;
+  protected abstract function onGetErrorHandler():ICanHandlePhpError;
   protected abstract function onGetRouter():ICanMatchRoutes;
   protected abstract function onGetPayloadGetter():ICanGetPayloadData;
 
   #[NoReturn]
   private function doHandleUnexpectedException(Throwable $exception) {
-    $this->onHandleUnexpectedException($exception);
+    $handler = $this->onGetUnexpectedExceptionHandler();
+    $handler->handleUncaughtException($exception);
     exit;
   }
 
@@ -49,7 +52,8 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
   }
 
   public function _error_handler(int $errNo, string $errMsg, string $file, int $line) {
-    $this->onHandleError($errNo, $errMsg, $file, $line);
+    $handler = $this->onGetErrorHandler();
+    $handler->handlePhpError($errNo, $errMsg, $file, $line);
   }
 
   /**
