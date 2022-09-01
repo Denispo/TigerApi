@@ -22,12 +22,12 @@ class TigerFileLogger implements IAmBaseLogger {
   private function addToFile(string $fileName, string $data) {
     $fullFilePath = FileSystem::joinPaths($this->pathToLogFolder, $fileName);
     $errorMessage = '';
-    $oldErrorHandler = set_error_handler(function (int $errNo, string $errMsg, string $file, int $line) use (&$errorMessage) {
+/*    $oldErrorHandler = set_error_handler(function (int $errNo, string $errMsg, string $file, int $line) use (&$errorMessage) {
       $errorMessage = $errMsg;
-    });
+    });*/
     $handle = @fopen('nette.safe://'.$fullFilePath, 'a');
     if ($handle === false) {
-      set_error_handler($oldErrorHandler);
+   //   set_error_handler($oldErrorHandler);
       throw new CanNotWriteToFileException('Can not open Log file '.$fullFilePath.' Reason: '.$errorMessage, $data);
     }
 
@@ -40,7 +40,7 @@ class TigerFileLogger implements IAmBaseLogger {
       throw new CanNotWriteToFileException('Can not write to Log file '.$fullFilePath.' Reason: '.$errorMessage, $data);
     } finally {
       @fclose($handle);
-      set_error_handler($oldErrorHandler);
+ //     set_error_handler($oldErrorHandler);
     }
 
   }
