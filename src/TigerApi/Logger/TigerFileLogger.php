@@ -19,9 +19,10 @@ class TigerFileLogger implements IAmBaseLogger {
    */
   private function addToFile(string $fileName, string $data) {
     $fullFilePath = FileSystem::joinPaths($this->pathToLogFolder, $fileName);
-    $handle = fopen('nette.safe://'.$fullFilePath, 'a');
+    $handle = @fopen('nette.safe://'.$fullFilePath, 'a');
     if (!$handle) {
-      throw new CanNotOpenLogFileException('Can not open Log file '.$fullFilePath, $data);
+
+      throw new CanNotOpenLogFileException('Can not open Log file '.$fullFilePath.' Reason: '.print_r(error_get_last(),true), $data);
     }
     fwrite($handle,$data);
     fclose($handle);
