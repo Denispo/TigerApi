@@ -4,6 +4,8 @@ namespace TigerApi\Logger;
 
 use Nette\Utils\DateTime;
 use Nette\Utils\FileSystem;
+use TigerApi\CanNotOpenFileException;
+use TigerApi\CanNotWriteToFileException;
 
 class TigerFileLogger implements IAmBaseLogger {
 
@@ -15,17 +17,32 @@ class TigerFileLogger implements IAmBaseLogger {
    * @param string $fileName
    * @param string $data
    * @return void
-   * @throws CanNotOpenLogFileException
+   * @throws CanNotWriteToFileException
    */
   private function addToFile(string $fileName, string $data) {
     $fullFilePath = FileSystem::joinPaths($this->pathToLogFolder, $fileName);
+    $errorMessage = '';
+    $oldErrorHandler = set_error_handler(function (int $errNo, string $errMsg, string $file, int $line) use (&$errorMessage) {
+      $errorMessage = $errMsg;
+    });
     $handle = @fopen('nette.safe://'.$fullFilePath, 'a');
-    if (!$handle) {
-
-      throw new CanNotOpenLogFileException('Can not open Log file '.$fullFilePath.' Reason: '.print_r(error_get_last(),true), $data);
+    if ($handle === false) {
+      set_error_handler($oldErrorHandler);
+      throw new CanNotWriteToFileException('Can not open Log file '.$fullFilePath.' Reason: '.$errorMessage, $data);
     }
-    fwrite($handle,$data);
-    fclose($handle);
+
+    try {
+      $writeResult = @fwrite($handle,$data);
+      if ($writeResult === false) {
+        throw new CanNotWriteToFileException('Can not write to Log file '.$fullFilePath.' Reason: '.$errorMessage, $data);
+      }
+    } catch (\Throwable $e) {
+      throw new CanNotWriteToFileException('Can not write to Log file '.$fullFilePath.' Reason: '.$errorMessage, $data);
+    } finally {
+      @fclose($handle);
+      set_error_handler($oldErrorHandler);
+    }
+
   }
 
   private function formatLogData(BaseLogData $data): string {
