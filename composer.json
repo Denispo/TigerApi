@@ -9,6 +9,9 @@
   "require": {
     "php": ">=8.0",
     "denispo/tigercore": "dev-master",
-    "nette/robot-loader": "^3.4"
+    "nette/robot-loader": "^3.4",
+    "nette/safe-stream": "^2.5",
+    "nette/mail": "^3.1",
+    "nette/utils": "^3.2"
   }
 }
