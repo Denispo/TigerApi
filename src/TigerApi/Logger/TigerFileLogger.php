@@ -22,15 +22,22 @@ class TigerFileLogger implements IAmBaseLogger {
   private function addToFile(string $fileName, string $data) {
     $fullFilePath = FileSystem::joinPaths($this->pathToLogFolder, $fileName);
     $errorMessage = '';
+    $errorLine = 0;
+    $errorFile = '';
+    $errorCode = '';
     if ($this->internalErrorHandler) {
-      $oldErrorHandler = set_error_handler(function (int $errNo, string $errMsg, string $file, int $line) use (&$errorMessage) {
+      $oldErrorHandler = set_error_handler(function (int $errNo, string $errMsg, string $file, int $line) use (&$errorMessage, &$errorLine, &$errorFile, &$errorCode) {
         $errorMessage = $errMsg;
+        $errorLine = $line;
+        $errorFile = $file;
+        $errorCode = $errNo;
       });
     }
     $handle = @fopen('nette.safe://'.$fullFilePath, 'a');
     if ($handle === false) {
       if ($this->internalErrorHandler) set_error_handler($oldErrorHandler);
-      throw new CanNotWriteToFileException('Can not open Log file '.$fullFilePath.' Reason: '.$errorMessage, $data);
+      throw new CanNotWriteToFileException("Wow my custom error handler got #[$errorCode] occurred in [$errorFile] at line [$errorLine]: [$errorMessage]", $data);
+      //throw new CanNotWriteToFileException("Can not open Log file '.$fullFilePath.' Reason: '.$errorMessage, $data);
     }
 
     try {
