@@ -4,25 +4,11 @@ namespace TigerApi\Logger;
 
 use Nette\Utils\DateTime;
 use Nette\Utils\FileSystem;
-use TigerApi\CanNotOpenFileException;
 use TigerApi\CanNotWriteToFileException;
 
 class TigerFileLogger implements IAmBaseLogger {
 
-  public string $errorMessage = '';
-  public int $errorLine = 0;
-  public string $errorFile = '';
-  public int $errorCode = 0;
-
   public function __construct(private string $pathToLogFolder, private $internalErrorHandler = true) {
-
-  }
-
-  public function errhandler(int $errNo, string $errMsg, string $file, int $line) {
-    $this->errorMessage = $this->errorMessage.' XXX '.$errMsg;
-    $this->errorLine = $line;
-    $this->errorFile = $this->errorFile.' '.$file;
-    $this->errorCode = $errNo;
 
   }
 
@@ -34,34 +20,40 @@ class TigerFileLogger implements IAmBaseLogger {
    */
   private function addToFile(string $fileName, string $data) {
     $fullFilePath = FileSystem::joinPaths($this->pathToLogFolder, $fileName);
-/*    $this->errorMessage = '';
-    $this->errorLine = 0;
-    $this->errorFile = '';
-    $this->errorCode = 0;*/
+    $errorMessage = '';
+    $errorLine = 0;
+    $errorFile = '';
+    $errorCode = 0;
     $oldErrorHandler = null;
     if ($this->internalErrorHandler) {
-/*      $oldErrorHandler = set_error_handler(function (int $errNo, string $errMsg, string $file, int $line) {
-        $this->errorMessage = $errMsg;
-        $this->errorLine = $line;
-        $this->errorFile = $file;
-        $this->errorCode = $errNo;
-      });*/
-      $oldErrorHandler = set_error_handler([$this, 'errhandler']);
+      $oldErrorHandler = set_error_handler(function (int $errNo, string $errMsg, string $file, int $line) use (&$errorMessage, &$errorLine, &$errorFile, &$errorCode) {
+        // Musime logovat jen prvni chybu. Viz komentar nize
+        if ($errorMessage == '') {
+          $errorMessage = $errMsg;
+          $errorLine = $line;
+          $errorFile = $file;
+          $errorCode = $errNo;
+        }
+      });
     }
+
+    // Pozor. @fopen('nette.safe://'.$fullFilePath, 'a'); zavola na pozadi SafeStream Wrapper od Nette a v nem se vola metoda stream_open, ktera taky vola svuj @fopen(.... Takze pokud v tomto Wrapperovskem @fopen dojde k chybe, zavola se nas internalErrorHandler poprve. Ale protoze tento Wrapper byl volany diky nasemu @fopen('nette.safe://'., tak tento nas fopen taky nasledne vzhodi chybu a takyznovu  zavola internalErrorHandler.
+    // Napr. Wrapperovsky @fopen skonci chybou "Failed to open stream: Permission denied", ale tato informace se neprenese do naseho fopen, takze nas @fopen('nette.safe://'... skonci chybou "Failed to open stream: ... call failed"
+    // Proto v internalErrorHandler logujeme jen prvni chybu (napr. permission denied), abychom vedeli, co se doopravdy stalo. Jinak bychom meli v $errorMessage vzdy chybu "call failed", ktera nam rekne prd.
     $handle = @fopen('nette.safe://'.$fullFilePath, 'a');
     if ($handle === false) {
       if ($this->internalErrorHandler && $oldErrorHandler) set_error_handler($oldErrorHandler);
-      throw new CanNotWriteToFileException("Wowa my custom error handler got #[$this->errorCode] occurred in [$this->errorFile] at line [$this->errorLine]: [$this->errorMessage]", $data);
-      //throw new CanNotWriteToFileException("Can not open Log file '.$fullFilePath.' Reason: '.$errorMessage, $data);
+      throw new CanNotWriteToFileException('Can not open Log file '.$fullFilePath.' Reason: '.$errorMessage, $data);
     }
 
     try {
+      $errorMessage = '';
       $writeResult = @fwrite($handle,$data);
       if ($writeResult === false) {
-        throw new CanNotWriteToFileException('Can not write to Log file '.$fullFilePath.' Reason: '.$this->errorMessage, $data);
+        throw new CanNotWriteToFileException('Can not write to Log file '.$fullFilePath.' Reason: '.$errorMessage, $data);
       }
     } catch (\Throwable $e) {
-      throw new CanNotWriteToFileException('Can not write to Log file '.$fullFilePath.' Reason: '.$this->errorMessage, $data);
+      throw new CanNotWriteToFileException('Can not write to Log file '.$fullFilePath.' Reason: '.$errorMessage, $data);
     } finally {
       @fclose($handle);
       if ($this->internalErrorHandler) set_error_handler($oldErrorHandler);
@@ -76,7 +68,7 @@ class TigerFileLogger implements IAmBaseLogger {
   /**
    * @param LogDataError $logData
    * @return void
-   * @throws CanNotOpenLogFileException
+   * @throws CanNotWriteToFileException
    */
   public function logError(LogDataError $logData):void {
     $this->addToFile('Error_'.(new DateTime())->format('Ymd').'.log', $this->formatLogData($logData));
@@ -85,7 +77,7 @@ class TigerFileLogger implements IAmBaseLogger {
   /**
    * @param LogDataException $logData
    * @return void
-   * @throws CanNotOpenLogFileException
+   * @throws CanNotWriteToFileException
    */
   public function logException(LogDataException $logData):void {
     $this->addToFile('Exception_'.(new DateTime())->format('Ymd').'.log', $this->formatLogData($logData));
@@ -94,7 +86,7 @@ class TigerFileLogger implements IAmBaseLogger {
   /**
    * @param LogDataNotice $logData
    * @return void
-   * @throws CanNotOpenLogFileException
+   * @throws CanNotWriteToFileException
    */
   public function logNotice(LogDataNotice $logData):void {
     $this->addToFile('Notice_'.(new DateTime())->format('Ymd').'.log', $this->formatLogData($logData));
@@ -103,7 +95,7 @@ class TigerFileLogger implements IAmBaseLogger {
   /**
    * @param LogDataWarning $logData
    * @return void
-   * @throws CanNotOpenLogFileException
+   * @throws CanNotWriteToFileException
    */
   public function logWarning(LogDataWarning $logData):void {
     $this->addToFile('Warning_'.(new DateTime())->format('Ymd').'.log', $this->formatLogData($logData));
