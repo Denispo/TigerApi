@@ -9,6 +9,11 @@ use TigerApi\CanNotWriteToFileException;
 
 class TigerFileLogger implements IAmBaseLogger {
 
+   public string $errorMessage = '';
+  public int $errorLine = 0;
+  public string $errorFile = '';
+  public string $errorCode = '';
+
   public function __construct(private string $pathToLogFolder, private $internalErrorHandler = true) {
 
   }
@@ -21,32 +26,32 @@ class TigerFileLogger implements IAmBaseLogger {
    */
   private function addToFile(string $fileName, string $data) {
     $fullFilePath = FileSystem::joinPaths($this->pathToLogFolder, $fileName);
-    $errorMessage = '';
-    $errorLine = 0;
-    $errorFile = '';
-    $errorCode = '';
+    $this->errorMessage = '';
+    $this->errorLine = 0;
+    $this->errorFile = '';
+    $this->errorCode = '';
     if ($this->internalErrorHandler) {
-      $oldErrorHandler = set_error_handler(function (int $errNo, string $errMsg, string $file, int $line) use (&$errorMessage, &$errorLine, &$errorFile, &$errorCode) {
-        $errorMessage = $errMsg;
-        $errorLine = $line;
-        $errorFile = $file;
-        $errorCode = $errNo;
+      $oldErrorHandler = set_error_handler(function (int $errNo, string $errMsg, string $file, int $line) {
+        $this->errorMessage = $errMsg;
+        $this->errorLine = $line;
+        $this->errorFile = $file;
+        $this->errorCode = $errNo;
       });
     }
     $handle = @fopen('nette.safe://'.$fullFilePath, 'a');
     if ($handle === false) {
       if ($this->internalErrorHandler) set_error_handler($oldErrorHandler);
-      throw new CanNotWriteToFileException("Wow my custom error handler got #[$errorCode] occurred in [$errorFile] at line [$errorLine]: [$errorMessage]", $data);
+      throw new CanNotWriteToFileException("Wow my custom error handler got #[$this->errorCode] occurred in [$this->errorFile] at line [$this->errorLine]: [$this->errorMessage]", $data);
       //throw new CanNotWriteToFileException("Can not open Log file '.$fullFilePath.' Reason: '.$errorMessage, $data);
     }
 
     try {
       $writeResult = @fwrite($handle,$data);
       if ($writeResult === false) {
-        throw new CanNotWriteToFileException('Can not write to Log file '.$fullFilePath.' Reason: '.$errorMessage, $data);
+        throw new CanNotWriteToFileException('Can not write to Log file '.$fullFilePath.' Reason: '.$this->errorMessage, $data);
       }
     } catch (\Throwable $e) {
-      throw new CanNotWriteToFileException('Can not write to Log file '.$fullFilePath.' Reason: '.$errorMessage, $data);
+      throw new CanNotWriteToFileException('Can not write to Log file '.$fullFilePath.' Reason: '.$this->errorMessage, $data);
     } finally {
       @fclose($handle);
       if ($this->internalErrorHandler) set_error_handler($oldErrorHandler);
