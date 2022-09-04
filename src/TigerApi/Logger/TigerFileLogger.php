@@ -13,7 +13,7 @@ class TigerFileLogger implements IAmBaseLogger {
   }
 
   private function handler(int $errNo, string $errMsg, string $file, int $line) {
-    echo('Handleeee'); exit;
+    echo('Handleeee '.$errMsg); exit;
   }
 
   /**
