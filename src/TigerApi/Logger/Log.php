@@ -26,8 +26,11 @@ class Log {
       throw new CyclicLoggerCallException('Log::Error() was called again during logging first Log:Error call', $logData);
     }
     self::$errorCounter++;
-    self::$logger->logError($logData);
-    self::$errorCounter--;
+    try {
+      self::$logger->logError($logData);
+    } finally {
+      self::$errorCounter--;
+    }
   }
 
   /**
@@ -41,8 +44,11 @@ class Log {
       throw new CyclicLoggerCallException('Log::Warning() was called again during logging first Log:Warning call', $logData);
     }
     self::$warningCounter++;
-    self::$logger->logWarning($logData);
-    self::$warningCounter--;
+    try {
+      self::$logger->logWarning($logData);
+    } finally {
+      self::$warningCounter--;
+    }
   }
 
   /**
@@ -56,8 +62,11 @@ class Log {
       throw new CyclicLoggerCallException('Log::Notice() was called again during logging first Log:Notice call', $logData);
     }
     self::$noticeCounter++;
-    self::$logger->logNotice($logData);
-    self::$noticeCounter--;
+    try {
+      self::$logger->logNotice($logData);
+    } finally {
+      self::$noticeCounter--;
+    }
   }
 
   /**
@@ -66,13 +75,16 @@ class Log {
    * @throws CyclicLoggerCallException
    */
   public static function Exception(LogDataException $logData):void {
-    if (self::$noticeCounter > 0) {
+    if (self::$exceptionCounter > 0) {
       // Nekdo v self::$logger->LogException($logData) zase zavolal Log::Exception, takze jsme se zacyklili
       throw new CyclicLoggerCallException('Log::Exception() was called again during logging first Log:Exception call', $logData);
     }
     self::$exceptionCounter++;
-    self::$logger->logException($logData);
-    self::$exceptionCounter--;
+    try {
+      self::$logger->logException($logData);
+    } finally {
+      self::$exceptionCounter--;
+    }
   }
 
 }
