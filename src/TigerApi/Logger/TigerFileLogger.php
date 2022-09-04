@@ -8,7 +8,7 @@ use TigerApi\CanNotWriteToFileException;
 
 class TigerFileLogger implements IAmBaseLogger {
 
-  public function __construct(private string $pathToLogFolder, private $internalErrorHandler = true) {
+  public function __construct(private string $pathToLogFolder) {
 
   }
 
@@ -24,39 +24,40 @@ class TigerFileLogger implements IAmBaseLogger {
     $errorLine = 0;
     $errorFile = '';
     $errorCode = 0;
-    $oldErrorHandler = null;
-    if ($this->internalErrorHandler) {
-      $oldErrorHandler = set_error_handler(function (int $errNo, string $errMsg, string $file, int $line) use (&$errorMessage, &$errorLine, &$errorFile, &$errorCode) {
-        // Musime logovat jen prvni chybu. Viz komentar nize
-        if ($errorMessage == '') {
-          $errorMessage = $errMsg;
-          $errorLine = $line;
-          $errorFile = $file;
-          $errorCode = $errNo;
-        }
-      });
-    }
 
-    // Pozor. @fopen('nette.safe://'.$fullFilePath, 'a'); zavola na pozadi SafeStream Wrapper od Nette a v nem se vola metoda stream_open, ktera taky vola svuj @fopen(.... Takze pokud v tomto Wrapperovskem @fopen dojde k chybe, zavola se nas internalErrorHandler poprve. Ale protoze tento Wrapper byl volany diky nasemu @fopen('nette.safe://'., tak tento nas fopen taky nasledne vzhodi chybu a takyznovu  zavola internalErrorHandler.
+    $oldErrorHandler = set_error_handler(function (int $errNo, string $errMsg, string $file, int $line) use (&$errorMessage, &$errorLine, &$errorFile, &$errorCode) {
+      // Musime logovat jen prvni chybu. Viz komentar nize
+      if ($errorMessage == '') {
+        $errorMessage = $errMsg;
+        $errorLine = $line;
+        $errorFile = $file;
+        $errorCode = $errNo;
+      }
+    });
+
+
+    // Pozor. @fopen('nette.safe://'.$fullFilePath, 'a'); zavola na pozadi SafeStream Wrapper od Nette a v nem se vola metoda stream_open, ktera taky vola svuj @fopen(.... Takze pokud v tomto Wrapperovskem @fopen dojde k chybe, zavola se nas set_error_handler(function... poprve. Ale protoze tento Wrapper byl volany diky nasemu @fopen('nette.safe://'., tak tento nas fopen taky nasledne vzhodi chybu a taky znovu  zavola set_error_handler(function....
     // Napr. Wrapperovsky @fopen skonci chybou "Failed to open stream: Permission denied", ale tato informace se neprenese do naseho fopen, takze nas @fopen('nette.safe://'... skonci chybou "Failed to open stream: ... call failed"
-    // Proto v internalErrorHandler logujeme jen prvni chybu (napr. permission denied), abychom vedeli, co se doopravdy stalo. Jinak bychom meli v $errorMessage vzdy chybu "call failed", ktera nam rekne prd.
+    // Proto v set_error_handler(function... logujeme jen prvni chybu (napr. permission denied), abychom vedeli, co se doopravdy stalo. Jinak bychom meli v $errorMessage vzdy chybu "call failed", ktera nam rekne prd.
     $handle = @fopen('nette.safe://'.$fullFilePath, 'a');
     if ($handle === false) {
-      if ($this->internalErrorHandler && $oldErrorHandler) set_error_handler($oldErrorHandler);
+      set_error_handler($oldErrorHandler);
       throw new CanNotWriteToFileException('Can not open Log file '.$fullFilePath.' Reason: '.$errorMessage, $data);
     }
 
+    $errorMessage = '';
     try {
-      $errorMessage = '';
       $writeResult = @fwrite($handle,$data);
       if ($writeResult === false) {
+        set_error_handler($oldErrorHandler);
         throw new CanNotWriteToFileException('Can not write to Log file '.$fullFilePath.' Reason: '.$errorMessage, $data);
       }
     } catch (\Throwable $e) {
+      set_error_handler($oldErrorHandler);
       throw new CanNotWriteToFileException('Can not write to Log file '.$fullFilePath.' Reason: '.$errorMessage, $data);
     } finally {
       @fclose($handle);
-      if ($this->internalErrorHandler) set_error_handler($oldErrorHandler);
+      set_error_handler($oldErrorHandler);
     }
 
   }
