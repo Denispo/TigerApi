@@ -8,6 +8,7 @@ use TigerCore\Payload\RefreshTokenPayload;
 use TigerCore\Request\RequestParam;
 use TigerCore\Requests\RP_String;
 use TigerCore\Response\ICanAddPayload;
+use TigerCore\Response\NotFoundException;
 use TigerCore\Response\UnauthorizedException;
 use TigerCore\ValueObject\VO_BaseId;
 use TigerCore\ValueObject\VO_Email;
@@ -63,7 +64,7 @@ use TigerCore\ValueObject\VO_TokenPlainStr;
     * @param IRequest $httpRequest
     * @return void
     * @throws UnauthorizedException
-    * @throws \ReflectionException
+    * @throws \ReflectionException|NotFoundException
     */
    protected function onProcessRequest(ICanAddPayload $payload, IRequest $httpRequest): void {
 
@@ -78,13 +79,13 @@ use TigerCore\ValueObject\VO_TokenPlainStr;
      $userId = $this->onGetUserIdByCredentials($this->userName->getValueAsString(), $userEmail);
 
      if (!$userId->isValid()) {
-       throw new UnauthorizedException();
+       throw new NotFoundException();
      }
 
      $passwordValidity = $this->onVerifyPassword(new VO_Password($this->userPassword->getValueAsString()), $userId);
 
      if ($passwordValidity->IsSetTo(PasswordValidity::PWD_INVALID)) {
-       throw new UnauthorizedException();
+       throw new NotFoundException();
      }
 
      $this->onLoginComplete($userId, $payload);
