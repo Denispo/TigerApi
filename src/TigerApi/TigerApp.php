@@ -3,7 +3,6 @@
 namespace TigerApi;
 
 use JetBrains\PhpStorm\NoReturn;
-use Nette\Loaders\RobotLoader;
 use Throwable;
 use TigerApi\Error\ICanHandlePhpError;
 use TigerApi\Error\ICanHandleUncaughtException;
@@ -24,7 +23,6 @@ use TigerCore\Response\MethodNotAllowedException;
 
 abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
 
-  private RobotLoader $loader;
   private IRequest|null $httpRequest = null;
 
   /*
