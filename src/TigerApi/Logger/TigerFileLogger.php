@@ -29,7 +29,7 @@ class TigerFileLogger implements IAmBaseLogger {
     $errorFile = '';
     $errorCode = 0;
 
-    $oldErrorHandler = set_error_handler([$this,'handler']);
+    $oldErrorHandler = set_error_handler(\Closure::fromCallable([$this,'handler']));
 /*    $oldErrorHandler = set_error_handler(function (int $errNo, string $errMsg, string $file, int $line) use (&$errorMessage, &$errorLine, &$errorFile, &$errorCode) {
       // Musime logovat jen prvni chybu. Viz komentar nize
       if ($errorMessage == '') {
