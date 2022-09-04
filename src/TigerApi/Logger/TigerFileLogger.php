@@ -12,6 +12,10 @@ class TigerFileLogger implements IAmBaseLogger {
 
   }
 
+  private function handler(int $errNo, string $errMsg, string $file, int $line) {
+    echo('Handleeee'); exit;
+  }
+
   /**
    * @param string $fileName
    * @param string $data
@@ -25,7 +29,8 @@ class TigerFileLogger implements IAmBaseLogger {
     $errorFile = '';
     $errorCode = 0;
 
-    $oldErrorHandler = set_error_handler(function (int $errNo, string $errMsg, string $file, int $line) use (&$errorMessage, &$errorLine, &$errorFile, &$errorCode) {
+    $oldErrorHandler = set_error_handler([$this,'handler']);
+/*    $oldErrorHandler = set_error_handler(function (int $errNo, string $errMsg, string $file, int $line) use (&$errorMessage, &$errorLine, &$errorFile, &$errorCode) {
       // Musime logovat jen prvni chybu. Viz komentar nize
       if ($errorMessage == '') {
         $errorMessage = $errMsg;
@@ -33,7 +38,7 @@ class TigerFileLogger implements IAmBaseLogger {
         $errorFile = $file;
         $errorCode = $errNo;
       }
-    });
+    });*/
 
 
     // Pozor. @fopen('nette.safe://'.$fullFilePath, 'a'); zavola na pozadi SafeStream Wrapper od Nette a v nem se vola metoda stream_open, ktera taky vola svuj @fopen(.... Takze pokud v tomto Wrapperovskem @fopen dojde k chybe, zavola se nas set_error_handler(function... poprve. Ale protoze tento Wrapper byl volany diky nasemu @fopen('nette.safe://'., tak tento nas fopen taky nasledne vzhodi chybu a taky znovu  zavola set_error_handler(function....
