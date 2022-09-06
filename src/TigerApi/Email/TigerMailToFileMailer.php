@@ -2,9 +2,9 @@
 
 namespace TigerApi\Email;
 
-use Nette\Mail\Mailer;
-use Nette\Mail\SendmailMailer;
-use TigerApi\CanNotOpenFileException;
+
+
+use TigerCore\SafeFileStream;
 
 class TigerMailToFileMailer implements ICanSendEmail {
 
@@ -13,9 +13,8 @@ class TigerMailToFileMailer implements ICanSendEmail {
   }
 
   public function send(TigerMailMessage $mail): void {
-    $handle = @fopen($this->fullFileName, 'a');
-    if (!$handle) {
-     // throw new CanNotOpenFileException()
-    }
+    $stream = new SafeFileStream($this->fullFileName);
+    $emailData = $mail->getSubject().PHP_EOL.implode(PHP_EOL,$mail->getHeaders() ?? []).PHP_EOL.PHP_EOL.$mail->getHtmlBody();
+    $stream->addToFile($emailData);
   }
 }
