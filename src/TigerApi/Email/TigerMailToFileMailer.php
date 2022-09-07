@@ -14,7 +14,7 @@ class TigerMailToFileMailer implements ICanSendEmail {
 
   public function send(TigerMailMessage $mail): void {
     $stream = new SafeFileStream($this->fullFileName);
-    $emailData = $mail->getSubject().PHP_EOL.implode(PHP_EOL,$mail->getHeaders() ?? []).PHP_EOL.PHP_EOL.$mail->getHtmlBody();
+    $emailData = $mail->getSubject().PHP_EOL.print_r($mail->getHeaders() ?? [], true).PHP_EOL.PHP_EOL.$mail->getHtmlBody();
     $stream->addToFile($emailData);
   }
 }
