@@ -62,13 +62,16 @@ class Log {
    * @param array $customData
    * @param IAmFileLineClass|null $fileLineClass
    * @return void
-   * @throws CyclicLoggerCallException
    */
   public static function Notice(string $message, array $customData = [], IAmFileLineClass|null $fileLineClass = null):void {
     $logData = new LogDataNotice($message, $customData, $fileLineClass);
     if (self::$noticeCounter > 0) {
       // Nekdo v self::$logger->logNotice($logData) zase zavolal Log::Notice, takze jsme se zacyklili
-      throw new CyclicLoggerCallException('Log::Notice() was called again during logging first Log:Notice call', $logData);
+
+      // U Notice ale Exception nevyhodime. Bo je to jen Notice
+
+      //throw new CyclicLoggerCallException('Log::Notice() was called again during logging first Log:Notice call', $logData);
+      return;
     }
     self::$noticeCounter++;
     try {
