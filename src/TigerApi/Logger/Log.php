@@ -16,11 +16,14 @@ class Log {
   }
 
   /**
-   * @param LogDataError $logData
+   * @param string $message
+   * @param array $customData
+   * @param IAmFileLineClass|null $fileLineClass
    * @return void
    * @throws CyclicLoggerCallException
    */
-  public static function Error(LogDataError $logData):void {
+  public static function Error(string $message, array $customData = [], IAmFileLineClass|null $fileLineClass = null):void {
+    $logData = new LogDataError($message, $customData, $fileLineClass);
     if (self::$errorCounter > 0) {
       // Nekdo v self::$logger->logError($logData) zase zavolal Log::Error, takze jsme se zacyklili
       throw new CyclicLoggerCallException('Log::Error() was called again during logging first Log:Error call', $logData);
@@ -34,11 +37,14 @@ class Log {
   }
 
   /**
-   * @param LogDataWarning $logData
+   * @param string $message
+   * @param array $customData
+   * @param IAmFileLineClass|null $fileLineClass
    * @return void
    * @throws CyclicLoggerCallException
    */
-  public static function Warning(LogDataWarning $logData):void {
+  public static function Warning(string $message, array $customData = [], IAmFileLineClass|null $fileLineClass = null):void {
+    $logData = new LogDataWarning($message, $customData, $fileLineClass);
     if (self::$warningCounter > 0) {
       // Nekdo v self::$logger->logWarning($logData) zase zavolal Log::Warning, takze jsme se zacyklili
       throw new CyclicLoggerCallException('Log::Warning() was called again during logging first Log:Warning call', $logData);
@@ -52,11 +58,14 @@ class Log {
   }
 
   /**
-   * @param LogDataNotice $logData
+   * @param string $message
+   * @param array $customData
+   * @param IAmFileLineClass|null $fileLineClass
    * @return void
    * @throws CyclicLoggerCallException
    */
-  public static function Notice(LogDataNotice $logData):void {
+  public static function Notice(string $message, array $customData = [], IAmFileLineClass|null $fileLineClass = null):void {
+    $logData = new LogDataNotice($message, $customData, $fileLineClass);
     if (self::$noticeCounter > 0) {
       // Nekdo v self::$logger->logNotice($logData) zase zavolal Log::Notice, takze jsme se zacyklili
       throw new CyclicLoggerCallException('Log::Notice() was called again during logging first Log:Notice call', $logData);
@@ -70,11 +79,13 @@ class Log {
   }
 
   /**
-   * @param LogDataException $logData
+   * @param \Throwable $exception
+   * @param array $customData
    * @return void
    * @throws CyclicLoggerCallException
    */
-  public static function Exception(LogDataException $logData):void {
+  public static function Exception(\Throwable $exception, array $customData = []):void {
+    $logData = new LogDataException($exception, $customData);
     if (self::$exceptionCounter > 0) {
       // Nekdo v self::$logger->LogException($logData) zase zavolal Log::Exception, takze jsme se zacyklili
       throw new CyclicLoggerCallException('Log::Exception() was called again during logging first Log:Exception call', $logData);
