@@ -3,6 +3,7 @@
 namespace TigerApi;
 
 use JetBrains\PhpStorm\NoReturn;
+use Nette\Http\RequestFactory;
 use Throwable;
 use TigerApi\Error\ICanHandlePhpError;
 use TigerApi\Error\ICanHandleUncaughtException;
@@ -15,15 +16,16 @@ use TigerApi\Logger\LogDataWarning;
 use TigerCore\Auth\ICanGetCurrentUser;
 use TigerCore\Auth\ICurrentUser;
 use TigerCore\BaseApp;
-use Nette\Http\IRequest;
+use TigerCore\Constants\Environment;
 use TigerCore\ICanMatchRoutes;
 use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\ICanGetPayloadData;
 use TigerCore\Response\MethodNotAllowedException;
+use TigerCore\ValueObject\VO_TokenPlainStr;
 
 abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
 
-  private IRequest|null $httpRequest = null;
+  private VO_TokenPlainStr|null $authTokenPlainStr = null;
 
   /*
    $_logBridge slouzi pro to, aby potomek TigerApp mohl pouzivat onLogNotice atd.
@@ -48,7 +50,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
    */
   private _LogBridge $_logBridge;
 
-  protected abstract function onGetCurrentUser(IRequest $httpRequest):ICurrentUser;
+  protected abstract function onGetCurrentUser(VO_TokenPlainStr $tokenPlainStr):ICurrentUser;
 
   protected abstract function onGetUnexpectedExceptionHandler():ICanHandleUncaughtException;
   protected abstract function onGetErrorHandler():ICanHandlePhpError;
@@ -68,15 +70,15 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
     exit;
   }
 
-  public function getCurrentUser():ICurrentUser {
-    try {
-      if (!$this->httpRequest) {
-        throw new TigerAppIsNotRunningException();
-      }
-    } catch (TigerAppIsNotRunningException $e ) {
-      $this->doHandleUnexpectedException($e);
+  private function getAuthTokenPlainStr():VO_TokenPlainStr {
+    if (!$this->authTokenPlainStr) {
+      $this->authTokenPlainStr = VO_TokenPlainStr::createFromBearerRequest($this->getHttpRequest());
     }
-    return $this->onGetCurrentUser($this->httpRequest);
+    return $this->authTokenPlainStr;
+  }
+
+  public function getCurrentUser():ICurrentUser {
+    return $this->onGetCurrentUser($this->getAuthTokenPlainStr());
   }
 
   #[NoReturn]
@@ -90,14 +92,17 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
   }
 
   /**
+   * @param Environment $environment
    * @param string $defaultTimeZone
    * @throws \ReflectionException
    */
-  public function __construct(string $defaultTimeZone = 'Europe/Prague') {
+  public function __construct(private Environment $environment, string $defaultTimeZone = 'Europe/Prague') {
     set_exception_handler([$this,'_exception_handler']);
     set_error_handler([$this,'_error_handler']);
 
     date_default_timezone_set($defaultTimeZone);
+
+    parent::__construct((new RequestFactory())->fromGlobals());
 
     $this->_logBridge = new _LogBridge(
       function (LogDataError $baseLogData){$this->onLogError($baseLogData);},
@@ -114,16 +119,14 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
     $method->setAccessible(false);
   }
 
-  public function run(IRequest $httpRequest) {
-    $this->httpRequest = $httpRequest;
-
+  public function run() {
     $httpResponse = new \Nette\Http\Response();
     $httpResponse->setHeader('Access-Control-Allow-Origin','*');
     $httpResponse->setHeader('Access-Control-Allow-Headers','*');
     $httpResponse->setContentType('application/json','utf-8');
 
     try {
-      $this->onGetRouter()->match($httpRequest, $this);
+      $this->onGetRouter()->match($this->getHttpRequest(), $this);
       $json = json_encode($this->onGetPayloadGetter()->getPayloadData());
       $error = json_last_error();
     } catch (MethodNotAllowedException $e){
