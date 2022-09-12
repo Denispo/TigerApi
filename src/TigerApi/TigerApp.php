@@ -56,6 +56,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
   protected abstract function onGetErrorHandler():ICanHandlePhpError;
   protected abstract function onGetRouter():ICanMatchRoutes;
   protected abstract function onGetPayloadGetter():ICanGetPayloadData;
+  protected abstract function onGetEnvironment(): Environment;
 
   protected abstract function onLogNotice(LogDataNotice $baseLogData):void;
   protected abstract function onLogError(LogDataError $baseLogData):void;
@@ -70,9 +71,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
     exit;
   }
 
-  protected function getEnvironment(): Environment {
-    return $this->environment;
-  }
+
 
   private function getAuthTokenPlainStr():VO_TokenPlainStr {
     if (!$this->authTokenPlainStr) {
@@ -96,11 +95,10 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
   }
 
   /**
-   * @param Environment $environment
    * @param string $defaultTimeZone
    * @throws \ReflectionException
    */
-  public function __construct(private Environment $environment, string $defaultTimeZone = 'Europe/Prague') {
+  public function __construct(string $defaultTimeZone = 'Europe/Prague') {
     set_exception_handler([$this,'_exception_handler']);
     set_error_handler([$this,'_error_handler']);
 
@@ -148,7 +146,9 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
       $errorMsg = json_last_error_msg();
       $errorResponse = new \Nette\Http\Response();
       $errorResponse->setCode(\Nette\Http\IResponse::S500_INTERNAL_SERVER_ERROR);
-      echo($error.': '.$errorMsg);
+      if ($this->onGetEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
+        echo($error.': '.$errorMsg);
+      }
     } else {
       echo($json);
     }
