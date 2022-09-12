@@ -70,6 +70,10 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
     exit;
   }
 
+  protected function getEnvironment(): Environment {
+    return $this->environment;
+  }
+
   private function getAuthTokenPlainStr():VO_TokenPlainStr {
     if (!$this->authTokenPlainStr) {
       $this->authTokenPlainStr = VO_TokenPlainStr::createFromBearerRequest($this->getHttpRequest());
@@ -124,6 +128,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
     $httpResponse->setHeader('Access-Control-Allow-Origin','*');
     $httpResponse->setHeader('Access-Control-Allow-Headers','*');
     $httpResponse->setContentType('application/json','utf-8');
+
 
     try {
       $this->onGetRouter()->match($this->getHttpRequest(), $this);
