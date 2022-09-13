@@ -2,21 +2,22 @@
 
 namespace TigerApi;
 
-use TigerCore\Payload\IBasePayload;
+
+use TigerApi\Payload\IAmTigerPayload;
+use TigerCore\Payload\ICanGetPayloadRawData;
 use TigerCore\Response\BaseResponse;
-use TigerCore\Response\ICanGetPayloadData;
 
-class TigerApiResponse extends BaseResponse implements ICanGetPayloadData {
 
-  public function addPayload(IBasePayload $payload) {
-    $key = $payload->getPayloadKey();
-    if ($key->isValid()) {
-      $this->payload[][$key->getValue()]['data'] = $payload->getPayloadData();
-    }
+class TigerApiResponse extends BaseResponse implements ICanGetPayloadRawData {
+
+  public function addPayload(ICanGetPayloadRawData|IAmTigerPayload $payload) {
+    $this->payload[] = [
+      'key' => $payload instanceof IAmTigerPayload ? $payload->getPayloadKey()->getValue() : '',
+      'data' => $payload->getPayloadRawData(),
+    ];
   }
 
-  public function getPayloadData(): array {
+  public function getPayloadRawData(): array {
     return $this->payload;
   }
-
 }

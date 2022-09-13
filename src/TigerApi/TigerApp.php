@@ -18,8 +18,8 @@ use TigerCore\Auth\ICurrentUser;
 use TigerCore\BaseApp;
 use TigerCore\Constants\Environment;
 use TigerCore\ICanMatchRoutes;
+use TigerCore\Payload\ICanGetPayloadRawData;
 use TigerCore\Response\BaseResponseException;
-use TigerCore\Response\ICanGetPayloadData;
 use TigerCore\Response\MethodNotAllowedException;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
@@ -55,7 +55,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
   protected abstract function onGetUnexpectedExceptionHandler():ICanHandleUncaughtException;
   protected abstract function onGetErrorHandler():ICanHandlePhpError;
   protected abstract function onGetRouter():ICanMatchRoutes;
-  protected abstract function onGetPayloadGetter():ICanGetPayloadData;
+  protected abstract function onGetPayloadGetter():ICanGetPayloadRawData;
   protected abstract function onGetEnvironment(): Environment;
 
   protected abstract function onLogNotice(LogDataNotice $baseLogData):void;
@@ -130,7 +130,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
 
     try {
       $this->onGetRouter()->match($this->getHttpRequest(), $this);
-      $json = json_encode($this->onGetPayloadGetter()->getPayloadData());
+      $json = json_encode($this->onGetPayloadGetter()->getPayloadRawData());
       $error = json_last_error();
     } catch (MethodNotAllowedException $e){
       $httpResponse->setHeader('Access-Control-Allow-Methods', implode(', ',$e->getAllowedMethods()));
@@ -138,7 +138,9 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
       exit;
     } catch (BaseResponseException $e) {
       $httpResponse->setCode($e->getCode());
-      $json = json_encode([$e->getPayloadKey()->getValue() => $e->getPayloadData()]);
+      if ($this->onGetEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
+        $json = json_encode(['exception '.get_class($e) => [$e->getMessage(),'CDATA: '=> $e->getCustomdata(), 'FILE: ' =>$e->getFile()]]);
+      }
       $error = json_last_error();
     }
 

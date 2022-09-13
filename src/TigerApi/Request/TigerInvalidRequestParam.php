@@ -1,6 +1,6 @@
 <?php
 
-namespace TigerApi;
+namespace TigerApi\Request;
 
 use TigerCore\Requests\BaseRequestParam;
 

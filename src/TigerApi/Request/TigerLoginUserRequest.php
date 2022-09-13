@@ -1,10 +1,10 @@
 <?php
 
-namespace TigerApi;
+namespace TigerApi\Request;
 
 use Nette\Http\IRequest;
 use TigerCore\Constants\PasswordValidity;
-use TigerCore\Payload\RefreshTokenPayload;
+use TigerApi\Payload\RefreshTokenPayload;
 use TigerCore\Request\RequestParam;
 use TigerCore\Requests\RP_String;
 use TigerCore\Response\ICanAddPayload;

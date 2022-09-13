@@ -1,10 +1,11 @@
 <?php
 
-namespace TigerApi;
+namespace TigerApi\Request;
 
 use Nette\Http\IRequest;
+use TigerApi\TigerAuthTokenClaims;
 use TigerCore\Exceptions\InvalidTokenException;
-use TigerCore\Payload\AuthTokenPayload;
+use TigerApi\Payload\AuthTokenPayload;
 use TigerCore\Request\RequestParam;
 use TigerCore\Requests\RP_String;
 use TigerCore\Response\BaseResponseException;

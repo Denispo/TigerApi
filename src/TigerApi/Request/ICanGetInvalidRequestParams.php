@@ -1,6 +1,6 @@
 <?php
 
-namespace TigerApi;
+namespace TigerApi\Request;
 
 interface ICanGetInvalidRequestParams {
 

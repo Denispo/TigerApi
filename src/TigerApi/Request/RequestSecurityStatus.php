@@ -1,6 +1,6 @@
 <?php
 
-namespace TigerApi;
+namespace TigerApi\Request;
 
 use TigerCore\Constants\BaseConst;
 use TigerCore\Constants\IBaseConst;

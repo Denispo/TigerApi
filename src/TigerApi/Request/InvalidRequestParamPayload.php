@@ -1,18 +1,18 @@
 <?php
 
-namespace TigerApi;
+namespace TigerApi\Request;
 
-use TigerCore\Payload\BasePayload;
+use TigerApi\Payload\TigerPayload;
 use TigerCore\ValueObject\VO_PayloadKey;
 
-class InvalidRequestParamPayload extends BasePayload {
+class InvalidRequestParamPayload extends TigerPayload {
 
   /**
    * @param TigerInvalidRequestParam $invalidParam
    */
   public function __construct(TigerInvalidRequestParam $invalidParam) {
     try {
-      parent::__construct(['name' => $invalidParam->param->getParamName(), 'desc' => $invalidParam->description], false);
+      parent::__construct(['name' => $invalidParam->param->getParamName(), 'desc' => $invalidParam->description]);
     } catch (\ReflectionException $e) {
 
     }

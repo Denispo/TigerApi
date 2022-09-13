@@ -1,7 +1,8 @@
 <?php
 
-namespace TigerApi;
+namespace TigerApi\Request;
 
+use TigerApi\TigerApiResponse;
 use TigerCore\Response\UnprocessableEntityException;
 
 class TigerInvalidRequestParamsException extends UnprocessableEntityException {
@@ -12,7 +13,7 @@ class TigerInvalidRequestParamsException extends UnprocessableEntityException {
     foreach ($params as $oneParam) {
       $response->addPayload(new InvalidRequestParamPayload($oneParam));
     }
-    parent::__construct($response);
+    parent::__construct('',$response->getPayloadRawData());
   }
 
 }
