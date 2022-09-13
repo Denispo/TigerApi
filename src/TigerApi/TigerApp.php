@@ -55,7 +55,6 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
   protected abstract function onGetUnexpectedExceptionHandler():ICanHandleUncaughtException;
   protected abstract function onGetErrorHandler():ICanHandlePhpError;
   protected abstract function onGetRouter():ICanMatchRoutes;
-  protected abstract function onGetPayloadGetter():ICanGetPayloadRawData;
   protected abstract function onGetEnvironment(): Environment;
 
   protected abstract function onLogNotice(LogDataNotice $baseLogData):void;
@@ -130,7 +129,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
 
     try {
       $payload = $this->onGetRouter()->match($this->getHttpRequest(), $this);
-      $json = json_encode($this->onGetPayloadGetter()->getPayloadRawData());
+      $json = json_encode($payload->getPayloadRawData());
       $error = json_last_error();
     } catch (MethodNotAllowedException $e){
       $httpResponse->setHeader('Access-Control-Allow-Methods', implode(', ',$e->getAllowedMethods()));
