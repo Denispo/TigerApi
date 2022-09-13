@@ -129,7 +129,7 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
 
 
     try {
-      $this->onGetRouter()->match($this->getHttpRequest(), $this);
+      $payload = $this->onGetRouter()->match($this->getHttpRequest(), $this);
       $json = json_encode($this->onGetPayloadGetter()->getPayloadRawData());
       $error = json_last_error();
     } catch (MethodNotAllowedException $e){

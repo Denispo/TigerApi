@@ -8,7 +8,7 @@ use TigerCore\Payload\ICanGetPayloadRawData;
 use TigerCore\Response\BaseResponse;
 
 
-class TigerApiResponse extends BaseResponse implements ICanGetPayloadRawData {
+class TigerApiResponse extends BaseResponse {
 
   public function addPayload(ICanGetPayloadRawData|IAmTigerPayload $payload) {
     $this->payload[] = [
