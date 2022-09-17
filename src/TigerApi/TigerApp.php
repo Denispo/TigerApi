@@ -18,9 +18,8 @@ use TigerCore\Auth\ICurrentUser;
 use TigerCore\BaseApp;
 use TigerCore\Constants\Environment;
 use TigerCore\ICanMatchRoutes;
-use TigerCore\Payload\ICanGetPayloadRawData;
 use TigerCore\Response\BaseResponseException;
-use TigerCore\Response\MethodNotAllowedException;
+use TigerCore\Response\S405_MethodNotAllowedException;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
 abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
@@ -127,11 +126,12 @@ abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
     $httpResponse->setContentType('application/json','utf-8');
 
 
+    $json = '';
     try {
       $payload = $this->onGetRouter()->match($this->getHttpRequest(), $this);
       $json = json_encode($payload->getPayloadRawData());
       $error = json_last_error();
-    } catch (MethodNotAllowedException $e){
+    } catch (S405_MethodNotAllowedException $e){
       $httpResponse->setHeader('Access-Control-Allow-Methods', implode(', ',$e->getAllowedMethods()));
       $httpResponse->setCode($e->getCode());
       exit;

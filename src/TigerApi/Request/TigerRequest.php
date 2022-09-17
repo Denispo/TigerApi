@@ -7,8 +7,8 @@ use TigerCore\Auth\ICurrentUser;
 use TigerCore\Request\BaseRequest;
 use TigerCore\Request\MatchedRequestData;
 use TigerCore\Response\ICanAddPayload;
-use TigerCore\Response\NotFoundException;
-use TigerCore\Response\UnauthorizedException;
+use TigerCore\Response\S401_UnauthorizedException;
+use TigerCore\Response\S404_NotFoundException;
 use TigerCore\ValueObject\VO_RouteMask;
 
 abstract class TigerRequest extends BaseRequest {
@@ -28,11 +28,11 @@ abstract class TigerRequest extends BaseRequest {
     $securityCheck = $this->onSecurityCheck($requestData->getCurrentUser());
     if (!$securityCheck->IsSetTo(RequestSecurityStatus::REQUEST_ALLOWED)) {
       if ($securityCheck->IsSetTo(RequestSecurityStatus::REQUEST_NOTALLOWED_USER_IS_UNAUTHORIZED)) {
-        throw new UnauthorizedException();
+        throw new S401_UnauthorizedException();
       } elseif ($securityCheck->IsSetTo(RequestSecurityStatus::REQUEST_NOTALLOWED_USER_HAS_INSUFFICIENT_RIGHTS)){
-        throw new UnauthorizedException();
+        throw new S401_UnauthorizedException();
       }
-      throw new NotFoundException();
+      throw new S404_NotFoundException();
     }
 
     $requestParamValidator = new TigerRequestParamValidator();

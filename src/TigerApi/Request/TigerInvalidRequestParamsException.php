@@ -3,9 +3,9 @@
 namespace TigerApi\Request;
 
 use TigerApi\TigerApiResponse;
-use TigerCore\Response\UnprocessableEntityException;
+use TigerCore\Response\S422_UnprocessableEntityException;
 
-class TigerInvalidRequestParamsException extends UnprocessableEntityException {
+class TigerInvalidRequestParamsException extends S422_UnprocessableEntityException {
 
   public function __construct(public ICanGetInvalidRequestParams $invalidParams) {
     $params = $invalidParams->getInvalidRequestParams();

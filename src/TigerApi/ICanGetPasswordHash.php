@@ -2,9 +2,9 @@
 
 namespace TigerApi;
 
-use TigerCore\ValueObject\VO_Password;
+use TigerCore\ValueObject\VO_PasswordPlainText;
 
 interface ICanGetPasswordHash {
-  public function getHashForPassword(VO_Password $plainPassword);
+  public function getHashForPassword(VO_PasswordPlainText $plainPassword);
 
 }
