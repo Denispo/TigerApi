@@ -19,7 +19,7 @@ class TigerPasswordResetHash {
    * @return string
    * @throws \Exception
    */
-  public function generateHashForPasswordReset(VO_BaseId $userId):string {
+  public function generatePasswordResetHash(VO_BaseId $userId):string {
     // Time is rouded to 5 minute granularity (to save some bytes)
     $timestampPacked = pack('V',round(ceil(time() / 60*5)));
 

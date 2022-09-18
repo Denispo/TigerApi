@@ -3,6 +3,7 @@
 namespace TigerApi\Email;
 
 use Nette\Mail\Mailer;
+use Nette\Mail\SendException;
 use Nette\Mail\SendmailMailer;
 
 class TigerPhpMailer implements ICanSendEmail {
@@ -13,7 +14,17 @@ class TigerPhpMailer implements ICanSendEmail {
     $this->mailer = new SendmailMailer();
   }
 
+  /**
+   * @param TigerMailMessage $mail
+   * @return void
+   * @throws CanNotSendEmailException
+   */
   public function send(TigerMailMessage $mail): void {
-    $this->mailer->send($mail);
+    try {
+      $this->mailer->send($mail);
+    } catch (SendException $e) {
+      throw new CanNotSendEmailException($e->getMessage(), $e->getCode(), $e);
+    }
+
   }
 }
