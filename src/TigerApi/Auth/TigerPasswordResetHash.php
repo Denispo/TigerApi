@@ -14,6 +14,11 @@ class TigerPasswordResetHash {
 
   }
 
+  /**
+   * @param VO_BaseId $userId
+   * @return string
+   * @throws \Exception
+   */
   public function generateHashForPasswordReset(VO_BaseId $userId):string {
     // Time is rouded to 5 minute granularity (to save some bytes)
     $timestampPacked = pack('V',round(ceil(time() / 60*5)));
@@ -40,7 +45,7 @@ class TigerPasswordResetHash {
    * @param string $passwordResetHash
    * @param VO_Duration $hashDuration
    * @return VO_BaseId
-   * @throws InvalidArgumentException|ExpiredException
+   * @throws InvalidArgumentException|ExpiredException|\Exception
    */
   public function getUserIdFromPasswordResetHash(string $passwordResetHash, VO_Duration $hashDuration):VO_BaseId {
     $binary = Crypt::decode($passwordResetHash, $this->passphrase);
