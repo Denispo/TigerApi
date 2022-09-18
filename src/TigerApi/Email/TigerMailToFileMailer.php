@@ -18,13 +18,15 @@ class TigerMailToFileMailer implements ICanSendEmail {
   /**
    * @param TigerMailMessage $mail
    * @return void
-   * @throws CanNotCloseFileException
-   * @throws CanNotOpenFileException
-   * @throws CanNotWriteToFileException
+   * @throws CanNotSendEmailException
    */
   public function send(TigerMailMessage $mail): void {
     $stream = new SafeFileStream($this->fullFileName);
     $emailData = $mail->getSubject().PHP_EOL.print_r($mail->getHeaders() ?? [], true).PHP_EOL.PHP_EOL.$mail->getHtmlBody();
-    $stream->addToFile($emailData);
+    try {
+      $stream->addToFile($emailData);
+    } catch (CanNotCloseFileException|CanNotOpenFileException|CanNotWriteToFileException $e) {
+      throw new CanNotSendEmailException($e->getMessage(), $e->getCode(), $e);
+    }
   }
 }
