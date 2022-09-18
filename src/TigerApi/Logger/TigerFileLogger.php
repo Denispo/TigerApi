@@ -21,15 +21,17 @@ class TigerFileLogger implements IAmBaseLogger {
   /**
    * @param string $fileName
    * @param string $data
-   * @return int
    * @throws CanNotWriteToFileException
    * @throws CanNotCloseFileException
    * @throws CanNotOpenFileException
    */
-  private function addToFile(string $fileName, string $data):int {
+  private function addToFile(string $fileName, string $data):void {
+    if ($data == '') {
+      return;
+    }
     $fullFilePath = FileSystem::joinPaths($this->pathToLogFolder, $fileName);
     $safeStream = new SafeFileStream($fullFilePath);
-    return $safeStream->addToFile($data);
+    $safeStream->addToFile($data);
   }
 
   private function formatLogData(BaseLogData $data): string {
