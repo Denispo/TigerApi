@@ -2,11 +2,13 @@
 
 namespace TigerApi\Auth;
 
+use TigerCore\Exceptions\ExpiredException;
+use TigerCore\Exceptions\InvalidArgumentException;
 use TigerCore\Utils\Crypt;
 use TigerCore\ValueObject\VO_BaseId;
 use TigerCore\ValueObject\VO_Duration;
 
-class TigerPasswordReset {
+class TigerPasswordResetHash {
 
   public function __construct(private string $passphrase) {
 
@@ -34,15 +36,24 @@ class TigerPasswordReset {
     return $hash;
   }
 
-  public function getUserIdFromPasswordResetHash(string $passwordResetHash, VO_Duration $hashDuration) {
+  /**
+   * @param string $passwordResetHash
+   * @param VO_Duration $hashDuration
+   * @return VO_BaseId
+   * @throws InvalidArgumentException|ExpiredException
+   */
+  public function getUserIdFromPasswordResetHash(string $passwordResetHash, VO_Duration $hashDuration):VO_BaseId {
     $binary = Crypt::decode($passwordResetHash, $this->passphrase);
     if (strlen($binary) < 4) {
       // 3 bytes timestamp + 1 byte (at least) UserId
-      return;
+      throw new InvalidArgumentException();
     }
     $timestamp = current(unpack('V',"\x00".substr($binary,0,3))) * (60*5);
 
-    $hashDuration->
+    if (($timestamp + $hashDuration->getValue() < time()) || ($timestamp - (5*60) > time())) {
+      // $timestamp - (5*60) can not be bigger than time()
+      throw new ExpiredException();
+    }
 
     $userId = substr($binary, 3);
 
