@@ -3,15 +3,13 @@
 namespace TigerApi;
 
 use TigerCore\Auth\ICanAddCustomTokenClaim;
-use TigerCore\Auth\ICanGetTokenPrivateKey;
-use TigerCore\Auth\ICanGetTokenPublicKey;
 use TigerCore\ValueObject\VO_BaseId;
 use TigerCore\ValueObject\VO_Duration;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 use TigerCore\ValueObject\VO_TokenPrivateKey;
 use TigerCore\ValueObject\VO_TokenPublicKey;
 
-abstract class ATigerTokenFactory implements ICanGenerateRefreshTokenForUser , ICanGenerateAuthTokenForUser, ICanGetTokenPublicKey, ICanGetTokenPrivateKey, ICanDecodeRefreshToken, ICanDecodeAuthToken {
+abstract class ATigerTokenFactory implements IAmTokenFactory {
 
   protected abstract function onGetPrivateKey():VO_TokenPrivateKey;
   protected abstract function onGetPublicKey():VO_TokenPublicKey;
