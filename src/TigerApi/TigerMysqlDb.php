@@ -9,8 +9,8 @@ class TigerMysqlDb implements ICanGetDbConnection {
 
   private Connection $db;
 
-  public function __construct(string $host, string $dbName, string $user, string $password) {
-    $this->db = new Connection('mysql:host='.$host.';dbname='.$dbName, $user, $password,['lazy']);
+  public function __construct(IAmMySqlConnectionCredentials $connectionCredentials) {
+    $this->db = new Connection('mysql:host='.$connectionCredentials->getHost().';dbname='.$connectionCredentials->getDbName(), $connectionCredentials->getUserName(), $connectionCredentials->getPassword(),['lazy']);
   }
 
   public function GetDbConnection(): Connection {
