@@ -22,7 +22,7 @@ use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\S405_MethodNotAllowedException;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
-abstract class TigerApp extends BaseApp implements ICanGetCurrentUser{
+abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
 
   private VO_TokenPlainStr|null $authTokenPlainStr = null;
 

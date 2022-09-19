@@ -5,7 +5,7 @@ namespace TigerApi\Payload;
 use TigerCore\Payload\ICanGetPayloadRawData;
 use TigerCore\ValueObject\VO_PayloadKey;
 
-class ExceptionPayload extends TigerPayload {
+class ExceptionPayload extends ATigerBasePayload {
 
   /**
    * @param ICanGetPayloadRawData|string $exceptionPayload

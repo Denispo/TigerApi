@@ -2,10 +2,10 @@
 
 namespace TigerApi\Request;
 
-use TigerApi\Payload\TigerPayload;
+use TigerApi\Payload\ATigerBasePayload;
 use TigerCore\ValueObject\VO_PayloadKey;
 
-class InvalidRequestParamPayload extends TigerPayload {
+class InvalidRequestParamPayload extends ATigerBasePayload {
 
   /**
    * @param TigerInvalidRequestParam $invalidParam

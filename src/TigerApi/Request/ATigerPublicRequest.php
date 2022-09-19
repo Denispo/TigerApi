@@ -4,7 +4,7 @@ namespace TigerApi\Request;
 
 use TigerCore\Auth\ICurrentUser;
 
-abstract class TigerPublicRequest extends TigerRequest {
+abstract class ATigerPublicRequest extends ATigerRequest {
 
   protected function onSecurityCheck(ICurrentUser $currentUser):RequestSecurityStatus{
     return new RequestSecurityStatus(RequestSecurityStatus::REQUEST_ALLOWED);

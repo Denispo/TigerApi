@@ -13,7 +13,7 @@ use TigerCore\Response\ICanAddPayload;
 use TigerCore\ValueObject\VO_BaseId;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
-abstract class TigerGenerateAuthTokenFromRefreshTokenRequest extends TigerPublicRequest {
+abstract class ATigerGenerateAuthTokenFromRefreshTokenRequest extends ATigerPublicRequest {
 
   #[RequestParam('refreshtoken')]
   public RP_String $refreshToken;

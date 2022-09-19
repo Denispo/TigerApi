@@ -4,6 +4,6 @@ namespace TigerApi;
 
 use TigerCore\BaseRestRouter;
 
-abstract class TigerRouter extends BaseRestRouter {
+abstract class ATigerRouter extends BaseRestRouter {
 
 }

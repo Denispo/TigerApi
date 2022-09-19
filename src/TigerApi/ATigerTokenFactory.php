@@ -11,7 +11,7 @@ use TigerCore\ValueObject\VO_TokenPlainStr;
 use TigerCore\ValueObject\VO_TokenPrivateKey;
 use TigerCore\ValueObject\VO_TokenPublicKey;
 
-abstract class TigerTokenFactory implements ICanGenerateRefreshTokenForUser , ICanGenerateAuthTokenForUser, ICanGetTokenPublicKey, ICanGetTokenPrivateKey, ICanDecodeRefreshToken, ICanDecodeAuthToken {
+abstract class ATigerTokenFactory implements ICanGenerateRefreshTokenForUser , ICanGenerateAuthTokenForUser, ICanGetTokenPublicKey, ICanGetTokenPrivateKey, ICanDecodeRefreshToken, ICanDecodeAuthToken {
 
   protected abstract function onGetPrivateKey():VO_TokenPrivateKey;
   protected abstract function onGetPublicKey():VO_TokenPublicKey;
