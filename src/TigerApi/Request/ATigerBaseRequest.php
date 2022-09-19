@@ -11,7 +11,7 @@ use TigerCore\Response\S401_UnauthorizedException;
 use TigerCore\Response\S404_NotFoundException;
 use TigerCore\ValueObject\VO_RouteMask;
 
-abstract class ATigerRequest extends BaseRequest {
+abstract class ATigerBaseRequest extends BaseRequest {
 
 
   abstract protected function onGetMask():VO_RouteMask;
