@@ -2,8 +2,8 @@
 
 namespace TigerApi\Email;
 
-use Nette\Mail\Message;
+use TigerCore\Email\BaseMailMessage;
 
-class TigerMailMessage extends Message {
+class TigerMailMessage extends BaseMailMessage {
 
 }
