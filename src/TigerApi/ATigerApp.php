@@ -14,7 +14,7 @@ use TigerApi\Logger\LogDataException;
 use TigerApi\Logger\LogDataNotice;
 use TigerApi\Logger\LogDataWarning;
 use TigerCore\Auth\ICanGetCurrentUser;
-use TigerCore\Auth\ICurrentUser;
+use TigerCore\Auth\IAmCurrentUser;
 use TigerCore\BaseApp;
 use TigerCore\Constants\Environment;
 use TigerCore\ICanMatchRoutes;
@@ -49,7 +49,7 @@ abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
    */
   private _LogBridge $_logBridge;
 
-  protected abstract function onGetCurrentUser(VO_TokenPlainStr $tokenPlainStr):ICurrentUser;
+  protected abstract function onGetCurrentUser(VO_TokenPlainStr $tokenPlainStr):IAmCurrentUser;
 
   protected abstract function onGetUnexpectedExceptionHandler():ICanHandleUncaughtException;
   protected abstract function onGetErrorHandler():ICanHandlePhpError;
@@ -105,7 +105,7 @@ abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
     return $this->authTokenPlainStr;
   }
 
-  public function getCurrentUser():ICurrentUser {
+  public function getCurrentUser():IAmCurrentUser {
     return $this->onGetCurrentUser($this->getAuthTokenPlainStr());
   }
 

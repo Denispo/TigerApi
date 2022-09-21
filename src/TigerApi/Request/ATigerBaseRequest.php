@@ -3,7 +3,7 @@
 namespace TigerApi\Request;
 
 use Nette\Http\IRequest;
-use TigerCore\Auth\ICurrentUser;
+use TigerCore\Auth\IAmCurrentUser;
 use TigerCore\Request\BaseRequest;
 use TigerCore\Request\MatchedRequestData;
 use TigerCore\Response\ICanAddPayload;
@@ -15,7 +15,7 @@ abstract class ATigerBaseRequest extends BaseRequest {
 
 
   abstract protected function onGetMask():VO_RouteMask;
-  abstract protected function onSecurityCheck(ICurrentUser $currentUser):RequestSecurityStatus;
+  abstract protected function onSecurityCheck(IAmCurrentUser $currentUser):RequestSecurityStatus;
   abstract protected function onValidateParams(ICanSetRequestParamIsInvalid $validator);
   abstract protected function onProcessRequest(ICanAddPayload $payload, IRequest $httpRequest):void;
 
