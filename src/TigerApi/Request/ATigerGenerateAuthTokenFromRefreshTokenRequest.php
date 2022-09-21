@@ -3,7 +3,7 @@
 namespace TigerApi\Request;
 
 use Nette\Http\IRequest;
-use TigerApi\Auth\TigerAuthTokenClaims;
+use TigerApi\Auth\TigerRefreshTokenClaims;
 use TigerCore\Exceptions\InvalidTokenException;
 use TigerApi\Payload\AuthTokenPayload;
 use TigerCore\Request\RequestParam;
@@ -24,10 +24,10 @@ abstract class ATigerGenerateAuthTokenFromRefreshTokenRequest extends ATigerPubl
 
   /**
    * @param VO_TokenPlainStr $refreshToken
-   * @return TigerAuthTokenClaims
+   * @return TigerRefreshTokenClaims
    * @throws  InvalidTokenException
    */
-  abstract protected function onGetDecodedRefreshToken(VO_TokenPlainStr $refreshToken):TigerAuthTokenClaims;
+  abstract protected function onGetDecodedRefreshToken(VO_TokenPlainStr $refreshToken):TigerRefreshTokenClaims;
 
   abstract protected function onGenerateNewAuthTokenForUser(VO_BaseId $userId):VO_TokenPlainStr;
 
