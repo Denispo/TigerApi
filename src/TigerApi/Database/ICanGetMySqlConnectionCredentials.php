@@ -1,6 +1,6 @@
 <?php
 
-namespace TigerApi;
+namespace TigerApi\Database;
 
 
 interface ICanGetMySqlConnectionCredentials {

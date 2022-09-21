@@ -1,6 +1,6 @@
 <?php
 
-namespace TigerApi;
+namespace TigerApi\Database;
 
 use Nette\Database\Connection;
 use TigerCore\Repository\ICanGetDbConnection;
