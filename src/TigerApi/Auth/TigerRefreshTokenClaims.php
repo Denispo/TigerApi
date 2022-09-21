@@ -1,12 +1,12 @@
 <?php
 
-namespace TigerApi;
+namespace TigerApi\Auth;
 
 use TigerCore\Auth\BaseTokenClaims;
 use TigerCore\ValueObject\VO_BaseId;
 
 
-class TigerAuthTokenClaims extends BaseTokenClaims {
+class TigerRefreshTokenClaims extends BaseTokenClaims {
 
   public function getUserId():VO_BaseId {
     return new VO_BaseId($this->getClaims()['uid'] ?? 0);

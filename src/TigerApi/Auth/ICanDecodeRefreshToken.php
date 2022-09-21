@@ -1,6 +1,6 @@
 <?php
 
-namespace TigerApi;
+namespace TigerApi\Auth;
 
 use TigerCore\Exceptions\InvalidTokenException;
 use TigerCore\ValueObject\VO_TokenPlainStr;
@@ -9,9 +9,9 @@ interface ICanDecodeRefreshToken {
 
   /**
    * @param VO_TokenPlainStr $refreshToken
-   * @return TigerAuthTokenClaims
+   * @return TigerRefreshTokenClaims
    * @throws InvalidTokenException
    */
-  public function decodeRefreshToken(VO_TokenPlainStr $refreshToken):TigerAuthTokenClaims;
+  public function decodeRefreshToken(VO_TokenPlainStr $refreshToken):TigerRefreshTokenClaims;
 
 }

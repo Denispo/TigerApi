@@ -1,6 +1,6 @@
 <?php
 
-namespace TigerApi;
+namespace TigerApi\Auth;
 
 use TigerCore\Auth\BaseJwtToken;
 use TigerCore\Auth\ICanGetTokenPrivateKey;

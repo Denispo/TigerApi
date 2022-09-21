@@ -1,6 +1,6 @@
 <?php
 
-namespace TigerApi;
+namespace TigerApi\Auth;
 
 use TigerCore\Exceptions\InvalidTokenException;
 use TigerCore\ValueObject\VO_TokenPlainStr;
