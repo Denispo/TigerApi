@@ -56,9 +56,36 @@ abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
   protected abstract function onGetRouter():ICanMatchRoutes;
   protected abstract function onGetEnvironment(): Environment;
 
+  /**
+   * Use some kind of IAmLogger or ICanLogNotice to log this Notice
+   * You can not call Log::Notice inside this method!
+   * @param LogDataNotice $baseLogData
+   * @return void
+   */
   protected abstract function onLogNotice(LogDataNotice $baseLogData):void;
+
+  /**
+   * Use some kind of IAmLogger or ICanLogError to log this Error
+   * You can not call Log::Error inside this method!
+   * @param LogDataError $baseLogData
+   * @return void
+   */
   protected abstract function onLogError(LogDataError $baseLogData):void;
+
+  /**
+   * Use some kind of IAmLogger or ICanLogWarning to log this Warning
+   * You can not call Log::Warning inside this method!
+   * @param LogDataWarning $baseLogData
+   * @return void
+   */
   protected abstract function onLogWarning(LogDataWarning $baseLogData):void;
+
+  /**
+   * Use some kind of IAmLogger or ICanLogException to log this Exception
+   * You can not call Log::Exception inside this method!
+   * @param LogDataException $logData
+   * @return void
+   */
   protected abstract function onLogException(LogDataException $logData):void;
 
 
