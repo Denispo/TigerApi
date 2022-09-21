@@ -26,13 +26,13 @@ abstract class ATigerRefreshTokenFactory implements IAmRefreshTokenFactory {
 
   /**
    * @param VO_TokenPlainStr $refreshToken
-   * @return TigerAuthTokenClaims
+   * @return TigerRefreshTokenClaims
    */
-  public function decodeRefreshToken(VO_TokenPlainStr $refreshToken): TigerAuthTokenClaims {
+  public function decodeRefreshToken(VO_TokenPlainStr $refreshToken): TigerRefreshTokenClaims {
     try {
       return (new TigerRefreshToken($this->onGetPrivateKey(), $this->onGetPublicKey()))->decodeToken($refreshToken);
     } catch (\Exception) {
-      return new TigerAuthTokenClaims();
+      return new TigerRefreshTokenClaims();
     }
 
   }

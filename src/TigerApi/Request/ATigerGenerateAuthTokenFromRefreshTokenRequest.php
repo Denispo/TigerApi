@@ -3,7 +3,7 @@
 namespace TigerApi\Request;
 
 use Nette\Http\IRequest;
-use TigerApi\TigerAuthTokenClaims;
+use TigerApi\Auth\TigerAuthTokenClaims;
 use TigerCore\Exceptions\InvalidTokenException;
 use TigerApi\Payload\AuthTokenPayload;
 use TigerCore\Request\RequestParam;
