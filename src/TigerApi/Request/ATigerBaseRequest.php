@@ -14,6 +14,12 @@ use TigerCore\ValueObject\VO_RouteMask;
 abstract class ATigerBaseRequest extends BaseRequest {
 
 
+  /**
+   * example: '/articles/{id:\d+}[/{title}]'
+   * {id} must be a number
+   * The /{title} suffix is optional
+   * @return VO_RouteMask
+   */
   abstract protected function onGetMask():VO_RouteMask;
   abstract protected function onSecurityCheck(IAmCurrentUser $currentUser):RequestSecurityStatus;
   abstract protected function onValidateParams(ICanSetRequestParamIsInvalid $validator);
