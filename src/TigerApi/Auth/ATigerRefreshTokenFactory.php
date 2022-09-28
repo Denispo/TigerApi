@@ -18,7 +18,7 @@ abstract class ATigerRefreshTokenFactory implements IAmRefreshTokenFactory {
 
 
   public function generateRefreshToken(VO_BaseId $userId): VO_TokenPlainStr {
-    $claims = new TigerAuthTokenClaims();
+    $claims = new TigerRefreshTokenClaims();
     $this->onAddRefreshTokenCustomClaims($claims);
     $claims->setUserId($userId);
     return (new TigerRefreshToken($this->onGetPrivateKey(), $this->onGetPublicKey()))->generateToken($this->onGetRefreshTokenDuration(), $claims);
