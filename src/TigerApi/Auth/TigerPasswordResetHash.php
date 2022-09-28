@@ -7,6 +7,7 @@ use TigerCore\Exceptions\InvalidArgumentException;
 use TigerCore\Utils\Crypt;
 use TigerCore\ValueObject\VO_BaseId;
 use TigerCore\ValueObject\VO_Duration;
+use TigerCore\ValueObject\VO_Hash;
 
 class TigerPasswordResetHash {
 
@@ -16,10 +17,10 @@ class TigerPasswordResetHash {
 
   /**
    * @param VO_BaseId $userId
-   * @return string
+   * @return VO_Hash
    * @throws \Exception
    */
-  public function generatePasswordResetHash(VO_BaseId $userId):string {
+  public function generatePasswordResetHash(VO_BaseId $userId):VO_Hash {
     // Time is rouded to 5 minute granularity (to save some bytes)
     $timestampPacked = pack('V',round(ceil(time() / 60*5)));
 
@@ -38,7 +39,7 @@ class TigerPasswordResetHash {
       }
     }
     $hash = Crypt::encode($timestampPacked.$userIdPacked, $this->passphrase);
-    return $hash;
+    return new VO_Hash($hash);
   }
 
   /**
