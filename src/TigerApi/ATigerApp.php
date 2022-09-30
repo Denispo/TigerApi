@@ -18,6 +18,8 @@ use TigerCore\Auth\IAmCurrentUser;
 use TigerCore\BaseApp;
 use TigerCore\Constants\Environment;
 use TigerCore\ICanMatchRoutes;
+use TigerCore\Response\Base_4xx_RequestException;
+use TigerCore\Response\Base_5xx_RequestException;
 use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\S405_MethodNotAllowedException;
 use TigerCore\ValueObject\VO_TokenPlainStr;
@@ -25,6 +27,7 @@ use TigerCore\ValueObject\VO_TokenPlainStr;
 abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
 
   private VO_TokenPlainStr|null $authTokenPlainStr = null;
+  private Environment|null $environment = null;
 
   /*
    $_logBridge slouzi pro to, aby potomek TigerApp mohl pouzivat onLogNotice atd.
@@ -96,6 +99,13 @@ abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
     exit;
   }
 
+  private function getEnvironment():Environment
+  {
+    if ($this->environment == null) {
+      $this->environment = $this->onGetEnvironment();
+    }
+    return $this->environment;
+  }
 
 
   private function getAuthTokenPlainStr():VO_TokenPlainStr {
@@ -146,6 +156,22 @@ abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
     $method->setAccessible(false);
   }
 
+  #[NoReturn]
+  private function doResponse4xxException(Base_4xx_RequestException $exception)
+  {
+    if ($exception instanceof S405_MethodNotAllowedException) {
+
+    }
+    exit;
+  }
+
+  #[NoReturn]
+  private function doResponse5xxException(Base_5xx_RequestException $exception)
+  {
+
+    exit;
+  }
+
   public function run() {
     $httpResponse = new \Nette\Http\Response();
     $httpResponse->setHeader('Access-Control-Allow-Origin','*');
@@ -162,19 +188,22 @@ abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
       $httpResponse->setHeader('Access-Control-Allow-Methods', implode(', ',$e->getAllowedMethods()));
       $httpResponse->setCode($e->getCode());
       exit;
-    } catch (BaseResponseException $e) {
+    } catch (Base_4xx_RequestException $e) {
       $httpResponse->setCode($e->getCode());
-      if ($this->onGetEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
+      $json = json_encode(['exception '.get_class($e) => [$e->getMessage(),'CDATA: '=> $e->getCustomdata(), 'FILE: ' =>$e->getFile()]]);
+    } catch (Base_5xx_RequestException $e){
+      if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
         $json = json_encode(['exception '.get_class($e) => [$e->getMessage(),'CDATA: '=> $e->getCustomdata(), 'FILE: ' =>$e->getFile()]]);
       }
-      $error = json_last_error();
     }
+
+    $error = json_last_error();
 
     if ($error) {
       $errorMsg = json_last_error_msg();
       $errorResponse = new \Nette\Http\Response();
       $errorResponse->setCode(\Nette\Http\IResponse::S500_INTERNAL_SERVER_ERROR);
-      if ($this->onGetEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
+      if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
         echo($error.': '.$errorMsg);
       }
     } else {
