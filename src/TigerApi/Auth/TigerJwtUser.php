@@ -24,7 +24,7 @@ class TigerJwtUser implements IAmCurrentUser, ICanGetCurrentUser
 
   public function isLoggedIn(): bool
   {
-    return $this->claims->getUserId()->isValid();
+    return !$this->claims->getUserId()->isEmpty();
   }
 
   public function getUserId(): VO_BaseId

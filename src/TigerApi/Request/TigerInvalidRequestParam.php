@@ -2,11 +2,12 @@
 
 namespace TigerApi\Request;
 
-use TigerCore\Requests\BaseRequestParam;
+use TigerCore\ValueObject\VO_RequestParamErrorCode;
+use TigerCore\ValueObject\VO_RequestParamName;
 
 class TigerInvalidRequestParam {
 
-  public function __construct(public BaseRequestParam $param, public string $description) {
+  public function __construct(public VO_RequestParamName $paramName, public VO_RequestParamErrorCode $errorCode) {
 
   }
 

@@ -12,7 +12,7 @@ class InvalidRequestParamPayload extends ATigerBasePayload {
    */
   public function __construct(TigerInvalidRequestParam $invalidParam) {
     try {
-      parent::__construct(['name' => $invalidParam->param->getParamName(), 'desc' => $invalidParam->description]);
+      parent::__construct(['name' => $invalidParam->paramName->getValue(), 'err_code' => $invalidParam->errorCode->getValue()]);
     } catch (\ReflectionException $e) {
 
     }

@@ -2,7 +2,8 @@
 
 namespace TigerApi\Request;
 
-use TigerCore\Requests\BaseRequestParam;
+use TigerCore\Requests\ICanGetRequestParamName;
+use TigerCore\ValueObject\VO_RequestParamErrorCode;
 
 class TigerRequestParamValidator implements ICanSetRequestParamIsInvalid, ICanGetInvalidRequestParams
 {
@@ -12,8 +13,9 @@ class TigerRequestParamValidator implements ICanSetRequestParamIsInvalid, ICanGe
    */
   private array $erros = [];
 
-  public function setRequestParamIsInvalid(BaseRequestParam $param, string $errorDescription = '') {
-    $this->erros[] = new TigerInvalidRequestParam($param,  $errorDescription);
+  public function setRequestParamIsInvalid(ICanGetRequestParamName $paramName, VO_RequestParamErrorCode|null $errorCode) {
+    $paramName = $paramName->getParamName();
+    $this->erros[] = new TigerInvalidRequestParam($paramName,  $errorCode ?? new VO_RequestParamErrorCode(''));
   }
 
   public function getInvalidRequestParams(): array {

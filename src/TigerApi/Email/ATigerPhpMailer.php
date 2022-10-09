@@ -7,6 +7,7 @@ use Nette\Mail\SendException;
 use Nette\Mail\SendmailMailer;
 use TigerCore\Email\BaseMailer;
 use TigerCore\Email\BaseMailMessage;
+use TigerCore\Email\CanNotSendEmailException;
 
 abstract class ATigerPhpMailer extends BaseMailer {
 

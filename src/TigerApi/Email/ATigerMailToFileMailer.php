@@ -4,6 +4,7 @@ namespace TigerApi\Email;
 
 use TigerCore\Email\BaseMailer;
 use TigerCore\Email\BaseMailMessage;
+use TigerCore\Email\CanNotSendEmailException;
 use TigerCore\Exceptions\CanNotCloseFileException;
 use TigerCore\Exceptions\CanNotOpenFileException;
 use TigerCore\Exceptions\CanNotWriteToFileException;

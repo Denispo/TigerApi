@@ -42,6 +42,9 @@ abstract class ATigerBaseRequest extends BaseRequest {
     }
 
     $requestParamValidator = new TigerRequestParamValidator();
+    foreach ($requestData->getInvalidParams() as $oneInvalidParam) {
+      $requestParamValidator->setRequestParamIsInvalid($oneInvalidParam->getParamName(), $oneInvalidParam->getErrorCode()->getErrorCodeValue());
+    }
     $this->onValidateParams($requestParamValidator);
     $invalidParams = $requestParamValidator->getInvalidRequestParams();
     if ($invalidParams) {

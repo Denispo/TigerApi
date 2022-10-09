@@ -20,7 +20,6 @@ use TigerCore\Constants\Environment;
 use TigerCore\ICanMatchRoutes;
 use TigerCore\Response\Base_4xx_RequestException;
 use TigerCore\Response\Base_5xx_RequestException;
-use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\S405_MethodNotAllowedException;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
