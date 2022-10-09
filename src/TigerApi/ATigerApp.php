@@ -13,6 +13,7 @@ use TigerApi\Logger\LogDataError;
 use TigerApi\Logger\LogDataException;
 use TigerApi\Logger\LogDataNotice;
 use TigerApi\Logger\LogDataWarning;
+use TigerApi\Request\TigerInvalidRequestParamsException;
 use TigerCore\Auth\ICanGetCurrentUser;
 use TigerCore\Auth\IAmCurrentUser;
 use TigerCore\BaseApp;
@@ -20,7 +21,9 @@ use TigerCore\Constants\Environment;
 use TigerCore\ICanMatchRoutes;
 use TigerCore\Response\Base_4xx_RequestException;
 use TigerCore\Response\Base_5xx_RequestException;
+use TigerCore\Response\S400_BadRequestException;
 use TigerCore\Response\S405_MethodNotAllowedException;
+use TigerCore\Response\S422_UnprocessableEntityException;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
 abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
@@ -183,6 +186,10 @@ abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
       $payload = $this->onGetRouter()->match($this->getHttpRequest(), $this);
       $json = json_encode($payload->getPayloadRawData());
       $error = json_last_error();
+    } catch (TigerInvalidRequestParamsException $e){
+      $httpResponse->setCode($e->getResponseCode());
+      echo(json_encode($e->getCustomData()));
+      exit;
     } catch (S405_MethodNotAllowedException $e){
       $httpResponse->setHeader('Access-Control-Allow-Methods', implode(', ',$e->getAllowedMethods()));
       $httpResponse->setCode($e->getResponseCode());
