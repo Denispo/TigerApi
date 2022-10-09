@@ -18,6 +18,9 @@ class TigerRequestParamValidator implements ICanSetRequestParamIsInvalid, ICanGe
     $this->erros[] = new TigerInvalidRequestParam($paramName,  $errorCode ?? new VO_RequestParamErrorCode(''));
   }
 
+  /**
+   * @return TigerInvalidRequestParam[]
+   */
   public function getInvalidRequestParams(): array {
     return $this->erros;
   }
