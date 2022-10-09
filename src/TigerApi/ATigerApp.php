@@ -185,10 +185,10 @@ abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
       $error = json_last_error();
     } catch (S405_MethodNotAllowedException $e){
       $httpResponse->setHeader('Access-Control-Allow-Methods', implode(', ',$e->getAllowedMethods()));
-      $httpResponse->setCode($e->getCode());
+      $httpResponse->setCode($e->getResponseCode());
       exit;
     } catch (Base_4xx_RequestException $e) {
-      $httpResponse->setCode($e->getCode());
+      $httpResponse->setCode($e->getResponseCode());
       $json = json_encode(['exception '.get_class($e) => [$e->getMessage(),'CDATA: '=> $e->getCustomdata(), 'FILE: ' =>$e->getFile()]]);
     } catch (Base_5xx_RequestException $e){
       if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
