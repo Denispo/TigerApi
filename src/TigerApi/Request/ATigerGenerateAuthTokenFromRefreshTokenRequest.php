@@ -7,7 +7,7 @@ use TigerApi\Auth\TigerRefreshTokenClaims;
 use TigerCore\Exceptions\InvalidTokenException;
 use TigerApi\Payload\AuthTokenPayload;
 use TigerCore\Request\RequestParam;
-use TigerCore\Request\Validator\RPCheck_NoEmptyString;
+use TigerCore\Request\Validator\RPCheck_IsNotEmptyString;
 use TigerCore\Requests\RP_String;
 use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\ICanAddPayload;
@@ -17,7 +17,7 @@ use TigerCore\ValueObject\VO_TokenPlainStr;
 abstract class ATigerGenerateAuthTokenFromRefreshTokenRequest extends ATigerPublicRequest {
 
   #[RequestParam('refreshtoken')]
-  #[RPCheck_NoEmptyString]
+  #[RPCheck_IsNotEmptyString]
   public RP_String $refreshToken;
 
   //---------------------------------------------
@@ -34,9 +34,6 @@ abstract class ATigerGenerateAuthTokenFromRefreshTokenRequest extends ATigerPubl
   abstract protected function onGenerateNewAuthTokenForUser(VO_BaseId $userId):VO_TokenPlainStr;
 
    protected function onValidateParams(ICanSetRequestParamIsInvalid $validator) {
-/*     if ($this->refreshToken->isEmpty()) {
-       $validator->setRequestParamIsInvalid($this->refreshToken, 'Token is empty');
-     }*/
    }
 
   /**
