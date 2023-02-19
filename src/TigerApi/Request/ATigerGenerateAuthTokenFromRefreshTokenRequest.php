@@ -4,8 +4,9 @@ namespace TigerApi\Request;
 
 use Nette\Http\IRequest;
 use TigerApi\Auth\TigerRefreshTokenClaims;
-use TigerCore\Exceptions\InvalidTokenException;
+use TigerApi\Controller\ATigerPublicController;
 use TigerApi\Payload\AuthTokenPayload;
+use TigerCore\Exceptions\InvalidTokenException;
 use TigerCore\Request\RequestParam;
 use TigerCore\Request\Validator\RPCheck_IsNotEmptyString;
 use TigerCore\Requests\RP_String;
@@ -14,7 +15,7 @@ use TigerCore\Response\ICanAddPayload;
 use TigerCore\ValueObject\VO_BaseId;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
-abstract class ATigerGenerateAuthTokenFromRefreshTokenRequest extends ATigerPublicRequest {
+abstract class ATigerGenerateAuthTokenFromRefreshTokenRequest extends ATigerPublicController {
 
   #[RequestParam('refreshtoken')]
   #[RPCheck_IsNotEmptyString]
