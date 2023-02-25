@@ -21,9 +21,8 @@ use TigerCore\Constants\Environment;
 use TigerCore\ICanMatchRoutes;
 use TigerCore\Response\Base_4xx_RequestException;
 use TigerCore\Response\Base_5xx_RequestException;
-use TigerCore\Response\S400_BadRequestException;
+use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\S405_MethodNotAllowedException;
-use TigerCore\Response\S422_UnprocessableEntityException;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
 abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
@@ -37,7 +36,7 @@ abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
    public function logError(LogDataError $logData) {
      $this->onLogError($logData);
    }
-   Potom by potomek mohl tuto metodu volat v obsluze udalosti (protoze ji vydi, protoze je public) onLogError.
+   Potom by potomek mohl tuto metodu volat v obsluze udalosti (protoze ji vidi, protoze je public) onLogError.
   napr. v potomkovi
   class App extend TigerApp
   protected function onLogError(LogDataError $baseLogData):void;{
@@ -181,11 +180,10 @@ abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
     $httpResponse->setContentType('application/json','utf-8');
 
 
-    $json = '';
+    $payload = [];
+
     try {
-      $payload = $this->onGetRouter()->match($this->getHttpRequest(), $this);
-      $json = json_encode($payload->getPayloadRawData());
-      $error = json_last_error();
+      $payload = $this->onGetRouter()->runMatch($this->getHttpRequest(), $this);
     } catch (TigerInvalidRequestParamsException $e){
       $httpResponse->setCode($e->getResponseCode());
       echo(json_encode($e->getCustomData()));
@@ -197,18 +195,32 @@ abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
     } catch (Base_4xx_RequestException $e) {
       $httpResponse->setCode($e->getResponseCode());
       $json = json_encode(['exception '.get_class($e) => [$e->getMessage(),'CDATA: '=> $e->getCustomdata(), 'FILE: ' =>$e->getFile()]]);
+      echo($json);
     } catch (Base_5xx_RequestException $e){
+      $httpResponse->setCode($e->getResponseCode());
       if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
         $json = json_encode(['exception '.get_class($e) => [$e->getMessage(),'CDATA: '=> $e->getCustomdata(), 'FILE: ' =>$e->getFile()]]);
+        echo($json);
+        exit;
+      }
+    } catch (BaseResponseException $e){
+      $httpResponse->setCode($e->getResponseCode());
+      if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
+        $json = json_encode(['exception '.get_class($e) => [$e->getMessage(),'CDATA: '=> $e->getCustomdata(), 'FILE: ' =>$e->getFile()]]);
+        echo($json);
+        exit;
       }
     }
 
+
+
+    $json = json_encode($payload->getPayloadRawData());
     $error = json_last_error();
 
     if ($error) {
       $errorMsg = json_last_error_msg();
       $errorResponse = new \Nette\Http\Response();
-      $errorResponse->setCode(\Nette\Http\IResponse::S500_INTERNAL_SERVER_ERROR);
+      $errorResponse->setCode(\Nette\Http\IResponse::S500_InternalServerError);
       if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
         echo($error.': '.$errorMsg);
       }

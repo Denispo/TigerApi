@@ -4,7 +4,7 @@ namespace TigerApi\Controller;
 
 use Nette\Http\IRequest;
 use TigerApi\Request\ICanSetRequestParamIsInvalid;
-use TigerApi\Request\RequestSecurityStatus;
+use TigerApi\Request\RequestAuthorizationStatus;
 use TigerApi\Request\TigerInvalidRequestParamsException;
 use TigerApi\Request\TigerRequestParamValidator;
 use TigerCore\Auth\IAmCurrentUser;
@@ -14,6 +14,7 @@ use TigerCore\ICanGetValueAsInit;
 use TigerCore\ICanGetValueAsString;
 use TigerCore\ICanGetValueAsTimestamp;
 use TigerCore\ICanHandleMatchedRoute;
+use TigerCore\Payload\IAmPayloadContainer;
 use TigerCore\Request\BaseRequest;
 use TigerCore\Request\MatchedRequestData;
 use TigerCore\Request\RequestParam;
@@ -33,12 +34,18 @@ use TigerCore\ValueObject\BaseValueObject;
 
 abstract class ATigerBaseController implements ICanHandleMatchedRoute {
 
+  /**
+   * @var InvalidRequestParam[]
+   */
+  private array $invalidParams = [];
 
-  abstract protected function onSecurityCheck(IAmCurrentUser $currentUser):RequestSecurityStatus;
+  abstract protected function onSecurityCheck(IAmCurrentUser $currentUser):RequestAuthorizationStatus;
   abstract protected function onValidateParams(ICanSetRequestParamIsInvalid $validator);
   abstract protected function onProcessRequest(ICanAddPayload $payload, IRequest $httpRequest):void;
 
   abstract protected function onGetObjectToMapRequestDataOn():object|null;
+
+  protected abstract function onGetPayloadContainer():IAmPayloadContainer;
 
   public function handleMatchedRoute(array $params):void {
     $obj = $this->onGetObjectToMapRequestDataOn();
@@ -127,17 +134,17 @@ abstract class ATigerBaseController implements ICanHandleMatchedRoute {
 
   public function runMatchedRequest(MatchedRequestData $requestData): void {
     $securityCheck = $this->onSecurityCheck($requestData->getCurrentUser());
-    if (!$securityCheck->IsSetTo(RequestSecurityStatus::REQUEST_ALLOWED)) {
-      if ($securityCheck->IsSetTo(RequestSecurityStatus::REQUEST_NOTALLOWED_USER_IS_UNAUTHORIZED)) {
+    if (!$securityCheck->IsSetTo(RequestAuthorizationStatus::REQUEST_ALLOWED)) {
+      if ($securityCheck->IsSetTo(RequestAuthorizationStatus::REQUEST_NOTALLOWED_USER_IS_UNAUTHORIZED)) {
         throw new S401_UnauthorizedException();
-      } elseif ($securityCheck->IsSetTo(RequestSecurityStatus::REQUEST_NOTALLOWED_USER_HAS_INSUFFICIENT_RIGHTS)){
+      } elseif ($securityCheck->IsSetTo(RequestAuthorizationStatus::REQUEST_NOTALLOWED_USER_HAS_INSUFFICIENT_RIGHTS)){
         throw new S401_UnauthorizedException();
       }
       throw new S404_NotFoundException();
     }
 
     $requestParamValidator = new TigerRequestParamValidator();
-    foreach ($requestData->getInvalidParams() as $oneInvalidParam) {
+    foreach ($this->invalidParams as $oneInvalidParam) {
       $requestParamValidator->setRequestParamIsInvalid($oneInvalidParam->getParamName(), $oneInvalidParam->getErrorCode()->getErrorCodeValue());
     }
     $this->onValidateParams($requestParamValidator);
