@@ -15,6 +15,7 @@ use TigerCore\ICanGetValueAsString;
 use TigerCore\ICanGetValueAsTimestamp;
 use TigerCore\ICanHandleMatchedRoute;
 use TigerCore\Payload\IAmPayloadContainer;
+use TigerCore\Payload\ICanGetPayloadRawData;
 use TigerCore\Request\BaseRequest;
 use TigerCore\Request\MatchedRequestData;
 use TigerCore\Request\RequestParam;
@@ -46,14 +47,6 @@ abstract class ATigerBaseController implements ICanHandleMatchedRoute {
   abstract protected function onGetObjectToMapRequestDataOn():object|null;
 
   protected abstract function onGetPayloadContainer():IAmPayloadContainer;
-
-  public function handleMatchedRoute(array $params):void {
-    $obj = $this->onGetObjectToMapRequestDataOn();
-    if (!$obj) {
-      return;
-    }
-    $this->mapData($obj, $params);
-  }
 
   private function validateParam(object $class, \ReflectionProperty $property):BaseParamErrorCode|null
   {
@@ -132,7 +125,13 @@ abstract class ATigerBaseController implements ICanHandleMatchedRoute {
 
   }
 
-  public function runMatchedRequest(MatchedRequestData $requestData): void {
+  public function handleMatchedRoute(array $params):ICanGetPayloadRawData {
+    $container = $this->onGetPayloadContainer();
+    $obj = $this->onGetObjectToMapRequestDataOn();
+    if (!$obj) {
+      return $container;
+    }
+    $this->mapData($obj, $params);
     $securityCheck = $this->onSecurityCheck($requestData->getCurrentUser());
     if (!$securityCheck->IsSetTo(RequestAuthorizationStatus::REQUEST_ALLOWED)) {
       if ($securityCheck->IsSetTo(RequestAuthorizationStatus::REQUEST_NOTALLOWED_USER_IS_UNAUTHORIZED)) {
@@ -154,6 +153,9 @@ abstract class ATigerBaseController implements ICanHandleMatchedRoute {
     }
 
     $this->onProcessRequest($requestData->getPayloadContainer(), $requestData->getHttpRequest());
+  }
+
+  public function runMatchedRequest(MatchedRequestData $requestData): void {
   }
 
 }
