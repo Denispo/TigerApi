@@ -7,14 +7,12 @@ use TigerApi\Request\ICanSetRequestParamIsInvalid;
 use TigerApi\Request\RequestAuthorizationStatus;
 use TigerApi\Request\TigerInvalidRequestParamsException;
 use TigerApi\Request\TigerRequestParamValidator;
-use TigerCore\Auth\IAmCurrentUser;
 use TigerCore\ICanGetValueAsBoolean;
 use TigerCore\ICanGetValueAsFloat;
 use TigerCore\ICanGetValueAsInit;
 use TigerCore\ICanGetValueAsString;
 use TigerCore\ICanGetValueAsTimestamp;
 use TigerCore\ICanHandleMatchedRoute;
-use TigerCore\Payload\IAmPayloadContainer;
 use TigerCore\Payload\ICanGetPayloadRawData;
 use TigerCore\Request\BaseRequest;
 use TigerCore\Request\RequestParam;
@@ -43,8 +41,6 @@ abstract class ATigerBaseController implements ICanHandleMatchedRoute {
   abstract protected function onProcessRequest(IRequest $httpRequest):ICanGetPayloadRawData;
 
   abstract protected function onGetObjectToMapRequestDataOn():object|null;
-
-  protected abstract function onGetPayloadContainer():IAmPayloadContainer;
 
   private function validateParam(object $class, \ReflectionProperty $property):BaseParamErrorCode|null
   {
