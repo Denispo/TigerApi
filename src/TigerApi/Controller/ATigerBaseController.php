@@ -25,6 +25,7 @@ use TigerCore\Request\Validator\ICanGuardStrRequestParam;
 use TigerCore\Request\Validator\ICanGuardTimestampRequestParam;
 use TigerCore\Request\Validator\InvalidRequestParam;
 use TigerCore\Requests\BaseRequestParam;
+use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\S401_UnauthorizedException;
 use TigerCore\Response\S404_NotFoundException;
 use TigerCore\ValueObject\BaseValueObject;
@@ -37,7 +38,19 @@ abstract class ATigerBaseController implements ICanHandleMatchedRoute {
   private array $invalidParams = [];
 
   abstract protected function onGetAuthorizationStatus():RequestAuthorizationStatus;
-  abstract protected function onValidateParams(ICanSetRequestParamIsInvalid $validator);
+
+  /**
+   * @param ICanSetRequestParamIsInvalid $validator
+   * @return void
+   * @throws @BaseResponseException
+   */
+  abstract protected function onValidateParams(ICanSetRequestParamIsInvalid $validator):void;
+
+  /**
+   * @param IRequest $httpRequest
+   * @return ICanGetPayloadRawData
+   * @throws BaseResponseException
+   */
   abstract protected function onProcessRequest(IRequest $httpRequest):ICanGetPayloadRawData;
 
   abstract protected function onGetObjectToMapRequestDataOn():object|null;
