@@ -38,7 +38,7 @@ abstract class ATigerBaseController implements ICanHandleMatchedRoute {
    */
   private array $invalidParams = [];
 
-  abstract protected function onGetAuthorizationStatus(IAmCurrentUser $currentUser):RequestAuthorizationStatus;
+  abstract protected function onGetAuthorizationStatus():RequestAuthorizationStatus;
   abstract protected function onValidateParams(ICanSetRequestParamIsInvalid $validator);
   abstract protected function onProcessRequest(IRequest $httpRequest):IAmPayloadContainer;
 
