@@ -124,17 +124,15 @@ abstract class ATigerBaseController implements ICanHandleMatchedRoute {
   }
 
   public function handleMatchedRoute(array $params, IRequest $request):ICanGetPayloadRawData {
-    $container = $this->onGetPayloadContainer();
     $obj = $this->onGetObjectToMapRequestDataOn();
-    if (!$obj) {
-      return $container;
+    if ($obj) {
+      $this->mapData($obj, $params);
     }
-    $this->mapData($obj, $params);
-    $securityCheck = $this->onGetAuthorizationStatus();
-    if (!$securityCheck->IsSetTo(RequestAuthorizationStatus::REQUEST_ALLOWED)) {
-      if ($securityCheck->IsSetTo(RequestAuthorizationStatus::REQUEST_NOTALLOWED_USER_IS_UNAUTHORIZED)) {
+    $authorizationStatus = $this->onGetAuthorizationStatus();
+    if (!$authorizationStatus->IsSetTo(RequestAuthorizationStatus::REQUEST_ALLOWED)) {
+      if ($authorizationStatus->IsSetTo(RequestAuthorizationStatus::REQUEST_NOTALLOWED_USER_IS_UNAUTHORIZED)) {
         throw new S401_UnauthorizedException();
-      } elseif ($securityCheck->IsSetTo(RequestAuthorizationStatus::REQUEST_NOTALLOWED_USER_HAS_INSUFFICIENT_RIGHTS)){
+      } elseif ($authorizationStatus->IsSetTo(RequestAuthorizationStatus::REQUEST_NOTALLOWED_USER_HAS_INSUFFICIENT_RIGHTS)){
         throw new S401_UnauthorizedException();
       }
       throw new S404_NotFoundException();
