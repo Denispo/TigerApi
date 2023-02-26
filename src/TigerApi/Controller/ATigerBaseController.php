@@ -17,7 +17,6 @@ use TigerCore\ICanHandleMatchedRoute;
 use TigerCore\Payload\IAmPayloadContainer;
 use TigerCore\Payload\ICanGetPayloadRawData;
 use TigerCore\Request\BaseRequest;
-use TigerCore\Request\MatchedRequestData;
 use TigerCore\Request\RequestParam;
 use TigerCore\Request\Validator\BaseParamErrorCode;
 use TigerCore\Request\Validator\BaseRequestParamValidator;
@@ -28,7 +27,6 @@ use TigerCore\Request\Validator\ICanGuardStrRequestParam;
 use TigerCore\Request\Validator\ICanGuardTimestampRequestParam;
 use TigerCore\Request\Validator\InvalidRequestParam;
 use TigerCore\Requests\BaseRequestParam;
-use TigerCore\Response\ICanAddPayload;
 use TigerCore\Response\S401_UnauthorizedException;
 use TigerCore\Response\S404_NotFoundException;
 use TigerCore\ValueObject\BaseValueObject;
@@ -40,9 +38,9 @@ abstract class ATigerBaseController implements ICanHandleMatchedRoute {
    */
   private array $invalidParams = [];
 
-  abstract protected function onSecurityCheck(IAmCurrentUser $currentUser):RequestAuthorizationStatus;
+  abstract protected function onGetAuthorizationStatus(IAmCurrentUser $currentUser):RequestAuthorizationStatus;
   abstract protected function onValidateParams(ICanSetRequestParamIsInvalid $validator);
-  abstract protected function onProcessRequest(ICanAddPayload $payload, IRequest $httpRequest):void;
+  abstract protected function onProcessRequest(IRequest $httpRequest):IAmPayloadContainer;
 
   abstract protected function onGetObjectToMapRequestDataOn():object|null;
 
@@ -125,14 +123,14 @@ abstract class ATigerBaseController implements ICanHandleMatchedRoute {
 
   }
 
-  public function handleMatchedRoute(array $params):ICanGetPayloadRawData {
+  public function handleMatchedRoute(array $params, IRequest $request):ICanGetPayloadRawData {
     $container = $this->onGetPayloadContainer();
     $obj = $this->onGetObjectToMapRequestDataOn();
     if (!$obj) {
       return $container;
     }
     $this->mapData($obj, $params);
-    $securityCheck = $this->onSecurityCheck($requestData->getCurrentUser());
+    $securityCheck = $this->onGetAuthorizationStatus();
     if (!$securityCheck->IsSetTo(RequestAuthorizationStatus::REQUEST_ALLOWED)) {
       if ($securityCheck->IsSetTo(RequestAuthorizationStatus::REQUEST_NOTALLOWED_USER_IS_UNAUTHORIZED)) {
         throw new S401_UnauthorizedException();
@@ -152,10 +150,8 @@ abstract class ATigerBaseController implements ICanHandleMatchedRoute {
       throw new TigerInvalidRequestParamsException($requestParamValidator);
     }
 
-    $this->onProcessRequest($requestData->getPayloadContainer(), $requestData->getHttpRequest());
+    return $this->onProcessRequest($request);
   }
 
-  public function runMatchedRequest(MatchedRequestData $requestData): void {
-  }
 
 }

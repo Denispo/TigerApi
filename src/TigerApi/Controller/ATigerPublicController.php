@@ -7,7 +7,7 @@ use TigerCore\Auth\IAmCurrentUser;
 
 abstract class ATigerPublicController extends ATigerBaseController {
 
-  protected function onSecurityCheck(IAmCurrentUser $currentUser):RequestAuthorizationStatus{
+  protected function onGetAuthorizationStatus(IAmCurrentUser $currentUser):RequestAuthorizationStatus{
     return new RequestAuthorizationStatus(RequestAuthorizationStatus::REQUEST_ALLOWED);
   }
 
