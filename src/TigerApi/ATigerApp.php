@@ -94,7 +94,7 @@ abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
 
 
   #[NoReturn]
-  private function doHandleUnexpectedException(Throwable $exception) {
+  private function doHandleUnexpectedException(Throwable $exception):void {
     $handler = $this->onGetUnexpectedExceptionHandler();
     $handler->handleUncaughtException($exception);
     exit;
@@ -121,11 +121,11 @@ abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
   }
 
   #[NoReturn]
-  public function _exception_handler(Throwable $exception) {
+  public function _exception_handler(Throwable $exception):void {
     $this->doHandleUnexpectedException($exception);
   }
 
-  public function _error_handler(int $errNo, string $errMsg, string $file, int $line) {
+  public function _error_handler(int $errNo, string $errMsg, string $file, int $line):void {
     $handler = $this->onGetErrorHandler();
     $handler->handlePhpError($errNo, $errMsg, $file, $line);
   }

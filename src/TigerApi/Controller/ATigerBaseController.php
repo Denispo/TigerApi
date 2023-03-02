@@ -14,7 +14,6 @@ use TigerCore\ICanGetValueAsString;
 use TigerCore\ICanGetValueAsTimestamp;
 use TigerCore\ICanHandleMatchedRoute;
 use TigerCore\Payload\ICanGetPayloadRawData;
-use TigerCore\Request\BaseRequest;
 use TigerCore\Request\RequestParam;
 use TigerCore\Request\Validator\BaseParamErrorCode;
 use TigerCore\Request\Validator\BaseRequestParamValidator;
