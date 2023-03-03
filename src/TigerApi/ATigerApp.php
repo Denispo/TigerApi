@@ -25,7 +25,7 @@ use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\S405_MethodNotAllowedException;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
-abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
+abstract class ATigerApp extends BaseApp{
 
   private VO_TokenPlainStr|null $authTokenPlainStr = null;
   private Environment|null $environment = null;
@@ -52,8 +52,6 @@ abstract class ATigerApp extends BaseApp implements ICanGetCurrentUser{
    * @var _LogBridge
    */
   private _LogBridge $_logBridge;
-
-  protected abstract function onGetCurrentUser(VO_TokenPlainStr $tokenPlainStr):IAmCurrentUser;
 
   protected abstract function onGetUnexpectedExceptionHandler():ICanHandleUncaughtException;
   protected abstract function onGetErrorHandler():ICanHandlePhpError;
