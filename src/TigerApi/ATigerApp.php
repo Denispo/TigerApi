@@ -14,8 +14,6 @@ use TigerApi\Logger\LogDataException;
 use TigerApi\Logger\LogDataNotice;
 use TigerApi\Logger\LogDataWarning;
 use TigerApi\Request\TigerInvalidRequestParamsException;
-use TigerCore\Auth\ICanGetCurrentUser;
-use TigerCore\Auth\IAmCurrentUser;
 use TigerCore\BaseApp;
 use TigerCore\Constants\Environment;
 use TigerCore\ICanMatchRoutes;
@@ -104,18 +102,6 @@ abstract class ATigerApp extends BaseApp{
       $this->environment = $this->onGetEnvironment();
     }
     return $this->environment;
-  }
-
-
-  private function getAuthTokenPlainStr():VO_TokenPlainStr {
-    if (!$this->authTokenPlainStr) {
-      $this->authTokenPlainStr = VO_TokenPlainStr::createFromBearerRequest($this->getHttpRequest());
-    }
-    return $this->authTokenPlainStr;
-  }
-
-  public function getCurrentUser():IAmCurrentUser {
-    return $this->onGetCurrentUser($this->getAuthTokenPlainStr());
   }
 
   #[NoReturn]
