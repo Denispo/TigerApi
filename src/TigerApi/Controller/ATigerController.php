@@ -29,7 +29,7 @@ use TigerCore\Response\S401_UnauthorizedException;
 use TigerCore\Response\S404_NotFoundException;
 use TigerCore\ValueObject\BaseValueObject;
 
-abstract class ATigeController implements ICanHandleMatchedRoute {
+abstract class ATigerController implements ICanHandleMatchedRoute {
 
   /**
    * @var InvalidRequestParam[]
