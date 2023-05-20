@@ -51,7 +51,14 @@ RUN docker-php-ext-install gd
 
 # funguje i bez ...-enable gd. Asi je gd povolene nekde defaultne v 8.0-fpm-alpine
 #RUN	docker-php-ext-enable gd
-RUN apk add icu-dev
-RUN docker-php-ext-configure intl
-RUN docker-php-ext-install intl
-RUN docker-php-ext-enable intl
+
+#https://releasecandidate.dev/posts/2020/how-to-install-php-ext-intl-on-alpine-docker/
+RUN apk add --no-cache --virtual .build-deps \
+        $PHPIZE_DEPS \
+        zlib-dev \
+        icu-dev \
+        g++ \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install \
+        intl \
+    && docker-php-ext-enable intl
