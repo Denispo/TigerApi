@@ -167,7 +167,7 @@ abstract class ATigerApp extends BaseApp{
     $payload = [];
 
     try {
-      $payload = $this->onGetRouter()->runMatch($this->getHttpRequest(), $this);
+      $payload = $this->onGetRouter()->runMatch($this->getHttpRequest());
     } catch (TigerInvalidRequestParamsException $e){
       $httpResponse->setCode($e->getResponseCode());
       echo(json_encode($e->getCustomData()));

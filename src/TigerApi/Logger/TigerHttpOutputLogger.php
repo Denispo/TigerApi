@@ -13,7 +13,7 @@ class TigerHttpOutputLogger implements IAmBaseLogger {
     return $data->getMessage().PHP_EOL.'FILE: '.$data->getFile().PHP_EOL.'CLASS: '.$data->getClass().PHP_EOL.'FUNCTION: '.$data->getMethodOrFunction().PHP_EOL.'LINE: '.$data->getLine().PHP_EOL.'DATA: '.print_r($data->getData(),true).PHP_EOL;
   }
 
-  private function outData(string $data) {
+  private function outData(string $data):void {
     $httpResponse = new \Nette\Http\Response();
     $httpResponse->setHeader('Access-Control-Allow-Origin','*');
     $httpResponse->setHeader('Access-Control-Allow-Headers','*');

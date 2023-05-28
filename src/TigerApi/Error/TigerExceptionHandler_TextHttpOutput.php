@@ -5,7 +5,7 @@ namespace TigerApi\Error;
 
 class TigerExceptionHandler_TextHttpOutput implements ICanHandleUncaughtException {
 
-  public function handleUncaughtException(\Throwable $exception) {
+  public function handleUncaughtException(\Throwable $exception):void {
     $httpResponse = new \Nette\Http\Response();
     $httpResponse->setHeader('Access-Control-Allow-Origin','*');
     $httpResponse->setHeader('Access-Control-Allow-Headers','*');

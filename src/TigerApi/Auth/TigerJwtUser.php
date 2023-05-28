@@ -4,7 +4,6 @@ namespace TigerApi\Auth;
 
 use TigerCore\Auth\ICanGetCurrentUser;
 use TigerCore\Auth\IAmCurrentUser;
-use TigerCore\ValueObject\VO_BaseId;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
 class TigerJwtUser implements IAmCurrentUser, ICanGetCurrentUser
@@ -24,10 +23,11 @@ class TigerJwtUser implements IAmCurrentUser, ICanGetCurrentUser
 
   public function isLoggedIn(): bool
   {
-    return !$this->claims->getUserId()->isEmpty();
+    $userId = $this->claims->getUserId();
+    return (is_int($userId) && $userId !== 0) || (is_string($userId) && trim($userId) !== '');
   }
 
-  public function getUserId(): VO_BaseId
+  public function getUserId(): string|int
   {
     return $this->claims->getUserId();
   }

@@ -99,7 +99,7 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
         $paramName = $attr->getParamName();
 
 
-        $value = $data[$paramName->getValue()] ?? null;
+        $value = $data[$paramName->getValueAsString()] ?? null;
         $type = $oneProp->getType();
         if ($type && !$type->isBuiltin()) {
           if (is_a($type->getName(), BaseValueObject::class, true)) {

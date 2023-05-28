@@ -4,7 +4,6 @@ namespace TigerApi\Controller;
 
 use Nette\Http\IRequest;
 use TigerApi\Auth\TigerRefreshTokenClaims;
-use TigerApi\Controller\ATigerPublicController;
 use TigerApi\Payload\AuthTokenPayload;
 use TigerApi\Request\ICanSetRequestParamIsInvalid;
 use TigerCore\Exceptions\InvalidTokenException;
@@ -15,10 +14,9 @@ use TigerCore\Request\Validator\Guard_IsNotEmptyString;
 use TigerCore\Requests\RP_String;
 use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\S500_InternalServerErrorException;
-use TigerCore\ValueObject\VO_BaseId;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
-abstract class ATigerGenerateAuthTokenFromRefreshTokenController extends ATigerPublicController {
+abstract class ATigerGenerateAuthTokenFromRefreshTokenController extends ATigerController {
 
   #[RequestParam('refreshtoken')]
   #[Guard_IsNotEmptyString]
@@ -35,7 +33,7 @@ abstract class ATigerGenerateAuthTokenFromRefreshTokenController extends ATigerP
    */
   abstract protected function onGetDecodedRefreshToken(VO_TokenPlainStr $refreshToken):TigerRefreshTokenClaims;
 
-  abstract protected function onGenerateNewAuthTokenForUser(VO_BaseId $userId):VO_TokenPlainStr;
+  abstract protected function onGenerateNewAuthTokenForUser(string|int $userId):VO_TokenPlainStr;
 
   abstract function onGetPayloadContainer():IAmPayloadContainer;
 
@@ -54,7 +52,9 @@ abstract class ATigerGenerateAuthTokenFromRefreshTokenController extends ATigerP
     } catch (InvalidTokenException $e) {
       throw new BaseResponseException($e->getMessage());
     }
-     if ($parsedRefreshToken->getUserId()->isEmpty()) {
+
+     $userId = $parsedRefreshToken->getUserId();
+     if (!((is_int($userId) && $userId >= 0) || (is_string($userId) && (trim($userId) !== '')))) {
       throw new BaseResponseException('invalid user id in token');
     }
 

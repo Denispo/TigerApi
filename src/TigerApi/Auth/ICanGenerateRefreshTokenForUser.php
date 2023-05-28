@@ -2,11 +2,10 @@
 
 namespace TigerApi\Auth;
 
-use TigerCore\ValueObject\VO_BaseId;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
 interface  ICanGenerateRefreshTokenForUser{
 
-  public function generateRefreshToken(VO_BaseId $userId):VO_TokenPlainStr;
+  public function generateRefreshToken(string|int $userId):VO_TokenPlainStr;
 
 }

@@ -10,9 +10,9 @@ use TigerCore\Response\BaseResponse;
 
 class TigerApiResponse extends BaseResponse {
 
-  public function addPayload(ICanGetPayloadRawData|IAmTigerPayload $payload) {
+  public function addPayload(ICanGetPayloadRawData|IAmTigerPayload $payload):void {
     $this->payload[] = [
-      'key' => $payload instanceof IAmTigerPayload ? $payload->getPayloadKey()->getValue() : '',
+      'key' => $payload instanceof IAmTigerPayload ? $payload->getPayloadKey()->getValueAsString() : '',
       'data' => $payload->getPayloadRawData(),
     ];
   }

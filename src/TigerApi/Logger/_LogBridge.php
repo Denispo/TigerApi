@@ -29,19 +29,19 @@ class _LogBridge implements IAmBaseLogger {
     $this->onLogException = $onLogException;
   }
 
-  public function logError(LogDataError $logData) {
+  public function logError(LogDataError $logData):void {
     ($this->onLogError)($logData);
   }
 
-  public function logException(LogDataException $logData) {
+  public function logException(LogDataException $logData):void {
     ($this->onLogException)($logData);
   }
 
-  public function logNotice(LogDataNotice $logData) {
+  public function logNotice(LogDataNotice $logData):void {
     ($this->onLogNotice)($logData);
   }
 
-  public function logWarning(LogDataWarning $logData) {
+  public function logWarning(LogDataWarning $logData):void {
     ($this->onLogWarning)($logData);
   }
 }

@@ -3,7 +3,6 @@
 namespace TigerApi\Auth;
 
 use TigerCore\Auth\ICanAddCustomTokenClaim;
-use TigerCore\ValueObject\VO_BaseId;
 use TigerCore\ValueObject\VO_Duration;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 use TigerCore\ValueObject\VO_TokenPrivateKey;
@@ -17,7 +16,7 @@ abstract class ATigerRefreshTokenFactory implements IAmRefreshTokenFactory {
   protected abstract function onAddRefreshTokenCustomClaims(ICanAddCustomTokenClaim $claimCollector):void;
 
 
-  public function generateRefreshToken(VO_BaseId $userId): VO_TokenPlainStr {
+  public function generateRefreshToken(string|int $userId): VO_TokenPlainStr {
     $claims = new TigerRefreshTokenClaims();
     $this->onAddRefreshTokenCustomClaims($claims);
     $claims->setUserId($userId);
