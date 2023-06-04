@@ -7,6 +7,7 @@ use TigerApi\Request\ICanSetRequestParamIsInvalid;
 use TigerApi\Request\RequestAuthorizationStatus;
 use TigerApi\Request\TigerInvalidRequestParamsException;
 use TigerApi\Request\TigerRequestParamValidator;
+use TigerCore\Exceptions\InvalidArgumentException;
 use TigerCore\ICanGetValueAsBoolean;
 use TigerCore\ICanGetValueAsFloat;
 use TigerCore\ICanGetValueAsInit;
@@ -104,7 +105,14 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
         if ($type && !$type->isBuiltin()) {
           if (is_a($type->getName(), BaseValueObject::class, true)) {
             // Parametr je BaseValueObject
-            $oneProp->setValue($class, new ($type->getName())($value));
+            try {
+              $valueObject =  new ($type->getName())($value);
+              $oneProp->setValue($class,$valueObject);
+            } catch (InvalidArgumentException){
+              // Value object se nepodarilo vytvorit (asi nelze vytvorit nevalidni)
+              $this->invalidParams[] = new InvalidRequestParam($paramName);
+            }
+
 
           } elseif (is_a($type->getName(), BaseRequestParam::class, true))  {
             // Parametr je potomkem BaseRequestParam
