@@ -11,7 +11,7 @@ use TigerCore\Payload\IAmPayloadContainer;
 use TigerCore\Payload\ICanGetPayloadRawData;
 use TigerCore\Request\RequestParam;
 use TigerCore\Request\Validator\Guard_IsNotEmptyString;
-use TigerCore\Requests\RP_String;
+use TigerCore\Request\RP_String;
 use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\S500_InternalServerErrorException;
 use TigerCore\ValueObject\VO_TokenPlainStr;

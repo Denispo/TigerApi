@@ -2,7 +2,7 @@
 
 namespace TigerApi\Request;
 
-use TigerCore\Requests\ICanGetRequestParamName;
+use TigerCore\Request\ICanGetRequestParamName;
 use TigerCore\ValueObject\VO_RequestParamErrorCode;
 use TigerCore\ValueObject\VO_RequestParamName;
 
