@@ -28,6 +28,7 @@ use TigerCore\Request\BaseRequestParam;
 use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\S401_UnauthorizedException;
 use TigerCore\Response\S404_NotFoundException;
+use TigerCore\Validator\BaseAssertableObject;
 use TigerCore\ValueObject\BaseValueObject;
 
 abstract class ATigerController implements ICanHandleMatchedRoute {
@@ -53,7 +54,7 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
    */
   abstract protected function onProcessRequest(IRequest $httpRequest):ICanGetPayloadRawData;
 
-  abstract protected function onGetObjectToMapRequestDataOn():object|null;
+  abstract protected function onGetObjectToMapRequestDataOn():BaseAssertableObject|null;
 
   private function validateParam(object $class, \ReflectionProperty $property):BaseParamErrorCode|null
   {
@@ -82,7 +83,7 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
     return null;
   }
 
-  private function mapData(object $class, array $data):void {
+  private function mapData(BaseAssertableObject $class, array $data):void {
 
     $reflection = new \ReflectionClass($class);
     $props = $reflection->getProperties();
@@ -128,6 +129,9 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
           }
         } else {
           // Parametr je obycejneho PHP typu (int, string, mixed atd.)
+          if ($type->getName() === 'array') {
+
+          } else {}
           $oneProp->setValue($class, $value);
         }
 
