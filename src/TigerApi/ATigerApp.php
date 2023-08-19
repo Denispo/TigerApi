@@ -157,7 +157,7 @@ abstract class ATigerApp extends BaseApp{
     exit;
   }
 
-  public function run() {
+  public function run():void {
     $httpResponse = new \Nette\Http\Response();
     $httpResponse->setHeader('Access-Control-Allow-Origin','*');
     $httpResponse->setHeader('Access-Control-Allow-Headers','*');
