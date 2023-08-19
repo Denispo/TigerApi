@@ -54,6 +54,18 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
   public function handleMatchedRoute(array $params, IRequest $request):ICanGetPayloadRawData {
     $obj = $this->onGetObjectToMapRequestDataOn();
     if ($obj) {
+      $contentType = $request->getHeader('Content-Type');
+      //inspirace: https://www.slimframework.com/docs/v4/objects/request.html#the-request-body
+      if (str_contains($contentType, 'application/json')) {
+        $requestData = json_decode(file_get_contents('php://input'), true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+          // Klice v $params prepisou pripadne stejne klice v $requestData;
+          $params = array_merge($requestData, $params);
+        } else {
+          throw new InvalidArgumentException('Request JSON is not properly formatted');
+        }
+
+      }
       $mapper = new DataMapper($params);
       $mapper->mapTo($obj);
     }
