@@ -22,7 +22,7 @@ class TigerJwtUser implements IAmCurrentUser, ICanGetCurrentUser
     $this->claims = $this->authTokenDecoder->decodeAuthToken($this->tokenPlainStr);
   }
 
-  public function isLoggedIn(): bool
+  public function isAuthenticated(): bool
   {
     $userId = $this->claims->getUserId();
     return (is_int($userId) && $userId !== 0) || (is_string($userId) && trim($userId) !== '');

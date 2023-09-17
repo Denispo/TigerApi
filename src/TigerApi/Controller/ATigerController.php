@@ -44,14 +44,18 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
   abstract protected function onGetObjectToMapRequestDataOn():BaseAssertableObject|null;
 
   /**
-   * @throws S404_NotFoundException
-   * @throws S401_UnauthorizedException
-   * @throws TypeNotDefinedException
+   * @param array $params
+   * @param IRequest $request
+   * @param mixed $customData
+   * @return ICanGetPayloadRawData
    * @throws BaseResponseException
    * @throws InvalidArgumentException
+   * @throws S401_UnauthorizedException
+   * @throws S404_NotFoundException
    * @throws TigerInvalidRequestParamsException
+   * @throws TypeNotDefinedException
    */
-  public function handleMatchedRoute(array $params, IRequest $request):ICanGetPayloadRawData {
+  public function handleMatchedRoute(array $params, IRequest $request, mixed $customData):ICanGetPayloadRawData {
     $obj = $this->onGetObjectToMapRequestDataOn();
     if ($obj) {
       //inspirace: https://www.slimframework.com/docs/v4/objects/request.html#the-request-body

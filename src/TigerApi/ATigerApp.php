@@ -3,6 +3,7 @@
 namespace TigerApi;
 
 use JetBrains\PhpStorm\NoReturn;
+use Nette\Http\IRequest;
 use Nette\Http\RequestFactory;
 use Throwable;
 use TigerApi\Error\ICanHandlePhpError;
@@ -14,7 +15,6 @@ use TigerApi\Logger\LogDataException;
 use TigerApi\Logger\LogDataNotice;
 use TigerApi\Logger\LogDataWarning;
 use TigerApi\Request\TigerInvalidRequestParamsException;
-use TigerCore\BaseApp;
 use TigerCore\Constants\Environment;
 use TigerCore\ICanMatchRoutes;
 use TigerCore\Response\Base_4xx_RequestException;
@@ -23,10 +23,11 @@ use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\S405_MethodNotAllowedException;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
-abstract class ATigerApp extends BaseApp{
+abstract class ATigerApp{
 
   private VO_TokenPlainStr|null $authTokenPlainStr = null;
   private Environment|null $environment = null;
+  private IRequest $request;
 
   /*
    $_logBridge slouzi pro to, aby potomek TigerApp mohl pouzivat onLogNotice atd.
@@ -124,7 +125,7 @@ abstract class ATigerApp extends BaseApp{
 
     date_default_timezone_set($defaultTimeZone);
 
-    parent::__construct((new RequestFactory())->fromGlobals());
+    $this->request = (new RequestFactory())->fromGlobals();
 
     $this->_logBridge = new _LogBridge(
       function (LogDataError $baseLogData){$this->onLogError($baseLogData);},
@@ -134,11 +135,12 @@ abstract class ATigerApp extends BaseApp{
     );
 
     // Abychom mohli zavolat Log::_init, musime metode _init zmenit na chvili private na public
+    //    (vyse zminene jiz neplati od php 8.1)
     $class = new \ReflectionClass(Log::class);
     $method = $class->getMethod('_init');
-    $method->setAccessible(true);
+    //$method->setAccessible(true); // from 8.1 everything is accessible
     $method->invokeArgs(null, [$this->_logBridge]);
-    $method->setAccessible(false);
+    //$method->setAccessible(false); // from 8.1 everything is accessible
   }
 
   #[NoReturn]
@@ -167,7 +169,7 @@ abstract class ATigerApp extends BaseApp{
     $payload = [];
 
     try {
-      $payload = $this->onGetRouter()->runMatch($this->getHttpRequest());
+      $payload = $this->onGetRouter()->runMatch($this->request);
     } catch (TigerInvalidRequestParamsException $e){
       $httpResponse->setCode($e->getResponseCode());
       echo(json_encode($e->getCustomData()));

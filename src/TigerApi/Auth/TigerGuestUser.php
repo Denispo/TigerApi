@@ -8,7 +8,7 @@ use TigerCore\Auth\IAmCurrentUser;
 class TigerGuestUser implements IAmCurrentUser, ICanGetCurrentUser
 {
 
-  public function isLoggedIn(): bool
+  public function isAuthenticated(): bool
   {
     return false;
   }

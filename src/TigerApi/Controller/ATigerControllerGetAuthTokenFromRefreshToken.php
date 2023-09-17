@@ -16,11 +16,11 @@ use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\S500_InternalServerErrorException;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
-abstract class ATigerGenerateAuthTokenFromRefreshTokenController extends ATigerController {
+abstract class ATigerControllerGetAuthTokenFromRefreshToken extends ATigerController {
 
   #[RequestParam('refreshtoken')]
   #[AssertNoEmptyString]
-  public RP_String $refreshToken;
+  public VO_TokenPlainStr $refreshToken;
 
   //---------------------------------------------
 
