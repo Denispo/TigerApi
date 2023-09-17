@@ -4,6 +4,7 @@ namespace TigerApi\Auth;
 
 use TigerCore\Auth\ICanGetCurrentUser;
 use TigerCore\Auth\IAmCurrentUser;
+use TigerCore\Exceptions\InvalidTokenException;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
 class TigerJwtUser implements IAmCurrentUser, ICanGetCurrentUser
@@ -14,7 +15,7 @@ class TigerJwtUser implements IAmCurrentUser, ICanGetCurrentUser
   /**
    * @param ICanDecodeAuthToken $authTokenDecoder
    * @param VO_TokenPlainStr $tokenPlainStr
-   * @throws \TigerCore\Exceptions\InvalidTokenException
+   * @throws InvalidTokenException
    */
   public function __construct(private ICanDecodeAuthToken $authTokenDecoder, private VO_TokenPlainStr $tokenPlainStr)
   {
