@@ -35,17 +35,15 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
   abstract protected function onValidateParams(ICanSetRequestParamIsInvalid $validator):void;
 
   /**
-   * @param IRequest $httpRequest
    * @return ICanGetPayloadRawData
    * @throws BaseResponseException
    */
-  abstract protected function onProcessRequest(IRequest $httpRequest):ICanGetPayloadRawData;
+  abstract protected function onProcessRequest():ICanGetPayloadRawData;
 
   abstract protected function onGetObjectToMapRequestDataOn():BaseAssertableObject|null;
 
   /**
    * @param array $params
-   * @param IRequest $request
    * @param mixed $customData
    * @return ICanGetPayloadRawData
    * @throws BaseResponseException
@@ -55,7 +53,7 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
    * @throws TigerInvalidRequestParamsException
    * @throws TypeNotDefinedException
    */
-  public function handleMatchedRoute(array $params, IRequest $request, mixed $customData):ICanGetPayloadRawData {
+  public function handleMatchedRoute(array $params, mixed $customData):ICanGetPayloadRawData {
     $obj = $this->onGetObjectToMapRequestDataOn();
     if ($obj) {
       //inspirace: https://www.slimframework.com/docs/v4/objects/request.html#the-request-body
@@ -93,7 +91,7 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
       throw new TigerInvalidRequestParamsException($requestParamValidator);
     }
 
-    return $this->onProcessRequest($request);
+    return $this->onProcessRequest();
   }
 
 

@@ -4,6 +4,7 @@ namespace TigerApi;
 
 use JetBrains\PhpStorm\NoReturn;
 use Nette\Http\IRequest;
+use Nette\Http\IResponse;
 use Nette\Http\RequestFactory;
 use Throwable;
 use TigerApi\Error\ICanHandlePhpError;
@@ -15,19 +16,21 @@ use TigerApi\Logger\LogDataException;
 use TigerApi\Logger\LogDataNotice;
 use TigerApi\Logger\LogDataWarning;
 use TigerApi\Request\TigerInvalidRequestParamsException;
+use TigerCore\Auth\IAmCurrentUser;
 use TigerCore\Constants\Environment;
 use TigerCore\ICanMatchRoutes;
 use TigerCore\Response\Base_4xx_RequestException;
 use TigerCore\Response\Base_5xx_RequestException;
 use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\S405_MethodNotAllowedException;
+use TigerCore\ValueObject\VO_HttpRequestMethod;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
-abstract class ATigerApp{
+abstract class ATigerApp implements IAmTigerApp {
 
   private VO_TokenPlainStr|null $authTokenPlainStr = null;
   private Environment|null $environment = null;
-  private IRequest $request;
+  private IRequest|null $request = null;
 
   /*
    $_logBridge slouzi pro to, aby potomek TigerApp mohl pouzivat onLogNotice atd.
@@ -56,6 +59,7 @@ abstract class ATigerApp{
   protected abstract function onGetErrorHandler():ICanHandlePhpError;
   protected abstract function onGetRouter():ICanMatchRoutes;
   protected abstract function onGetEnvironment(): Environment;
+  protected abstract function onGetCurrentUser(): IAmCurrentUser;
 
   /**
    * Use some kind of IAmLogger or ICanLogNotice to log this Notice
@@ -105,6 +109,19 @@ abstract class ATigerApp{
     return $this->environment;
   }
 
+  public function getCurrentUser(): IAmCurrentUser
+  {
+    return  $this->onGetCurrentUser();
+  }
+
+  public function getHttpRequest(): IRequest
+  {
+    if ($this->request === null) {
+      $this->request = (new RequestFactory())->fromGlobals();
+    }
+    return $this->request;
+  }
+
   #[NoReturn]
   public function _exception_handler(Throwable $exception):void {
     $this->doHandleUnexpectedException($exception);
@@ -124,8 +141,6 @@ abstract class ATigerApp{
     set_error_handler([$this,'_error_handler']);
 
     date_default_timezone_set($defaultTimeZone);
-
-    $this->request = (new RequestFactory())->fromGlobals();
 
     $this->_logBridge = new _LogBridge(
       function (LogDataError $baseLogData){$this->onLogError($baseLogData);},
@@ -155,11 +170,11 @@ abstract class ATigerApp{
   #[NoReturn]
   private function doResponse5xxException(Base_5xx_RequestException $exception)
   {
-
     exit;
   }
 
   public function run():void {
+    $request = $this->getHttpRequest();
     $httpResponse = new \Nette\Http\Response();
     $httpResponse->setHeader('Access-Control-Allow-Origin','*');
     $httpResponse->setHeader('Access-Control-Allow-Headers','*');
@@ -169,7 +184,7 @@ abstract class ATigerApp{
     $payload = [];
 
     try {
-      $payload = $this->onGetRouter()->runMatch($this->request);
+      $payload = $this->onGetRouter()->runMatch(new VO_HttpRequestMethod($request->getMethod()), $request->getUrl()->getPath());
     } catch (TigerInvalidRequestParamsException $e){
       $httpResponse->setCode($e->getResponseCode());
       echo(json_encode($e->getCustomData()));
@@ -187,8 +202,8 @@ abstract class ATigerApp{
       if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
         $json = json_encode(['exception '.get_class($e) => [$e->getMessage(),'CDATA: '=> $e->getCustomdata(), 'FILE: ' =>$e->getFile()]]);
         echo($json);
-        exit;
       }
+      exit;
     } catch (BaseResponseException $e){
       $httpResponse->setCode($e->getResponseCode());
       if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
@@ -196,7 +211,16 @@ abstract class ATigerApp{
         echo($json);
         exit;
       }
+    } catch (\Throwable $e){
+      $httpResponse->setCode(IResponse::S500_InternalServerError);
+      if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
+        $json = json_encode(['exception '.get_class($e) => [$e->getMessage(), 'FILE: ' =>$e->getFile()]]);
+        echo($json);
+      }
+      exit;
     }
+
+
 
 
 
@@ -215,4 +239,4 @@ abstract class ATigerApp{
     }
   }
 
-}
+ }
