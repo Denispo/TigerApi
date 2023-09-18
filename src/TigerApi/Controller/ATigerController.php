@@ -2,7 +2,7 @@
 
 namespace TigerApi\Controller;
 
-use Nette\Http\IRequest;
+use TigerApi\IAmTigerApp;
 use TigerApi\Request\ICanSetRequestParamIsInvalid;
 use TigerApi\Request\RequestAuthorizationStatus;
 use TigerApi\Request\TigerInvalidRequestParamsException;
@@ -24,6 +24,8 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
    * @var InvalidRequestParam[]
    */
   private array $invalidParams = [];
+
+  abstract protected function onGetTigrApp():IAmTigerApp;
 
   abstract protected function onGetAuthorizationStatus():RequestAuthorizationStatus;
 
@@ -57,7 +59,7 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
     $obj = $this->onGetObjectToMapRequestDataOn();
     if ($obj) {
       //inspirace: https://www.slimframework.com/docs/v4/objects/request.html#the-request-body
-      $contentType = $request->getHeader('Content-Type')?? '';
+      $contentType = $this->onGetTigrApp()->getHttpRequest()->getHeader('Content-Type')?? '';
       if (str_contains($contentType, 'application/json')) {
         $requestData = json_decode(file_get_contents('php://input'), true);
         if (json_last_error() === JSON_ERROR_NONE) {
