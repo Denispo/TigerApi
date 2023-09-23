@@ -2,11 +2,11 @@
 
 namespace TigerApi\Request;
 
-use TigerApi\Payload\ATigerBasePayload;
+use TigerApi\Payload\ATigerPayload;
 use TigerCore\Response\S500_InternalServerErrorException;
 use TigerCore\ValueObject\VO_PayloadKey;
 
-class InvalidRequestParamPayload extends ATigerBasePayload {
+class InvalidRequestParamPayload extends ATigerPayload {
 
   /**
    * @param TigerInvalidRequestParam $invalidParam

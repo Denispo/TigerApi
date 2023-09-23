@@ -181,8 +181,6 @@ abstract class ATigerApp implements IAmTigerApp {
     $httpResponse->setContentType('application/json','utf-8');
 
 
-    $payload = [];
-
     try {
       $payload = $this->onGetRouter()->runMatch(new VO_HttpRequestMethod($request->getMethod()), $request->getUrl()->getPath());
     } catch (TigerInvalidRequestParamsException $e){

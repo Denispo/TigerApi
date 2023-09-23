@@ -4,7 +4,7 @@ namespace TigerApi\Controller;
 
 use Nette\Http\IRequest;
 use TigerApi\Auth\TigerRefreshTokenClaims;
-use TigerApi\Payload\AuthTokenPayload;
+use TigerApi\Payload\AuthPayloadJwtToken;
 use TigerApi\Request\ICanSetRequestParamIsInvalid;
 use TigerCore\Exceptions\InvalidTokenException;
 use TigerCore\Payload\IAmPayloadContainer;
@@ -63,7 +63,7 @@ abstract class ATigerControllerGetAuthTokenFromRefreshToken extends ATigerContro
     $payload = $this->onGetPayloadContainer();
 
     if (!$authToken->isEmpty()) {
-      $payload->addPayload(new AuthTokenPayload($this->authToken));
+      $payload->addPayload(new AuthPayloadJwtToken($this->authToken));
     }  else {
       throw new BaseResponseException('Can not generate Auth token');
     }
