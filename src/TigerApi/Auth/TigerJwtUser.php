@@ -2,8 +2,6 @@
 
 namespace TigerApi\Auth;
 
-use TigerCore\Auth\ICanGetCurrentUser;
-use TigerCore\Auth\IAmCurrentUser;
 use TigerCore\Exceptions\InvalidTokenException;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
@@ -28,7 +26,7 @@ class TigerJwtUser implements IAmCurrentUser, ICanGetCurrentUser
     return (is_int($userId) && $userId !== 0) || (is_string($userId) && trim($userId) !== '');
   }
 
-  public function getUserId(): string|int
+  public function getUserId(): int
   {
     return $this->claims->getUserId();
   }

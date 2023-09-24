@@ -2,9 +2,6 @@
 
 namespace TigerApi\Auth;
 
-use TigerCore\Auth\ICanGetCurrentUser;
-use TigerCore\Auth\IAmCurrentUser;
-
 class TigerGuestUser implements IAmCurrentUser, ICanGetCurrentUser
 {
 
