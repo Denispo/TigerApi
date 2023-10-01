@@ -7,7 +7,6 @@ use Nette\Http\IRequest;
 use Nette\Http\IResponse;
 use Nette\Http\RequestFactory;
 use Throwable;
-use TigerApi\Auth\IAmCurrentUser;
 use TigerApi\Error\ICanHandlePhpError;
 use TigerApi\Error\ICanHandleUncaughtException;
 use TigerApi\Logger\_LogBridge;
@@ -59,7 +58,6 @@ abstract class ATigerApp implements IAmTigerApp {
   protected abstract function onGetErrorHandler():ICanHandlePhpError;
   protected abstract function onGetRouter():ICanMatchRoutes;
   protected abstract function onGetEnvironment(): Environment;
-  protected abstract function onGetCurrentUser(): IAmCurrentUser;
 
   /**
    * Use some kind of IAmLogger or ICanLogNotice to log this Notice
@@ -107,11 +105,6 @@ abstract class ATigerApp implements IAmTigerApp {
       $this->environment = $this->onGetEnvironment();
     }
     return $this->environment;
-  }
-
-  public function getCurrentUser(): IAmCurrentUser
-  {
-    return  $this->onGetCurrentUser();
   }
 
   public function getHttpRequest(): IRequest
@@ -195,6 +188,7 @@ abstract class ATigerApp implements IAmTigerApp {
       $httpResponse->setCode($e->getResponseCode());
       $json = json_encode(['exception '.get_class($e) => [$e->getMessage(),'CDATA: '=> $e->getCustomdata(), 'FILE: ' =>$e->getFile()]]);
       echo($json);
+      exit;
     } catch (Base_5xx_RequestException $e){
       $httpResponse->setCode($e->getResponseCode());
       if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
@@ -207,8 +201,8 @@ abstract class ATigerApp implements IAmTigerApp {
       if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
         $json = json_encode(['exception '.get_class($e) => [$e->getMessage(),'CDATA: '=> $e->getCustomdata(), 'FILE: ' =>$e->getFile()]]);
         echo($json);
-        exit;
       }
+      exit;
     } catch (\Throwable $e){
       $httpResponse->setCode(IResponse::S500_InternalServerError);
       if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {

@@ -3,8 +3,6 @@
 namespace TigerApi;
 
 
-use TigerApi\Auth\ICanGetCurrentUser;
-
-interface IAmTigerApp extends ICanGetCurrentUser , ICanGetHttpRequest{
+interface IAmTigerApp extends ICanGetHttpRequest{
 
 }

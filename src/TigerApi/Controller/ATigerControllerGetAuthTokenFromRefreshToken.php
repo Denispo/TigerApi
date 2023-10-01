@@ -41,12 +41,11 @@ abstract class ATigerControllerGetAuthTokenFromRefreshToken extends ATigerContro
    }
 
   /**
-   * @param IRequest $httpRequest
    * @return ICanGetPayloadRawData
    * @throws BaseResponseException
    * @throws S500_InternalServerErrorException
    */
-  protected function onProcessRequest(IRequest $httpRequest):ICanGetPayloadRawData {
+  protected function onProcessRequest():ICanGetPayloadRawData {
     try {
       $parsedRefreshToken = $this->onGetDecodedRefreshToken(new VO_TokenPlainStr($this->refreshToken->getValueAsString()));
     } catch (InvalidTokenException $e) {
