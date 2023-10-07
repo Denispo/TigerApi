@@ -2,20 +2,15 @@
 
 namespace TigerApi\Payload;
 
+use TigerCore\ValueObject\VO_PayloadKey;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
 class TigerPayloadRefreshToken extends ATigerPayload {
 
-  private \stdClass $payload;
-
   public function __construct(VO_TokenPlainStr $refreshTokenPlainStr){
-    $this->payload = new \stdClass();
-    $this->payload->refreshToken = $refreshTokenPlainStr->getValueAsString();
+    $payload = new \stdClass();
+    $payload->token = $refreshTokenPlainStr->getValueAsString();
+    $this->appendPayload($payload, new VO_PayloadKey('token'));
   }
 
-
-  public function getPayloadRawData(): array|object
-  {
-    return $this->payload;
-  }
 }
