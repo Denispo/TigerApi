@@ -10,7 +10,7 @@ use TigerCore\ValueObject\VO_TokenPlainStr;
 use TigerCore\ValueObject\VO_TokenPrivateKey;
 use TigerCore\ValueObject\VO_TokenPublicKey;
 
-abstract class ATigerAuthToken implements ICanGenerateAuthTokenForUser, ICanDecodeAuthToken {
+abstract class ATigerTokenJwtAuth implements ICanGenerateAuthTokenForUser, ICanDecodeAuthToken {
 
   protected abstract function onGetPrivateKey():VO_TokenPrivateKey;
   protected abstract function onGetPublicKey():VO_TokenPublicKey;
