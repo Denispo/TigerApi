@@ -3,6 +3,7 @@
 namespace TigerApi\Auth;
 
 use TigerCore\Auth\BaseJwtToken;
+use TigerCore\Auth\BaseTokenClaims;
 use TigerCore\Auth\FirebaseCustomToken;
 use TigerCore\Auth\ICanAddCustomTokenClaim;
 use TigerCore\Exceptions\InvalidArgumentException;
@@ -18,7 +19,7 @@ abstract class ATigerTokenJwtFirebaseCustomToken implements ICanGenerateFirebase
   protected abstract function onGetPrivateKey():VO_TokenPrivateKey;
   protected abstract function onGetPublicKey():VO_TokenPublicKey;
   protected abstract function onGetFirebaseServiceAccountJson():VO_FullPathFileName|array;
-  protected abstract function onAddRefreshTokenCustomClaims(ICanAddCustomTokenClaim $claimCollector):void;
+  protected abstract function onAddTokenCustomClaims(ICanAddCustomTokenClaim $claimCollector):void;
 
 
   /**
@@ -28,22 +29,20 @@ abstract class ATigerTokenJwtFirebaseCustomToken implements ICanGenerateFirebase
    * @throws InvalidTokenException
    */
   public function generateToken(string|int $userId): VO_TokenPlainStr {
-    $claims = new TigerRefreshTokenClaims();
-    $this->onAddRefreshTokenCustomClaims($claims);
-    $claims->setUserId($userId);
+    $claims = new BaseTokenClaims();
+    $this->onAddTokenCustomClaims($claims);
     return FirebaseCustomToken::generateToken($this->onGetFirebaseServiceAccountJson(), $userId, $claims);
   }
 
   /**
    * @param VO_TokenPlainStr $refreshToken
-   * @return TigerRefreshTokenClaims
+   * @return BaseTokenClaims
    */
-  public function decodeToken(VO_TokenPlainStr $refreshToken): TigerRefreshTokenClaims {
+  public function decodeToken(VO_TokenPlainStr $refreshToken): BaseTokenClaims {
     try {
-      $baseClaims = FirebaseCustomToken::decodeToken($this->onGetPublicKey(),$refreshToken);
-      return new TigerRefreshTokenClaims($baseClaims->getClaims());
+      return FirebaseCustomToken::decodeToken($this->onGetPublicKey(),$refreshToken);
     } catch (\Exception) {
-      return new TigerRefreshTokenClaims();
+      return new BaseTokenClaims();
     }
 
   }
