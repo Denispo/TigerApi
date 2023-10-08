@@ -16,7 +16,6 @@ use TigerCore\ValueObject\VO_TokenPublicKey;
 
 abstract class ATigerTokenJwtFirebaseCustomToken implements ICanGenerateFirebaseCustomToken , ICanDecodeFirebaseCustomToken {
 
-  protected abstract function onGetPrivateKey():VO_TokenPrivateKey;
   protected abstract function onGetPublicKey():VO_TokenPublicKey;
   protected abstract function onGetFirebaseServiceAccountJson():VO_FullPathFileName|array;
   protected abstract function onAddTokenCustomClaims(ICanAddCustomTokenClaim $claimCollector):void;
@@ -40,7 +39,7 @@ abstract class ATigerTokenJwtFirebaseCustomToken implements ICanGenerateFirebase
    */
   public function decodeToken(VO_TokenPlainStr $refreshToken): BaseTokenClaims {
     try {
-      return FirebaseCustomToken::decodeToken($this->onGetPublicKey(),$refreshToken);
+      $decodedToken =  FirebaseCustomToken::decodeToken($this->onGetPublicKey(),$refreshToken);
     } catch (\Exception) {
       return new BaseTokenClaims();
     }
