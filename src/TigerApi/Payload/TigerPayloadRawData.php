@@ -2,11 +2,12 @@
 
 namespace TigerApi\Payload;
 
+use TigerCore\Payload\ICanGetPayloadRawData;
 use TigerCore\ValueObject\VO_PayloadKey;
 
 class TigerPayloadRawData extends ATigerPayload {
 
-  public function __construct(array|object $rawData, VO_PayloadKey $keyName)
+  public function __construct(array|\stdClass|ICanGetPayloadRawData $rawData, VO_PayloadKey $keyName)
   {
     $this->appendPayload($rawData, $keyName);
   }
