@@ -18,9 +18,11 @@ use TigerApi\Logger\LogDataWarning;
 use TigerApi\Request\TigerInvalidRequestParamsException;
 use TigerCore\Constants\Environment;
 use TigerCore\ICanMatchRoutes;
+use TigerCore\Payload\ICanGetPayloadRawData;
 use TigerCore\Response\Base_4xx_RequestException;
 use TigerCore\Response\Base_5xx_RequestException;
 use TigerCore\Response\BaseResponseException;
+use TigerCore\Response\S404_NotFoundException;
 use TigerCore\Response\S405_MethodNotAllowedException;
 use TigerCore\ValueObject\VO_HttpRequestMethod;
 use TigerCore\ValueObject\VO_TokenPlainStr;
@@ -56,7 +58,11 @@ abstract class ATigerApp implements IAmTigerApp {
 
   protected abstract function onGetUnexpectedExceptionHandler():ICanHandleUncaughtException;
   protected abstract function onGetErrorHandler():ICanHandlePhpError;
-  protected abstract function onGetRouter():ICanMatchRoutes;
+
+  /**
+   * @return ICanMatchRoutes|ICanMatchRoutes[]
+   */
+  protected abstract function onGetRouters():ICanMatchRoutes|array;
   protected abstract function onGetEnvironment(): Environment;
 
   /**
@@ -175,7 +181,25 @@ abstract class ATigerApp implements IAmTigerApp {
 
 
     try {
-      $payload = $this->onGetRouter()->runMatch(new VO_HttpRequestMethod($request->getMethod()), $request->getUrl()->getPath());
+      $routers = $this->onGetRouters();
+      if (!is_array($routers)) {
+        $routers = [$routers];
+      }
+      $payload = null;
+
+      $requestMethod = new VO_HttpRequestMethod($request->getMethod());
+      $requestPath = $request->getUrl()->getPath();
+
+
+      foreach ($routers as $oneRouter) {
+        if ($oneRouter instanceof ICanMatchRoutes) {
+          $payload = $oneRouter->runMatch($requestMethod, $requestPath);
+        }
+      }
+
+      if (!($payload instanceof ICanGetPayloadRawData)) {
+        throw new S404_NotFoundException('Path not found');
+      }
     } catch (TigerInvalidRequestParamsException $e){
       $httpResponse->setCode($e->getResponseCode());
       echo(json_encode($e->getCustomData()));
