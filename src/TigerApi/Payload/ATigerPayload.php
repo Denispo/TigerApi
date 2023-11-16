@@ -12,7 +12,12 @@ use TigerCore\ValueObject\VO_PayloadKey;
 
 abstract class ATigerPayload  implements IAmTigerPayload {
 
-  private array $payload = [];
+  private \stdClass $payload;
+
+  public function __construct()
+  {
+    $this->payload = new \stdClass();
+  }
 
   /**
    * @param array|string|int|float|object|ICanGetValueAsInit|ICanGetValueAsString|ICanGetValueAsBoolean|ICanGetValueAsFloat|ICanGetValueAsTimestamp|ICanGetPayloadRawData $data
@@ -35,10 +40,7 @@ abstract class ATigerPayload  implements IAmTigerPayload {
       $data = $data->getPayloadRawData();
     }
     $key = $key->getValueAsString();
-    if (!is_array($data)) {
-      $data = [$data];
-    }
-    $this->payload[$key] = ['data' => $data];
+    $this->payload->$key = $data;
   }
 
   public function getPayloadRawData(): array|object
