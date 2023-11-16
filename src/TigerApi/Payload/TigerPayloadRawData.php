@@ -9,6 +9,7 @@ class TigerPayloadRawData extends ATigerPayload {
 
   public function __construct(array|\stdClass|ICanGetPayloadRawData $rawData, VO_PayloadKey $keyName)
   {
+    parent::__construct();
     $this->appendPayload($rawData, $keyName);
   }
 }
