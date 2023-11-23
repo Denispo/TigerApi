@@ -58,18 +58,22 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
   public function handleMatchedRoute(array $params, mixed $customData):ICanGetPayloadRawData {
     $obj = $this->onGetObjectToMapRequestDataOn();
     if ($obj) {
+      $requestData = [];
       //inspirace: https://www.slimframework.com/docs/v4/objects/request.html#the-request-body
       $contentType = $this->onGetTigrApp()->getHttpRequest()->getHeader('Content-Type')?? '';
       if (str_contains($contentType, 'application/json')) {
         $requestData = json_decode(file_get_contents('php://input'), true);
-        if (json_last_error() === JSON_ERROR_NONE) {
-          // Chceme, at se $params zmerguje do $requestData. Klice v $params maji vyssi prioritu a prepisou pripadne stejne klice v $requestData;
-          $params = array_merge($requestData, $params);
-        } else {
+        if (json_last_error() !== JSON_ERROR_NONE) {
           throw new InvalidArgumentException('Request JSON is not properly formatted');
         }
-
+      } elseif (str_contains($contentType, 'multipart/form-data')) {
+        $requestData = $this->onGetTigrApp()->getHttpRequest()->getPost();
+        if (!is_array($requestData)) {
+          $requestData = [];
+        }
       }
+      // Chceme, at se $params zmerguje do $requestData. Klice v $params maji vyssi prioritu a prepisou pripadne stejne klice v $requestData;
+      $params = array_merge($requestData, $params);
       $mapper = new DataMapper($params);
       $mapper->mapTo($obj);
     }
