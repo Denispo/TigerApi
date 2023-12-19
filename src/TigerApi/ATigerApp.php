@@ -31,7 +31,7 @@ abstract class ATigerApp implements IAmTigerApp {
 
   private VO_TokenPlainStr|null $authTokenPlainStr = null;
   private Environment|null $environment = null;
-  private IRequest|null $request = null;
+  private IRequest $request;
 
   /*
    $_logBridge slouzi pro to, aby potomek TigerApp mohl pouzivat onLogNotice atd.
@@ -115,9 +115,6 @@ abstract class ATigerApp implements IAmTigerApp {
 
   public function getHttpRequest(): IRequest
   {
-    if ($this->request === null) {
-      $this->request = (new RequestFactory())->fromGlobals();
-    }
     return $this->request;
   }
 
@@ -132,10 +129,15 @@ abstract class ATigerApp implements IAmTigerApp {
   }
 
   /**
+   * @param IRequest|null $request If null, request will be created from globals
    * @param string $defaultTimeZone
    * @throws \ReflectionException
    */
-  public function __construct(string $defaultTimeZone = 'Europe/Prague') {
+  public function __construct(IRequest|null $request = null, string $defaultTimeZone = 'Europe/Prague') {
+    if ($request === null) {
+      $request = (new RequestFactory())->fromGlobals();
+    }
+    $this->request = $request;
     set_exception_handler([$this,'_exception_handler']);
     set_error_handler([$this,'_error_handler']);
 
