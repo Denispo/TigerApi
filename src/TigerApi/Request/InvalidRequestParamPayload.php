@@ -9,13 +9,12 @@ use TigerCore\ValueObject\VO_PayloadKey;
 class InvalidRequestParamPayload extends ATigerPayload {
 
   /**
-   * @param TigerInvalidRequestParam $invalidParam
+   * @param string[] $invalidParam
    * @throws S500_InternalServerErrorException
    */
-  public function __construct(TigerInvalidRequestParam $invalidParam) {
+  public function __construct(array $invalidParam) {
      parent::__construct();
-     $this->appendPayload($invalidParam->paramName->getValueAsString(), new VO_PayloadKey('name'));
-     $this->appendPayload($invalidParam->errorCode->getValueAsString(), new VO_PayloadKey('err_code'));
+     $this->appendPayload($invalidParam, new VO_PayloadKey('errors'));
   }
 
   public function getPayloadKey(): VO_PayloadKey {

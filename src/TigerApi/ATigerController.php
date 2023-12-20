@@ -1,17 +1,15 @@
 <?php
 
-namespace TigerApi\Controller;
+namespace TigerApi;
 
-use TigerApi\IAmTigerApp;
-use TigerApi\Request\ICanSetRequestParamIsInvalid;
+use TigerApi\Request\ICanSetRequestDataIsInvalid;
 use TigerApi\Request\RequestAuthorizationStatus;
 use TigerApi\Request\TigerInvalidRequestParamsException;
-use TigerApi\Request\TigerRequestParamValidator;
+use TigerApi\Request\TigerRequestDataValidator;
 use TigerCore\Exceptions\InvalidArgumentException;
 use TigerCore\Exceptions\TypeNotDefinedException;
 use TigerCore\ICanHandleMatchedRoute;
 use TigerCore\Payload\ICanGetPayloadRawData;
-use TigerCore\Request\Validator\InvalidRequestParam;
 use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\S401_UnauthorizedException;
 use TigerCore\Response\S404_NotFoundException;
@@ -21,7 +19,7 @@ use TigerCore\Validator\DataMapper;
 abstract class ATigerController implements ICanHandleMatchedRoute {
 
   /**
-   * @var InvalidRequestParam[]
+   * @var string[]
    */
   private array $invalidParams = [];
 
@@ -30,11 +28,11 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
   abstract protected function onGetAuthorizationStatus():RequestAuthorizationStatus;
 
   /**
-   * @param ICanSetRequestParamIsInvalid $validator
+   * @param ICanSetRequestDataIsInvalid $validator
    * @return void
    * @throws @BaseResponseException
    */
-  abstract protected function onValidateParams(ICanSetRequestParamIsInvalid $validator):void;
+  abstract protected function onValidateParams(ICanSetRequestDataIsInvalid $validator):void;
 
   /**
    * @return ICanGetPayloadRawData
@@ -87,13 +85,10 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
       throw new S404_NotFoundException();
     }
 
-    $requestParamValidator = new TigerRequestParamValidator();
-    foreach ($this->invalidParams as $oneInvalidParam) {
-      $requestParamValidator->setRequestParamIsInvalid($oneInvalidParam->getParamName(), $oneInvalidParam->getErrorCode()->getErrorCodeValue());
-    }
+    $requestParamValidator = new TigerRequestDataValidator();
     $this->onValidateParams($requestParamValidator);
-    $invalidParams = $requestParamValidator->getInvalidRequestParams();
-    if ($invalidParams) {
+    $invalidParams = $requestParamValidator->getInvalidRequestData();
+    if (count($invalidParams) > 0) {
       throw new TigerInvalidRequestParamsException($requestParamValidator);
     }
 
