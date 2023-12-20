@@ -67,7 +67,7 @@ abstract class ATigerApp implements IAmTigerApp {
 
 
   /**
-   * If payload is returned, router->runMatch() will be skipped and this payload will be returned
+   * If payload is returned, router->runMatch() will be skipped and this payload will be returned instead
    * @param VO_HttpRequestMethod $method
    * @param string $path
    * @return ICanGetPayloadRawData|null
