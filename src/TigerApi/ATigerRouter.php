@@ -24,7 +24,7 @@ abstract class ATigerRouter implements IAmTigerRouter {
    */
   public function addRoute(VO_RouteMask $mask, ICanHandleMatchedRoute $handler)
   {
-    // Everzthing is POST. See Allan Holub presentation form 2015
+    // Everzthing is POST. See Allan Holub presentation from 2015
     $this->router->addRoute('POST', $this->pathPrefix->add($mask), $handler);
   }
 
