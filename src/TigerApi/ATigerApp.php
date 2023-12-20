@@ -60,10 +60,19 @@ abstract class ATigerApp implements IAmTigerApp {
   protected abstract function onGetErrorHandler():ICanHandlePhpError;
 
   /**
-   * @return ICanMatchRoutes|ICanMatchRoutes[]
+   * @return ICanMatchRoutes
    */
-  protected abstract function onGetRouters():ICanMatchRoutes|array;
+  protected abstract function onGetRouter():ICanMatchRoutes;
   protected abstract function onGetEnvironment(): Environment;
+
+
+  /**
+   * If payload is returned, router->runMatch() will be skipped and this payload will be returned
+   * @param VO_HttpRequestMethod $method
+   * @param string $path
+   * @return ICanGetPayloadRawData|null
+   */
+  protected abstract function onGetPayloadBeforeRouterMatch(VO_HttpRequestMethod $method, string $path):null|ICanGetPayloadRawData;
 
   /**
    * Use some kind of IAmLogger or ICanLogNotice to log this Notice
@@ -183,23 +192,18 @@ abstract class ATigerApp implements IAmTigerApp {
 
 
     try {
-      $routers = $this->onGetRouters();
-      if (!is_array($routers)) {
-        $routers = [$routers];
-      }
-      $payload = null;
+      $router = $this->onGetRouter();
 
       $requestMethod = new VO_HttpRequestMethod($request->getMethod());
       $requestPath = $request->getUrl()->getPath();
 
+      $payload = $this->onGetPayloadBeforeRouterMatch($requestMethod, $requestPath);
 
-      foreach ($routers as $oneRouter) {
-        if ($oneRouter instanceof ICanMatchRoutes) {
-          $payload = $oneRouter->runMatch($requestMethod, $requestPath);
-        }
+      if ($payload === null) {
+        $payload = $router->runMatch($requestMethod, $requestPath);
       }
 
-      if (!($payload instanceof ICanGetPayloadRawData)) {
+      if ($payload === null) {
         throw new S404_NotFoundException('Path not found');
       }
     } catch (TigerInvalidRequestParamsException $e){

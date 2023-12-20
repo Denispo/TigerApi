@@ -31,7 +31,7 @@ abstract class ATigerRouter implements ICanMatchRoutes {
     $this->router->addRoute($method, $mask, $handler);
   }
 
-  public function runMatch(VO_HttpRequestMethod $requestMethod, string $requestUrlPath): ICanGetPayloadRawData
+  public function runMatch(VO_HttpRequestMethod $requestMethod, string $requestUrlPath): null|ICanGetPayloadRawData
   {
     $this->onBeforeRunMatch($requestMethod, $requestUrlPath);
     return $this->router->runMatch($requestMethod, $requestUrlPath);
