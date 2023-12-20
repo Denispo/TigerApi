@@ -4,12 +4,11 @@ namespace TigerApi;
 
 use TigerCore\BaseRestRouter;
 use TigerCore\ICanHandleMatchedRoute;
-use TigerCore\ICanMatchRoutes;
 use TigerCore\Payload\ICanGetPayloadRawData;
 use TigerCore\ValueObject\VO_HttpRequestMethod;
 use TigerCore\ValueObject\VO_RouteMask;
 
-abstract class ATigerRouter implements ICanMatchRoutes {
+abstract class ATigerRouter implements IAmTigerRouter {
 
   private BaseRestRouter $router;
 
@@ -37,4 +36,8 @@ abstract class ATigerRouter implements ICanMatchRoutes {
     return $this->router->runMatch($requestMethod, $requestUrlPath);
   }
 
+  public function getRoutesCount(): int
+  {
+    return $this->router->getRoutesCount();
+  }
 }
