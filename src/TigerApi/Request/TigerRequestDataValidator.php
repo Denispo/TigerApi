@@ -2,7 +2,7 @@
 
 namespace TigerApi\Request;
 
-class TigerRequestDataValidator implements ICanSetRequestDataIsInvalid, ICanGetInvalidRequestData
+class TigerRequestDataValidator implements ICanSetRequestParamIsInvalid, ICanGetInvalidRequestData
 {
 
   /**

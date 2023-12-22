@@ -2,7 +2,7 @@
 
 namespace TigerApi;
 
-use TigerApi\Request\ICanSetRequestDataIsInvalid;
+use TigerApi\Request\ICanSetRequestParamIsInvalid;
 use TigerApi\Request\RequestAuthorizationStatus;
 use TigerApi\Request\TigerInvalidRequestParamsException;
 use TigerApi\Request\TigerRequestDataValidator;
@@ -28,11 +28,11 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
   abstract protected function onGetAuthorizationStatus():RequestAuthorizationStatus;
 
   /**
-   * @param ICanSetRequestDataIsInvalid $validator
+   * @param ICanSetRequestParamIsInvalid $validator
    * @return void
    * @throws @BaseResponseException
    */
-  abstract protected function onValidateParams(ICanSetRequestDataIsInvalid $validator):void;
+  abstract protected function onValidateParams(ICanSetRequestParamIsInvalid $validator):void;
 
   /**
    * @return ICanGetPayloadRawData

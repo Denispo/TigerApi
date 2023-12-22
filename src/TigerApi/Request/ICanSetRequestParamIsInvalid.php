@@ -2,7 +2,7 @@
 
 namespace TigerApi\Request;
 
-interface ICanSetRequestDataIsInvalid {
+interface ICanSetRequestParamIsInvalid {
   public function setRequestParamIsInvalid(string $errorMessage);
 
 }
