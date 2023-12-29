@@ -18,7 +18,8 @@ class TigerMysqlDb implements ICanGetDbConnection {
 
     // Ach boze... nette :/
     // https://github.com/nette/database/issues/257#issuecomment-1016559714
-    $this->db->setRowNormalizer((new RowNormalizer())->skipNumeric());
+    // Also make no sense to convert DateTime to Date() because DateTime has no timezone. It is just a string representing date and time!
+    $this->db->setRowNormalizer((new RowNormalizer())->skipNumeric()->skipDateTime());
   }
 
   public function GetDbConnection(): Connection {
