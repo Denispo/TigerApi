@@ -191,7 +191,7 @@ abstract class ATigerApp implements IAmTigerApp {
           $exception->getMessage(),
           'CDATA: '=> $exception->getCustomdata(),
           'FILE: ' =>$exception->getFile(),
-          'TRACE: '=> $exception->getTraceAsString()
+          'TRACE: '=> $exception->getTrace()
         ]
       ]);
     } else {
