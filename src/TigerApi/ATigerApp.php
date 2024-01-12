@@ -171,15 +171,33 @@ abstract class ATigerApp implements IAmTigerApp {
   #[NoReturn]
   private function doResponse4xxException(Base_4xx_RequestException $exception)
   {
-    if ($exception instanceof S405_MethodNotAllowedException) {
-
-    }
+    $json = json_encode([
+      'exception '.get_class($exception) => [
+        $exception->getMessage(),
+        'CDATA: '=> $exception->getCustomdata(),
+        'FILE: ' =>$exception->getFile()
+      ]
+    ]);
+    echo($json);
     exit;
   }
 
   #[NoReturn]
   private function doResponse5xxException(Base_5xx_RequestException $exception)
   {
+    if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
+      $json = json_encode([
+        'exception '.get_class($exception) => [
+          $exception->getMessage(),
+          'CDATA: '=> $exception->getCustomdata(),
+          'FILE: ' =>$exception->getFile(),
+          'TRACE: '=> $exception->getTraceAsString()
+        ]
+      ]);
+    } else {
+      $json = '{"message": "Internal server error"}';
+    }
+    echo($json);
     exit;
   }
 
@@ -216,15 +234,11 @@ abstract class ATigerApp implements IAmTigerApp {
       exit;
     } catch (Base_4xx_RequestException $e) {
       $httpResponse->setCode($e->getResponseCode());
-      $json = json_encode(['exception '.get_class($e) => [$e->getMessage(),'CDATA: '=> $e->getCustomdata(), 'FILE: ' =>$e->getFile()]]);
-      echo($json);
+      $this->doResponse4xxException($e);
       exit;
     } catch (Base_5xx_RequestException $e){
       $httpResponse->setCode($e->getResponseCode());
-      if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
-        $json = json_encode(['exception '.get_class($e) => [$e->getMessage(),'CDATA: '=> $e->getCustomdata(), 'FILE: ' =>$e->getFile()]]);
-        echo($json);
-      }
+      $this->doResponse5xxException($e);
       exit;
     } catch (BaseResponseException $e){
       $httpResponse->setCode($e->getResponseCode());
