@@ -12,7 +12,7 @@ use TigerCore\Exceptions\InvalidTokenException;
 use TigerCore\ValueObject\VO_FullPathFileName;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
-abstract class ATigerTokenJwtFirebaseCustomToken implements ICanGenerateFirebaseCustomToken {
+abstract class ATigerTokenJwtFirebaseCustomToken {
 
   /**
    * @return VO_FullPathFileName|array{client_email:string,private_key:string}
@@ -28,7 +28,7 @@ abstract class ATigerTokenJwtFirebaseCustomToken implements ICanGenerateFirebase
    * @throws InvalidTokenException
    * @throws InvalidFormatException
    */
-  public function generateToken(string|int $userId): VO_TokenPlainStr {
+  public function generateJwtFirebaseCustomToken(string|int $userId): VO_TokenPlainStr {
     if (empty($userId)) {
       throw new InvalidArgumentException('UserId can not be empty');
     }
