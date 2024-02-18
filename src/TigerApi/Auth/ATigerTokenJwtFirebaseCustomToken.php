@@ -5,7 +5,6 @@ namespace TigerApi\Auth;
 use TigerCore\Auth\BaseTokenClaims;
 use TigerCore\Auth\FirebaseCustomToken;
 use TigerCore\Auth\ICanAddTokenClaim;
-use TigerCore\Auth\ICanGetTokenClaims;
 use TigerCore\Exceptions\InvalidArgumentException;
 use TigerCore\Exceptions\InvalidFileNameException;
 use TigerCore\Exceptions\InvalidFormatException;
@@ -13,7 +12,7 @@ use TigerCore\Exceptions\InvalidTokenException;
 use TigerCore\ValueObject\VO_FullPathFileName;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
-abstract class ATigerTokenJwtFirebaseCustomToken implements ICanGenerateFirebaseCustomToken , ICanGetTokenClaims {
+abstract class ATigerTokenJwtFirebaseCustomToken implements ICanGenerateFirebaseCustomToken {
 
   /**
    * @return VO_FullPathFileName|array{client_email:string,private_key:string}
