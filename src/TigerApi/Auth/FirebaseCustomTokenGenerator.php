@@ -2,9 +2,8 @@
 
 namespace TigerApi\Auth;
 
-use TigerCore\Auth\BaseTokenClaims;
 use TigerCore\Auth\FirebaseCustomToken;
-use TigerCore\Auth\ICanAddTokenClaim;
+use TigerCore\Auth\ICanGetTokenClaims;
 use TigerCore\Exceptions\InvalidArgumentException;
 use TigerCore\Exceptions\InvalidFileNameException;
 use TigerCore\Exceptions\InvalidFormatException;
@@ -12,29 +11,22 @@ use TigerCore\Exceptions\InvalidTokenException;
 use TigerCore\ValueObject\VO_FullPathFileName;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
-abstract class ATigerTokenJwtFirebaseCustomToken {
-
-  /**
-   * @return VO_FullPathFileName|array{client_email:string,private_key:string}
-   */
-  protected abstract function onGetFirebaseServiceAccountJson():VO_FullPathFileName|array;
-  protected abstract function onAddTokenCustomClaims(ICanAddTokenClaim $claimCollector):void;
+class FirebaseCustomTokenGenerator {
 
   /**
    * @param string|int $userId
+   * @param VO_FullPathFileName|array{client_email:string,private_key:string} $serviceAccountData
+   * @param ICanGetTokenClaims $tokenCustomClaims
    * @return VO_TokenPlainStr
    * @throws InvalidArgumentException
    * @throws InvalidFileNameException
-   * @throws InvalidTokenException
    * @throws InvalidFormatException
+   * @throws InvalidTokenException
    */
-  public function generateJwtFirebaseCustomToken(string|int $userId): VO_TokenPlainStr {
+  public static function generate(string|int $userId,VO_FullPathFileName|array $serviceAccountData, ICanGetTokenClaims $tokenCustomClaims): VO_TokenPlainStr {
     if (empty($userId)) {
       throw new InvalidArgumentException('UserId can not be empty');
     }
-    $claims = new BaseTokenClaims();
-    $this->onAddTokenCustomClaims($claims);
-    $serviceAccountData = $this->onGetFirebaseServiceAccountJson();
     if ($serviceAccountData instanceof VO_FullPathFileName) {
       $serviceAccountData = @file_get_contents($serviceAccountData->getValueAsString());
       if ($serviceAccountData === false) {
@@ -45,7 +37,7 @@ abstract class ATigerTokenJwtFirebaseCustomToken {
         throw new InvalidFormatException('Invalid JSON format of service account file');
       }
     }
-    return FirebaseCustomToken::generateToken($serviceAccountData, $userId, $claims);
+    return FirebaseCustomToken::generateToken($serviceAccountData, $userId, $tokenCustomClaims);
   }
 
 }
