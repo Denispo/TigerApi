@@ -16,14 +16,14 @@ class FirebaseCustomTokenGenerator {
   /**
    * @param string|int $userId
    * @param VO_FullPathFileName|array{client_email:string,private_key:string} $serviceAccountData
-   * @param ICanGetTokenClaims $tokenCustomClaims
+   * @param ICanGetTokenClaims|null $tokenCustomClaims
    * @return VO_TokenPlainStr
    * @throws InvalidArgumentException
    * @throws InvalidFileNameException
    * @throws InvalidFormatException
    * @throws InvalidTokenException
    */
-  public static function generate(string|int $userId,VO_FullPathFileName|array $serviceAccountData, ICanGetTokenClaims $tokenCustomClaims): VO_TokenPlainStr {
+  public static function generate(string|int $userId,VO_FullPathFileName|array $serviceAccountData, ICanGetTokenClaims|null $tokenCustomClaims = null): VO_TokenPlainStr {
     if (empty($userId)) {
       throw new InvalidArgumentException('UserId can not be empty');
     }
