@@ -3,7 +3,6 @@
 namespace TigerApi\Auth;
 
 use Nette\Caching\Cache;
-use Nette\Caching\Storages\FileStorage;
 use TigerCore\Auth\FirebaseIdToken;
 use TigerCore\Auth\FirebaseIdTokenClaims;
 use TigerCore\Exceptions\InvalidArgumentException;
@@ -40,7 +39,6 @@ class TigerFirebaseIdToken implements ICanGetFirebaseIdTokenClaims
       return;
     }
 
-    FileStorage::$gcProbability = 0; // Set 0 to prevent nette form randomly executing expensive file search/delete operation in the Constructor... no comment :/
     $hash = substr(md5($this->fileNameFirebaseServiceAccountJson->getValueAsString()),0,5);
     $cacheKey = 'fb_idtoken_certificates_'.$hash;
     $certificates = $this->cache?->load($cacheKey)?? null;
