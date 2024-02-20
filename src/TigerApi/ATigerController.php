@@ -105,7 +105,7 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
       throw $e;
     } catch (\Throwable $e){
       // Exceptions except 4xx or 5xx are not allowed and has to be transformed to 500 exception
-      throw new S500_InternalServerErrorException('Uncaught exception during calling controllers onProcessRequest()',['message' => $e->getMessage()],$e);
+      throw new S500_InternalServerErrorException('Uncaught exception during calling controllers onProcessRequest()',['message' => $e->getMessage(), 'file' => $e->getFile()],$e);
     }
   }
 
