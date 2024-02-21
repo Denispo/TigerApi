@@ -57,7 +57,7 @@ class TigerFirebaseIdToken implements ICanGetFirebaseIdTokenClaims
       }
 
     }
-    $certificates = json_decode($certificates,true);
+
     // TODO: Set expiration time based on file_get_contents header response cache-control: max-age
     $this->cache?->save($cacheKey,$certificates,[Cache::Expire => time() + (5 * 60 * 60)]); // 5 hours.
     $this->claims = FirebaseIdToken::decodeToken($this->firebaseIdToken, $certificates);
