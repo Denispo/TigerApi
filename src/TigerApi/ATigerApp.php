@@ -205,9 +205,10 @@ abstract class ATigerApp implements IAmTigerApp {
     $request = $this->getHttpRequest();
     $httpResponse = new \Nette\Http\Response();
     $httpResponse->setHeader('Access-Control-Allow-Origin',$this->request->getHeader('origin'));
-    $httpResponse->setHeader('Access-Control-Allow-Headers','*');
-    $httpResponse->setHeader('Access-Control-Allow-Headers','*');
     $httpResponse->setContentType('application/json','utf-8');
+    $httpResponse->setHeader('Access-Control-Allow-Credentials','true');
+    $httpResponse->setHeader('Access-Control-Allow-Headers','*, x-custom, authorization, content-type');
+
 
 
     try {
