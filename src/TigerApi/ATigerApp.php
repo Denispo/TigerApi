@@ -207,7 +207,7 @@ abstract class ATigerApp implements IAmTigerApp {
     $httpResponse->setHeader('Access-Control-Allow-Origin',$this->request->getHeader('origin'));
     $httpResponse->setContentType('application/json','utf-8');
     $httpResponse->setHeader('Access-Control-Allow-Credentials','true');
-    $httpResponse->setHeader('Access-Control-Allow-Headers','*, x-custom, authorization, content-type');
+    $httpResponse->setHeader('Access-Control-Allow-Headers','*, authorization, content-type');
 
 
 
@@ -218,9 +218,9 @@ abstract class ATigerApp implements IAmTigerApp {
       $requestPath = $request->getUrl()->getPath();
 
       if ($requestMethod->isOPTIONS()) {
+        // For OPTION runMatch will set header Access-Control-Allow-Methods according to route match result.
+        // TODO: Refactor. $router shuld have dedicated method to only returns valid hmethods. Router should not set Reposne hedares.
         $router->runMatch($requestMethod, $requestPath);
-        $httpResponse->setHeader('Access-Control-Allow-Credentials','true');
-        $httpResponse->setHeader('Access-Control-Allow-Headers','x-custom');
         exit;
       }
 
