@@ -7,6 +7,7 @@ use TigerApi\Request\RequestAuthorizationStatus;
 use TigerApi\Request\TigerInvalidRequestParamsException;
 use TigerApi\Request\TigerRequestDataValidator;
 use TigerCore\Exceptions\InvalidArgumentException;
+use TigerCore\Exceptions\InvalidFormatException;
 use TigerCore\Exceptions\TypeNotDefinedException;
 use TigerCore\ICanHandleMatchedRoute;
 use TigerCore\Payload\ICanGetPayloadRawData;
@@ -16,6 +17,7 @@ use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\S400_BadRequestException;
 use TigerCore\Response\S401_UnauthorizedException;
 use TigerCore\Response\S404_NotFoundException;
+use TigerCore\Response\S422_UnprocessableEntityException;
 use TigerCore\Response\S500_InternalServerErrorException;
 use TigerCore\Validator\BaseAssertableObject;
 use TigerCore\Validator\DataMapper;
@@ -75,7 +77,18 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
         // Chceme, at se $params zmerguje do $requestData. Klice v $params maji vyssi prioritu a prepisou pripadne stejne klice v $requestData;
         $params = array_merge($requestData, $params);
         $mapper = new DataMapper($params);
-        $mapper->mapTo($obj);
+
+        try {
+          $mapper->mapTo($obj);
+        } catch (InvalidArgumentException $e) {
+          throw new S500_InternalServerErrorException('BaseAssertableObject contains invalid definition',['message' => $e->getMessage()],$e);
+        } catch (TypeNotDefinedException $e){
+          throw new S500_InternalServerErrorException('Some BaseAssertableObject\'s property is missing type definition',['message' => $e->getMessage()],$e);
+        } catch (InvalidFormatException $e){
+          // Client sends mallformed or invalid/unnasignable data
+          throw new S422_UnprocessableEntityException('Malformed data to map data from ',[],$e);
+        }
+
       }
       $authorizationStatus = $this->onGetAuthorizationStatus();
       if (!$authorizationStatus->IsSetTo(RequestAuthorizationStatus::REQUEST_ALLOWED)) {
