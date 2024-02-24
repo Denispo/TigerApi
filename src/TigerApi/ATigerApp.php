@@ -204,7 +204,7 @@ abstract class ATigerApp implements IAmTigerApp {
   public function run():void {
     $request = $this->getHttpRequest();
     $httpResponse = new \Nette\Http\Response();
-    $httpResponse->setHeader('Access-Control-Allow-Origin','*');
+    $httpResponse->setHeader('Access-Control-Allow-Origin',$this->request->getHeader('origin'));
     $httpResponse->setHeader('Access-Control-Allow-Headers','*');
     $httpResponse->setContentType('application/json','utf-8');
 
@@ -214,6 +214,12 @@ abstract class ATigerApp implements IAmTigerApp {
 
       $requestMethod = new VO_HttpRequestMethod($request->getMethod());
       $requestPath = $request->getUrl()->getPath();
+
+      if ($requestMethod->isOPTIONS()) {
+        $router->runMatch($requestMethod, $requestPath);
+
+        exit;
+      }
 
       $payload = $this->onGetPayloadBeforeRouterMatch($requestMethod, $requestPath);
 
