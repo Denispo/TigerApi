@@ -198,7 +198,7 @@ abstract class ATigerApp implements IAmTigerApp {
       ]);
     } else {
       if ($sentryId) {
-        $json = '{"errorNo": "'.$exception->getSentryEventId().'"}';
+        $json = '{"errorNo": "'.substr($exception->getSentryEventId(),0,10).'"}';
       } else {
         $json = '{"errorNo": "NA"}';
       }
