@@ -251,11 +251,11 @@ abstract class ATigerApp implements IAmTigerApp {
     } catch (Base_4xx_RequestException $e) {
       $httpResponse->setCode($e->getResponseCode());
       $this->doResponse4xxException($e);
-      exit;
+      exit; // pro jistotu
     } catch (Base_5xx_RequestException $e){
       $httpResponse->setCode($e->getResponseCode());
       $this->doResponse5xxException($e);
-      exit;
+      exit; // pro jistotu
     } catch (BaseResponseException $e){
       $httpResponse->setCode($e->getResponseCode());
       if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
