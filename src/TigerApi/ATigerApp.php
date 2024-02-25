@@ -185,17 +185,23 @@ abstract class ATigerApp implements IAmTigerApp {
   #[NoReturn]
   private function doResponse5xxException(Base_5xx_RequestException $exception)
   {
+    $sentryId = $exception->getSentryEventId();
     if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
       $json = json_encode([
         'exception '.get_class($exception) => [
           $exception->getMessage(),
+          'SentryId: ' => $sentryId,
           'CDATA: '=> $exception->getCustomdata(),
           'FILE: ' =>$exception->getFile(),
           'TRACE: '=> $exception->getTrace()
         ]
       ]);
     } else {
-      $json = '{"message": "Internal server error"}';
+      if ($sentryId) {
+        $json = '{"errorNo": "'.$exception->getSentryEventId().'"}';
+      } else {
+        $json = '{"errorNo": "NA"}';
+      }
     }
     echo($json);
     exit;
