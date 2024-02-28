@@ -24,6 +24,7 @@ use TigerCore\Response\Base_5xx_RequestException;
 use TigerCore\Response\BaseResponseException;
 use TigerCore\Response\S404_NotFoundException;
 use TigerCore\Response\S405_MethodNotAllowedException;
+use TigerCore\Response\S500_InternalServerErrorException;
 use TigerCore\ValueObject\VO_HttpRequestMethod;
 use TigerCore\ValueObject\VO_TokenPlainStr;
 
@@ -218,28 +219,38 @@ abstract class ATigerApp implements IAmTigerApp {
 
 
     try {
-      $router = $this->onGetRouter();
 
-      $requestMethod = new VO_HttpRequestMethod($request->getMethod());
-      $requestPath = $request->getUrl()->getPath();
+      try {
+        $router = $this->onGetRouter();
 
-      if ($requestMethod->isOPTIONS()) {
-        // For OPTION runMatch will set header Access-Control-Allow-Methods according to route match result.
-        // TODO: Refactor. $router shuld have dedicated method to only returns valid hmethods. Router should not set Reposne hedares.
-        $router->runMatch($requestMethod, $requestPath);
-        exit;
-      }
+        $requestMethod = new VO_HttpRequestMethod($request->getMethod());
+        $requestPath = $request->getUrl()->getPath();
 
+        if ($requestMethod->isOPTIONS()) {
+          // For OPTION runMatch will set header Access-Control-Allow-Methods according to route match result.
+          // TODO: Refactor. $router shuld have dedicated method to only returns valid hmethods. Router should not set Reposne hedares.
+          $router->runMatch($requestMethod, $requestPath);
+          exit;
+        }
 
-      $payload = $this->onGetPayloadBeforeRouterMatch($requestMethod, $requestPath);
+        $payload = $this->onGetPayloadBeforeRouterMatch($requestMethod, $requestPath);
 
-      if ($payload === null) {
-        $payload = $router->runMatch($requestMethod, $requestPath);
+        if ($payload === null) {
+          $payload = $router->runMatch($requestMethod, $requestPath);
+        }
+
+      } catch (\Throwable $e) {
+        if (!($e instanceof BaseResponseException)) {
+          throw new S500_InternalServerErrorException('Unexpected error',[],$e);
+        } else {
+          throw $e;
+        }
       }
 
       if ($payload === null) {
         throw new S404_NotFoundException('Path not found');
       }
+
     } catch (TigerInvalidRequestParamsException $e){
       $httpResponse->setCode($e->getResponseCode());
       echo(json_encode($e->getCustomData()));
