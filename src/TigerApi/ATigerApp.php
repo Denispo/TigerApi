@@ -221,14 +221,14 @@ abstract class ATigerApp implements IAmTigerApp {
     try {
       try{
         $router = $this->onGetRouter(true);
-      } catch (\Throwable){
+      } catch (\Throwable $e){
         throw new S500_InternalServerErrorException('Can not get router for Preflight',['$requestPath' => $requestPath], $e);
       }
       try {
         $headers = $router->runMatchPreflight($requestPath);
         $httpResponse->setHeader('Access-Control-Allow-Methods', implode(', ', $headers));
         $httpResponse->setCode(IResponse::S200_OK);
-      } catch (\Throwable) {
+      } catch (\Throwable $e) {
         throw new S500_InternalServerErrorException('Error during runMatchPreflight()',['$requestPath' => $requestPath], $e);
       }
     } catch (\Throwable){
