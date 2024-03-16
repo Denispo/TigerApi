@@ -12,19 +12,19 @@ abstract class ATigerRouter implements IAmTigerRouter {
 
   private BaseRestRouter $router;
 
-  public function __construct(private VO_RouteMask $pathPrefix)
+  public function __construct(private readonly VO_RouteMask $pathPrefix)
   {
     $this->router = new BaseRestRouter();
   }
 
   /**
    * @param VO_RouteMask $mask
-   * @param ICanHandleMatchedRoute $handler
+   * @param ICanHandleMatchedRoute|null $handler
    * @return void
    */
-  public function addRoute(VO_RouteMask $mask, ICanHandleMatchedRoute $handler)
+  public function addRoute(VO_RouteMask $mask, ICanHandleMatchedRoute|null $handler): void
   {
-    // Everzthing is POST. See Allan Holub presentation from 2015
+    // Everything is POST. See Allan Holub presentation from 2015
     $this->router->addRoute('POST', $this->pathPrefix->add($mask), $handler);
   }
 
@@ -36,5 +36,10 @@ abstract class ATigerRouter implements IAmTigerRouter {
   public function getRoutesCount(): int
   {
     return $this->router->getRoutesCount();
+  }
+
+  public function runMatchPreflight(string $requestUrlPath): array
+  {
+    return $this->router->runMatchPreflight($requestUrlPath);
   }
 }
