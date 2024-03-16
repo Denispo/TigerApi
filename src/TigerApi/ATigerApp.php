@@ -270,57 +270,60 @@ abstract class ATigerApp implements IAmTigerApp {
     return $payload;
   }
 
-  public function run():void {
-    $request = $this->getHttpRequest();
-    $httpResponse = new \Nette\Http\Response();
-    $httpResponse->setHeader('Access-Control-Allow-Origin',$this->request->getHeader('origin'));
-    $httpResponse->setContentType('application/json','utf-8');
-    $httpResponse->setHeader('Access-Control-Allow-Credentials','true');
-    $httpResponse->setHeader('Access-Control-Allow-Headers','*, authorization, content-type');
-
-
-    $payload = null;
-    $requestPath = '';
-
+  public function run():void
+  {
     try {
-      $requestMethod = new VO_HttpRequestMethod($request->getMethod());
-      $requestPath = $request->getUrl()->getPath();
+      $request = $this->getHttpRequest();
+      $httpResponse = new \Nette\Http\Response();
+      $httpResponse->setHeader('Access-Control-Allow-Origin', $this->request->getHeader('origin'));
+      $httpResponse->setContentType('application/json', 'utf-8');
+      $httpResponse->setHeader('Access-Control-Allow-Credentials', 'true');
+      $httpResponse->setHeader('Access-Control-Allow-Headers', '*, authorization, content-type');
 
-      if ($requestMethod->isOPTIONS()) {
-        $this->processPreflight($requestPath);
-        exit;
+      try {
+        $payload = null;
+        $requestPath = '';
+
+        try {
+          $requestMethod = new VO_HttpRequestMethod($request->getMethod());
+          $requestPath = $request->getUrl()->getPath();
+
+          if ($requestMethod->isOPTIONS()) {
+            $this->processPreflight($requestPath);
+            exit;
+          }
+
+          $payload = $this->getPayload($requestMethod, $requestPath);
+
+        } catch (BaseResponseException $e) {
+          $httpResponse->setCode($e->getResponseCode());
+          if ($e instanceof ICanGetPayloadRawData) {
+            $payload = $e;
+          }
+        }
+
+        if (!$payload) {
+          exit;
+        }
+
+        $json = json_encode($payload->getPayloadRawData());
+
+        if (json_last_error()) {
+          throw new S500_InternalServerErrorException(json_last_error_msg(), ['$requestPath' => $requestPath]);
+        }
+
+        echo($json);
+
+      } catch (\Throwable $e) {
+        // throw S500 to be captured by Sentry
+        throw new S500_InternalServerErrorException('Internal server error', [], $e);
       }
-
-      $payload = $this->getPayload($requestMethod, $requestPath);
-
-    } catch (BaseResponseException $e) {
-      $httpResponse->setCode($e->getResponseCode());
-      if ($e instanceof ICanGetPayloadRawData) {
-        $payload = $e;
-      }
-    } catch (\Throwable $e){
-      $httpResponse->setCode(IResponse::S500_InternalServerError);
-      if ($e instanceof ICanGetPayloadRawData) {
-        $payload = $e;
-      }
-    }
-
-    if (!$payload) {
+    } catch (\Throwable) {
+      // This catch is only to prevent leaking information to client
+      // If some unintented exception reach this point, previous code has to be fixed, not this!
+      // It means no logging there, because this is THE last catch
       exit;
-    }
-
-    try {
-      $json = json_encode($payload->getPayloadRawData());
-
-      if (json_last_error()) {
-        throw new S500_InternalServerErrorException(json_last_error_msg(), ['$requestPath' => $requestPath]);
-      }
-
-      echo($json);
-
-    } catch (\Throwable $e) {
-      echo('Internal server error');
     }
   }
 
- }
+}
