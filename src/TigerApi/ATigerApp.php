@@ -61,9 +61,10 @@ abstract class ATigerApp implements IAmTigerApp {
   protected abstract function onGetErrorHandler():ICanHandlePhpError;
 
   /**
+   * @param bool $handlersCanBeNull
    * @return ICanMatchRoutes
    */
-  protected abstract function onGetRouter():ICanMatchRoutes;
+  protected abstract function onGetRouter(bool $handlersCanBeNull):ICanMatchRoutes;
   protected abstract function onGetEnvironment(): Environment;
 
 
@@ -184,7 +185,7 @@ abstract class ATigerApp implements IAmTigerApp {
   }
 
   #[NoReturn]
-  private function doResponse5xxException(Base_5xx_RequestException $exception)
+  private function doResponse5xxException(Base_5xx_RequestException $exception): void
   {
     $eventId = $exception->getSentryEventId();
     if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
@@ -208,6 +209,67 @@ abstract class ATigerApp implements IAmTigerApp {
     exit;
   }
 
+  /**
+   * @param string $requestPath
+   */
+  private function processPreflight(string $requestPath): void
+  {
+    $httpResponse = new \Nette\Http\Response();
+    $httpResponse->setHeader('Access-Control-Allow-Origin',$this->request->getHeader('origin'));
+    $httpResponse->setHeader('Access-Control-Allow-Credentials','true');
+    $httpResponse->setHeader('Access-Control-Allow-Headers','*, authorization, content-type');
+    try {
+      try{
+        $router = $this->onGetRouter(true);
+      } catch (\Throwable){
+        throw new S500_InternalServerErrorException('Can not get router for Preflight',['$requestPath' => $requestPath], $e);
+      }
+      try {
+        $headers = $router->runMatchPreflight($requestPath);
+        $httpResponse->setHeader('Access-Control-Allow-Methods', implode(', ', $headers));
+        $httpResponse->setCode(IResponse::S200_OK);
+      } catch (\Throwable) {
+        throw new S500_InternalServerErrorException('Error during runMatchPreflight()',['$requestPath' => $requestPath], $e);
+      }
+    } catch (\Throwable){
+      $httpResponse->setCode(IResponse::S404_NotFound);
+    }
+  }
+
+  /**
+   * @param VO_HttpRequestMethod $requestMethod
+   * @param string $requestPath
+   * @return ICanGetPayloadRawData
+   * @throws Base_5xx_RequestException
+   * @throws Base_4xx_RequestException
+   */
+  private function getPayload(VO_HttpRequestMethod $requestMethod, string $requestPath):ICanGetPayloadRawData
+  {
+    try {
+
+      $payload = $this->onGetPayloadBeforeRouterMatch($requestMethod, $requestPath);
+
+      if ($payload === null) {
+        try {
+          $router = $this->onGetRouter(false);
+          $payload = $router->runMatch($requestMethod, $requestPath);
+        } catch (ICanGetPayloadRawData $e) {
+          $payload = $e->getPayloadRawData();
+        }
+      }
+
+      if ($payload === null) {
+        throw new S404_NotFoundException('Path not found');
+      }
+
+    } catch (Base_4xx_RequestException|Base_5xx_RequestException $e) {
+      throw $e;
+    } catch (\Throwable $e) {
+      throw new S500_InternalServerErrorException('Unexpected error',['$requestPath' => $requestPath],$e);
+    }
+    return $payload;
+  }
+
   public function run():void {
     $request = $this->getHttpRequest();
     $httpResponse = new \Nette\Http\Response();
@@ -217,88 +279,47 @@ abstract class ATigerApp implements IAmTigerApp {
     $httpResponse->setHeader('Access-Control-Allow-Headers','*, authorization, content-type');
 
 
+    $payload = null;
+    $requestPath = '';
 
     try {
+      $requestMethod = new VO_HttpRequestMethod($request->getMethod());
+      $requestPath = $request->getUrl()->getPath();
 
-      try {
-        $router = $this->onGetRouter();
-
-        $requestMethod = new VO_HttpRequestMethod($request->getMethod());
-        $requestPath = $request->getUrl()->getPath();
-
-        if ($requestMethod->isOPTIONS()) {
-          // For OPTION runMatch will set header Access-Control-Allow-Methods according to route match result.
-          // TODO: Refactor. $router shuld have dedicated method to only returns valid hmethods. Router should not set Reposne hedares.
-          $router->runMatch($requestMethod, $requestPath);
-          exit;
-        }
-
-        $payload = $this->onGetPayloadBeforeRouterMatch($requestMethod, $requestPath);
-
-        if ($payload === null) {
-          $payload = $router->runMatch($requestMethod, $requestPath);
-        }
-
-      } catch (\Throwable $e) {
-        if (!($e instanceof BaseResponseException)) {
-          throw new S500_InternalServerErrorException('Unexpected error',[],$e);
-        } else {
-          throw $e;
-        }
+      if ($requestMethod->isOPTIONS()) {
+        $this->processPreflight($requestPath);
+        exit;
       }
 
-      if ($payload === null) {
-        throw new S404_NotFoundException('Path not found');
-      }
+      $payload = $this->getPayload($requestMethod, $requestPath);
 
-    } catch (TigerInvalidRequestParamsException $e){
+    } catch (BaseResponseException $e) {
       $httpResponse->setCode($e->getResponseCode());
-      echo(json_encode($e->getCustomData()));
-      exit;
-    } catch (S405_MethodNotAllowedException $e){
-      $httpResponse->setHeader('Access-Control-Allow-Methods', implode(', ',$e->getAllowedMethods()));
-      $httpResponse->setCode($e->getResponseCode());
-      exit;
-    } catch (Base_4xx_RequestException $e) {
-      $httpResponse->setCode($e->getResponseCode());
-      $this->doResponse4xxException($e);
-      exit; // pro jistotu
-    } catch (Base_5xx_RequestException $e){
-      $httpResponse->setCode($e->getResponseCode());
-      $this->doResponse5xxException($e);
-      exit; // pro jistotu
-    } catch (BaseResponseException $e){
-      $httpResponse->setCode($e->getResponseCode());
-      if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
-        $json = json_encode(['exception '.get_class($e) => [$e->getMessage(),'CDATA: '=> $e->getCustomdata(), 'FILE: ' =>$e->getFile()]]);
-        echo($json);
+      if ($e instanceof ICanGetPayloadRawData) {
+        $payload = $e;
       }
-      exit;
     } catch (\Throwable $e){
       $httpResponse->setCode(IResponse::S500_InternalServerError);
-      if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
-        $json = json_encode(['exception '.get_class($e) => [$e->getMessage(), 'FILE: ' =>$e->getFile()]]);
-        echo($json);
+      if ($e instanceof ICanGetPayloadRawData) {
+        $payload = $e;
       }
+    }
+
+    if (!$payload) {
       exit;
     }
 
+    try {
+      $json = json_encode($payload->getPayloadRawData());
 
-
-
-
-    $json = json_encode($payload->getPayloadRawData());
-    $error = json_last_error();
-
-    if ($error) {
-      $errorMsg = json_last_error_msg();
-      $errorResponse = new \Nette\Http\Response();
-      $errorResponse->setCode(\Nette\Http\IResponse::S500_InternalServerError);
-      if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
-        echo($error.': '.$errorMsg);
+      if (json_last_error()) {
+        throw new S500_InternalServerErrorException(json_last_error_msg(), ['$requestPath' => $requestPath]);
       }
-    } else {
+
       echo($json);
+
+    } catch (\Throwable $e) {
+      echo('Internal server error');
     }
   }
 
