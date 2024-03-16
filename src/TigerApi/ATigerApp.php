@@ -250,12 +250,8 @@ abstract class ATigerApp implements IAmTigerApp {
       $payload = $this->onGetPayloadBeforeRouterMatch($requestMethod, $requestPath);
 
       if ($payload === null) {
-        try {
-          $router = $this->onGetRouter(false);
-          $payload = $router->runMatch($requestMethod, $requestPath);
-        } catch (ICanGetPayloadRawData $e) {
-          $payload = $e->getPayloadRawData();
-        }
+        $router = $this->onGetRouter(false);
+        $payload = $router->runMatch($requestMethod, $requestPath);
       }
 
       if ($payload === null) {
@@ -272,15 +268,15 @@ abstract class ATigerApp implements IAmTigerApp {
 
   public function run():void
   {
+    $httpResponse = new \Nette\Http\Response();
     try {
-      $request = $this->getHttpRequest();
-      $httpResponse = new \Nette\Http\Response();
-      $httpResponse->setHeader('Access-Control-Allow-Origin', $this->request->getHeader('origin'));
-      $httpResponse->setContentType('application/json', 'utf-8');
-      $httpResponse->setHeader('Access-Control-Allow-Credentials', 'true');
-      $httpResponse->setHeader('Access-Control-Allow-Headers', '*, authorization, content-type');
-
       try {
+        $request = $this->getHttpRequest();
+        $httpResponse->setHeader('Access-Control-Allow-Origin', $this->request->getHeader('origin'));
+        $httpResponse->setContentType('application/json', 'utf-8');
+        $httpResponse->setHeader('Access-Control-Allow-Credentials', 'true');
+        $httpResponse->setHeader('Access-Control-Allow-Headers', '*, authorization, content-type');
+
         $payload = null;
         $requestPath = '';
 
@@ -322,6 +318,7 @@ abstract class ATigerApp implements IAmTigerApp {
       // This catch is only to prevent leaking information to client
       // If some unintented exception reach this point, previous code has to be fixed, not this!
       // It means no logging there, because this is THE last catch
+      $httpResponse->setCode(IResponse::S500_InternalServerError);
       exit;
     }
   }
