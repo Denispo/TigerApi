@@ -10,7 +10,7 @@ use TigerCore\ICanGetValueAsTimestamp;
 use TigerCore\Payload\ICanGetPayloadRawData;
 use TigerCore\ValueObject\VO_PayloadKey;
 
-abstract class ATigerPayload  implements IAmTigerPayload {
+class TigerPayload  implements IAmTigerPayload {
 
   private \stdClass $payload;
 
