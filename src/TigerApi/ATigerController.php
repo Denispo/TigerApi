@@ -4,7 +4,6 @@ namespace TigerApi;
 
 use TigerApi\Request\ICanSetRequestParamIsInvalid;
 use TigerApi\Request\RequestAuthorizationStatus;
-use TigerApi\Request\TigerInvalidRequestParamsException;
 use TigerApi\Request\TigerRequestDataValidator;
 use TigerCore\Exceptions\InvalidArgumentException;
 use TigerCore\Exceptions\InvalidFormatException;
@@ -105,7 +104,7 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
       $invalidParams = $requestParamValidator->getInvalidRequestData();
 
       if (count($invalidParams) > 0) {
-        throw new TigerInvalidRequestParamsException($requestParamValidator);
+        throw new S422_UnprocessableEntityException('',$requestParamValidator->getInvalidRequestData());
       }
 
 
