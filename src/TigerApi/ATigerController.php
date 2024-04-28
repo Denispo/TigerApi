@@ -2,9 +2,6 @@
 
 namespace TigerApi;
 
-use TigerApi\Request\ICanSetRequestParamIsInvalid;
-use TigerApi\Request\RequestAuthorizationStatus;
-use TigerApi\Request\TigerRequestDataValidator;
 use TigerCore\Exceptions\InvalidArgumentException;
 use TigerCore\Exceptions\InvalidFormatException;
 use TigerCore\Exceptions\TypeNotDefinedException;
@@ -31,13 +28,6 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
   abstract protected function onGetTigrApp():IAmTigerApp;
 
   abstract protected function onGetAuthorizationStatus():RequestAuthorizationStatus;
-
-  /**
-   * @param ICanSetRequestParamIsInvalid $validator
-   * @return void
-   * @throws @BaseResponseException
-   */
-  abstract protected function onValidateParams(ICanSetRequestParamIsInvalid $validator):void;
 
   /**
    * @return ICanGetPayloadRawData
@@ -98,15 +88,6 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
         }
         throw new S404_NotFoundException();
       }
-
-      $requestParamValidator = new TigerRequestDataValidator();
-      $this->onValidateParams($requestParamValidator);
-      $invalidParams = $requestParamValidator->getInvalidRequestData();
-
-      if (count($invalidParams) > 0) {
-        throw new S422_UnprocessableEntityException('',$requestParamValidator->getInvalidRequestData());
-      }
-
 
       return $this->onProcessRequest();
     } catch (Base_4xx_RequestException $e) {
