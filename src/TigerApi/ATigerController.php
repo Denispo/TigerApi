@@ -75,7 +75,7 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
           throw new S500_InternalServerErrorException('Some BaseAssertableObject\'s property is missing type definition',['message' => $e->getMessage()],$e);
         } catch (InvalidFormatException $e){
           // Client sends mallformed or invalid/unnasignable data
-          throw new S422_UnprocessableEntityException('Malformed data to map data from ',[],$e);
+          throw new S422_UnprocessableEntityException('Malformed data to map data from ',['msg'=>$e->getMessage()],$e);
         }
 
       }
