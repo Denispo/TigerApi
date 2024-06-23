@@ -2,6 +2,12 @@
 
 namespace TigerApi\Logger;
 
+use TigerCore\ICanGetValueAsBoolean;
+use TigerCore\ICanGetValueAsFloat;
+use TigerCore\ICanGetValueAsInit;
+use TigerCore\ICanGetValueAsString;
+use TigerCore\ICanGetValueAsTimestamp;
+
 class BaseLogData implements IAmBaseLogData, IAmFileLineClass {
 
   public function __construct(
@@ -13,7 +19,20 @@ class BaseLogData implements IAmBaseLogData, IAmFileLineClass {
     private string          $class = '',
     private string          $methodOrFunction = ''
   ) {
-
+     foreach ($customData as $key => $value) {
+        if ($value instanceof ICanGetValueAsInit) {
+           $value = $value->getValueAsInt();
+        } elseif ($value instanceof ICanGetValueAsString) {
+           $value = $value->getValueAsString();
+        } elseif ($value instanceof ICanGetValueAsBoolean) {
+           $value = $value->getValueAsBool();
+        } elseif ($value instanceof ICanGetValueAsFloat) {
+           $value = $value->getValueAsFloat();
+        } elseif ($value instanceof ICanGetValueAsTimestamp) {
+           $value = $value->getValueAsTimestamp();
+        }
+        $this->customData[$key] = $value;
+     }
   }
 
   /**
