@@ -12,7 +12,7 @@ interface IAmBaseLogData {
   /**
    * @return array
    */
-  public function getData(): array;
+  public function getCustomData(): array;
 
 
 }

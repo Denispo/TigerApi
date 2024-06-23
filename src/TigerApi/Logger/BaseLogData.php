@@ -5,12 +5,13 @@ namespace TigerApi\Logger;
 class BaseLogData implements IAmBaseLogData, IAmFileLineClass {
 
   public function __construct(
-    private string $message,
-    private array $data,
-    private string $file = '',
-    private int $line = 0,
-    private string $class = '',
-    private string $methodOrFunction = ''
+    private string          $message = "",
+    private array           $customData = [],
+    private \Throwable|null $exception = null,
+    private string          $file = '',
+    private int             $line = 0,
+    private string          $class = '',
+    private string          $methodOrFunction = ''
   ) {
 
   }
@@ -25,8 +26,8 @@ class BaseLogData implements IAmBaseLogData, IAmFileLineClass {
   /**
    * @return array
    */
-  public function getData(): array {
-    return $this->data;
+  public function getCustomData(): array {
+    return $this->customData;
   }
 
 
@@ -45,4 +46,9 @@ class BaseLogData implements IAmBaseLogData, IAmFileLineClass {
   public function getMethodOrFunction(): string {
     return $this->methodOrFunction;
   }
+
+   public function getException(): \Throwable|null
+   {
+      return $this->exception;
+   }
 }

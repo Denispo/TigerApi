@@ -10,7 +10,7 @@ class TigerHttpOutputLogger implements IAmBaseLogger {
 
 
   private function formatLogData(BaseLogData $data): string {
-    return $data->getMessage().PHP_EOL.'FILE: '.$data->getFile().PHP_EOL.'CLASS: '.$data->getClass().PHP_EOL.'FUNCTION: '.$data->getMethodOrFunction().PHP_EOL.'LINE: '.$data->getLine().PHP_EOL.'DATA: '.print_r($data->getData(),true).PHP_EOL;
+    return $data->getMessage().PHP_EOL.'FILE: '.$data->getFile().PHP_EOL.'CLASS: '.$data->getClass().PHP_EOL.'FUNCTION: '.$data->getMethodOrFunction().PHP_EOL.'LINE: '.$data->getLine().PHP_EOL.'DATA: '.print_r($data->getCustomData(),true).PHP_EOL;
   }
 
   private function outData(string $data):void {

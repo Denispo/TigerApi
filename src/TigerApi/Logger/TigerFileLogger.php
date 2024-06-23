@@ -35,7 +35,7 @@ class TigerFileLogger implements IAmBaseLogger {
   }
 
   private function formatLogData(BaseLogData $data): string {
-    return PHP_EOL.(new DateTime())->format('h:i:s d.m.Y').PHP_EOL.$data->getMessage().PHP_EOL.'FILE: '.$data->getFile().PHP_EOL.'CLASS: '.$data->getClass().PHP_EOL.'FUNCTION: '.$data->getMethodOrFunction().PHP_EOL.'LINE: '.$data->getLine().PHP_EOL.'DATA: '.print_r($data->getData(),true);
+    return PHP_EOL.(new DateTime())->format('h:i:s d.m.Y').PHP_EOL.$data->getMessage().PHP_EOL.'FILE: '.$data->getFile().PHP_EOL.'CLASS: '.$data->getClass().PHP_EOL.'FUNCTION: '.$data->getMethodOrFunction().PHP_EOL.'LINE: '.$data->getLine().PHP_EOL.'DATA: '.print_r($data->getCustomData(),true);
   }
 
   /**
