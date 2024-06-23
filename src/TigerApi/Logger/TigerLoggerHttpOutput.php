@@ -2,7 +2,7 @@
 
 namespace TigerApi\Logger;
 
-class TigerHttpOutputLogger implements IAmBaseLogger {
+class TigerLoggerHttpOutput implements IAmBaseLogger {
 
   public function __construct() {
 

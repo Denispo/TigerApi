@@ -10,7 +10,7 @@ use TigerCore\Exceptions\CanNotWriteToFileException;
 use TigerCore\SafeFileStream;
 
 
-class TigerFileLogger implements IAmBaseLogger {
+class TigerLoggerFile implements IAmBaseLogger {
 
 
   public function __construct(private string $pathToLogFolder) {
