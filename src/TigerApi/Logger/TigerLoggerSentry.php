@@ -34,15 +34,15 @@ class TigerLoggerSentry implements IAmBaseLogger {
       if (class_exists('\Sentry\Severity')) {
          switch ($severity) {
             case self::SEVERITY_WARNING:{
-               $severity = \Sentry\Severity::WARNING;
+               $severity = new \Sentry\Severity(\Sentry\Severity::WARNING);
                break;
             }
             case self::SEVERITY_NOTICE:{
-               $severity = \Sentry\Severity::NOTICE;
+               $severity = new \Sentry\Severity(\Sentry\Severity::INFO);
                break;
             }
             case self::SEVERITY_ERROR:{
-               $severity = \Sentry\Severity::ERROR;
+               $severity = new \Sentry\Severity(\Sentry\Severity::ERROR);
                break;
             }
             default:{
