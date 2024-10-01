@@ -3,7 +3,6 @@
 namespace TigerApi\Database;
 
 use Nette\Database\Connection;
-use Nette\Database\RowNormalizer;
 use TigerCore\Repository\ICanGetDbConnection;
 
 class TigerMysqlDb implements ICanGetDbConnection {
@@ -18,7 +17,10 @@ class TigerMysqlDb implements ICanGetDbConnection {
 
     // Ach boze... nette :/
     // https://github.com/nette/database/issues/257#issuecomment-1016559714
-    $this->db->setRowNormalizer((new RowNormalizer())->skipNumeric());
+    // $this->db->setRowNormalizer((new RowNormalizer())->skipNumeric());
+    // S novym Nette je setRowNormalizer deprecated s hlaskou: "() is deprecated, configure 'convert*' options instead."
+    // Takze vlastne nam rekl hovno. Tak snad je tento zapis 1:1 tomu prdeslemu :/
+     $this->db->getTypeConverter()->convertDecimal = false;
   }
 
   public function GetDbConnection(): Connection {
