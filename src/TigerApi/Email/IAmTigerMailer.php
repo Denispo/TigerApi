@@ -2,17 +2,11 @@
 
 namespace TigerApi\Email;
 
-use Nette\Mail\Message;
-use Nette\Mail\SendException;
+use Nette\Mail\Mailer;
 use TigerCore\ValueObject\VO_Email;
 
-interface IAmTigerMailer
+interface IAmTigerMailer extends Mailer
 {
-   /**
-    * Sends email.
-    * @throws SendException
-    */
-   function send(Message $mail): void;
 
    /**
     * Send all emails to $emailAddress instead of :standard: email address
