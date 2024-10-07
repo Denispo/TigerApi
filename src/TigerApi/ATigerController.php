@@ -2,6 +2,8 @@
 
 namespace TigerApi;
 
+use TigerApi\Logger\FileLineClass;
+use TigerApi\Logger\Log;
 use TigerCore\Exceptions\InvalidArgumentException;
 use TigerCore\Exceptions\InvalidFormatException;
 use TigerCore\Exceptions\TypeNotDefinedException;
@@ -50,17 +52,46 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
          $obj = $this->onGetObjectToMapRequestDataOn();
          if ($obj) {
             $requestData = [];
+            $contentLenght = $_SERVER['CONTENT_LENGTH']?? 0;
+
+            if ($contentLenght > 20000) {
+               // Check if post data have reasonable sise
+               //TODO: Make content lenght limit configurable (for example Amdin (1Mb) vs Web(5Kb))
+               throw new S422_UnprocessableEntityException("Invalid form request size");
+            }
+
+            if ($contentLenght === 0) {
+               Log::Warning('undefined $_SERVER["CONTENT_LENGTH"]',[],new FileLineClass());
+            }
+
             //inspirace: https://www.slimframework.com/docs/v4/objects/request.html#the-request-body
             $contentType = $this->onGetTigrApp()->getHttpRequest()->getHeader('Content-Type')?? '';
             if (str_contains($contentType, 'application/json')) {
                $requestData = json_decode(file_get_contents('php://input'), true);
                if (json_last_error() !== JSON_ERROR_NONE) {
-                  throw new S400_BadRequestException('Request JSON is not properly formatted');
+                  throw new S400_BadRequestException('Invalid json request');
                }
             } elseif (str_contains($contentType, 'multipart/form-data')) {
                $requestData = $this->onGetTigrApp()->getHttpRequest()->getPost();
                if (!is_array($requestData)) {
                   $requestData = [];
+               }
+               if (count($requestData) > 100) {
+                  // Post request can not have more than 100 properties
+                  //TODO: Make hard limit configurable
+                  throw new S422_UnprocessableEntityException("Invalid form request count");
+
+               }
+               foreach ($requestData as $oneRequestData) {
+                  if (is_string($oneRequestData)) {
+                     if (!mb_detect_encoding($oneRequestData, ['UTF-8'], true)) {
+                        throw new S422_UnprocessableEntityException("Invalid form request utf-8");
+                     }
+                  } elseif (is_array($oneRequestData)) {
+                     // Array is not allowed, because majority of traffic should be done exclusivelz via JSON data.
+                     //TODO: Should array be allowed? https://stackoverflow.com/questions/11676011/post-array-from-html-form
+                     throw new S422_UnprocessableEntityException("Invalid form request array");
+                  }
                }
             }
             // Chceme, at se $params zmerguje do $requestData. Klice v $params maji vyssi prioritu a prepisou pripadne stejne klice v $requestData;
