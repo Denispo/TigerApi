@@ -75,7 +75,7 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
                throw new S500_InternalServerErrorException('Some BaseAssertableObject\'s property is missing type definition',['message' => $e->getMessage()],$e);
             } catch (InvalidFormatException $e){
                // Client sends mallformed or invalid/unnasignable data
-               throw new S422_UnprocessableEntityException('Malformed data to map data from ',['msg'=>$e->getMessage()],$e);
+               throw new S422_UnprocessableEntityException('Malformed data to map data from ',['msg'=>$e->getMessage()]);
             }
 
          }
@@ -97,7 +97,7 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
          // 5xx exceptions are ok, They will be handled by parent (by tigerApp mostly)
          throw $e;
       } catch (\Throwable $e){
-         // Exceptions except 4xx or 5xx are not allowed and has to be transformed to 500 exception
+         // Exceptions other than 4xx or 5xx are not allowed and has to be transformed to 500 exception
          throw new S500_InternalServerErrorException('Uncaught exception during calling controllers onProcessRequest()',['message' => $e->getMessage(), 'file' => $e->getFile()],$e);
       }
    }
