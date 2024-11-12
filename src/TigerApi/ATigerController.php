@@ -40,6 +40,16 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
    abstract protected function onGetObjectToMapRequestDataOn():BaseAssertableObject|null;
 
    /**
+    * @param int $contentSizeInBytes
+    * @return void
+    * @throws Base_4xx_RequestException
+    */
+   protected function onCheckRequestContentSize(int $contentSizeInBytes):void
+   {
+
+   }
+
+   /**
     * @param array $params
     * @param mixed $customData
     * @return ICanGetPayloadRawData
@@ -52,16 +62,12 @@ abstract class ATigerController implements ICanHandleMatchedRoute {
          $obj = $this->onGetObjectToMapRequestDataOn();
          if ($obj) {
             $requestData = [];
+
             $contentLenght = $_SERVER['CONTENT_LENGTH']?? 0;
-
-            if ($contentLenght > 20000) {
-               // Check if post data have reasonable sise
-               //TODO: Make content lenght limit configurable (for example Amdin (1Mb) vs Web(5Kb))
-               throw new S422_UnprocessableEntityException("Invalid form request size");
-            }
-
             if ($contentLenght === 0) {
                Log::Warning('undefined $_SERVER["CONTENT_LENGTH"]',[],new FileLineClass());
+            } else {
+               $this->onCheckRequestContentSize($contentLenght);
             }
 
             //inspirace: https://www.slimframework.com/docs/v4/objects/request.html#the-request-body
