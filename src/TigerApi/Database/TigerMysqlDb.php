@@ -27,7 +27,7 @@ class TigerMysqlDb implements ICanGetDbConnection {
      // https://database.guide/how-to-remove-a-sql-mode-from-sql_mode-in-mysql/
      // https://mariadb.com/kb/en/list_drop/#:~:text=list_drop%20is%20a%20stored%20function,of%20options%2C%20such%20as%20sql_mode.
      // MySql from 5.7 throws exceptions when truncating and other values convertings on INSERT and UPDATE so we have to disable STRICT_TRANS_TABLES and STRICT_ALL_TABLES
-     $this->db->query("SET @@sql_mode = sys.list_drop(@@sql_mode, 'STRICT_TRANS_TABLES');");
+     // $this->db->query("SET @@sql_mode = sys.list_drop(@@sql_mode, 'STRICT_TRANS_TABLES');");
   }
 
   public function GetDbConnection(): Connection {
