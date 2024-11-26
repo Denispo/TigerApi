@@ -21,6 +21,13 @@ class TigerMysqlDb implements ICanGetDbConnection {
     // S novym Nette je setRowNormalizer deprecated s hlaskou: "() is deprecated, configure 'convert*' options instead."
     // Takze vlastne nam rekl hovno. Tak snad je tento zapis 1:1 tomu prdeslemu :/
      $this->db->getTypeConverter()->convertDecimal = false;
+
+     // https://dev.mysql.com/doc/refman/8.4/en/sql-mode.html#sql-mode-strict
+     // https://blog.andrewkoebbe.com/blog/2016-03-10.mysql-truncate
+     // https://database.guide/how-to-remove-a-sql-mode-from-sql_mode-in-mysql/
+     // https://mariadb.com/kb/en/list_drop/#:~:text=list_drop%20is%20a%20stored%20function,of%20options%2C%20such%20as%20sql_mode.
+     // MySql from 5.7 throws exceptions when truncating and other values convertings on INSERT and UPDATE so we have to disable STRICT_TRANS_TABLES and STRICT_ALL_TABLES
+     $this->db->query("SET @@sql_mode = sys.list_drop(@@sql_mode, 'STRICT_TRANS_TABLES');");
   }
 
   public function GetDbConnection(): Connection {
