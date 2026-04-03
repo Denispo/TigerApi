@@ -2,6 +2,7 @@
 
 namespace TigerApi;
 
+use Closure;
 use TigerCore\BaseRestRouter;
 use TigerCore\ICanHandleMatchedRoute;
 use TigerCore\Payload\ICanGetPayloadRawData;
@@ -19,10 +20,10 @@ abstract class ATigerRouter implements IAmTigerRouter {
 
   /**
    * @param VO_RouteMask $mask
-   * @param ICanHandleMatchedRoute|null $handler
+   * @param ICanHandleMatchedRoute|null|(Closure(): ICanHandleMatchedRoute) $handler
    * @return void
    */
-  public function addRoute(VO_RouteMask $mask, ICanHandleMatchedRoute|null $handler): void
+  public function addRoute(VO_RouteMask $mask, mixed $handler): void
   {
     // Everything is POST. See Allan Holub presentation from 2015
     $this->router->addRoute('POST', $this->pathPrefix->add($mask), $handler);
