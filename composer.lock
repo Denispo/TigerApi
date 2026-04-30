@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "28e2076610de9efc6d0fb71ca05dc4db",
+    "content-hash": "34b8953e35ecb65b99354041b1bfe5ea",
     "packages": [
         {
             "name": "denispo/tigercore",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Denispo/TigerCore.git",
-                "reference": "e47fd7a1dc5672ebe6a7c23706feffc86b406301"
+                "reference": "76fa1388edfb707c445689f9af0635cd2b3fb9ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Denispo/TigerCore/zipball/e47fd7a1dc5672ebe6a7c23706feffc86b406301",
-                "reference": "e47fd7a1dc5672ebe6a7c23706feffc86b406301",
+                "url": "https://api.github.com/repos/Denispo/TigerCore/zipball/76fa1388edfb707c445689f9af0635cd2b3fb9ed",
+                "reference": "76fa1388edfb707c445689f9af0635cd2b3fb9ed",
                 "shasum": ""
             },
             "require": {
@@ -29,7 +29,7 @@
                 "nette/safe-stream": "^3.0",
                 "nette/utils": "^4.0",
                 "nikic/fast-route": "^1.3",
-                "php": ">=8.1"
+                "php": ">=8.3"
             },
             "require-dev": {
                 "nette/tester": "^2.5"
@@ -47,19 +47,19 @@
                 "issues": "https://github.com/Denispo/TigerCore/issues",
                 "source": "https://github.com/Denispo/TigerCore/tree/master"
             },
-            "time": "2026-04-03T10:12:06+00:00"
+            "time": "2026-04-03T10:45:31+00:00"
         },
         {
             "name": "firebase/php-jwt",
             "version": "6.x-dev",
             "source": {
                 "type": "git",
-                "url": "https://github.com/firebase/php-jwt.git",
+                "url": "https://github.com/googleapis/php-jwt.git",
                 "reference": "d1e91ecf8c598d073d0995afa8cd5c75c6e19e66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/d1e91ecf8c598d073d0995afa8cd5c75c6e19e66",
+                "url": "https://api.github.com/repos/googleapis/php-jwt/zipball/d1e91ecf8c598d073d0995afa8cd5c75c6e19e66",
                 "reference": "d1e91ecf8c598d073d0995afa8cd5c75c6e19e66",
                 "shasum": ""
             },
@@ -107,8 +107,8 @@
                 "php"
             ],
             "support": {
-                "issues": "https://github.com/firebase/php-jwt/issues",
-                "source": "https://github.com/firebase/php-jwt/tree/v6.11.1"
+                "issues": "https://github.com/googleapis/php-jwt/issues",
+                "source": "https://github.com/googleapis/php-jwt/tree/v6.11.1"
             },
             "time": "2025-04-09T20:32:01+00:00"
         },
@@ -193,32 +193,33 @@
         },
         {
             "name": "nette/database",
-            "version": "v4.0.0-RC1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/database.git",
-                "reference": "0084e7360ba877e8a16c4bdf79c86bd8440c6242"
+                "reference": "9dc391a0a7b65649fbc8fe00f5dadda0804208fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/database/zipball/0084e7360ba877e8a16c4bdf79c86bd8440c6242",
-                "reference": "0084e7360ba877e8a16c4bdf79c86bd8440c6242",
+                "url": "https://api.github.com/repos/nette/database/zipball/9dc391a0a7b65649fbc8fe00f5dadda0804208fe",
+                "reference": "9dc391a0a7b65649fbc8fe00f5dadda0804208fe",
                 "shasum": ""
             },
             "require": {
                 "ext-pdo": "*",
                 "nette/caching": "^3.2",
                 "nette/utils": "^4.0",
-                "php": "8.1 - 8.4"
+                "php": "8.2 - 8.5"
             },
             "require-dev": {
-                "jetbrains/phpstorm-attributes": "^1.0",
-                "mockery/mockery": "^1.6",
+                "jetbrains/phpstorm-attributes": "^1.2",
+                "mockery/mockery": "^1.6@stable",
                 "nette/di": "^3.1",
                 "nette/tester": "^2.5",
-                "phpstan/phpstan-nette": "^1.0",
+                "phpstan/phpstan-nette": "^2.0@stable",
                 "tracy/tracy": "^2.9"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -226,6 +227,9 @@
                 }
             },
             "autoload": {
+                "psr-4": {
+                    "Nette\\": "src"
+                },
                 "classmap": [
                     "src/"
                 ]
@@ -262,9 +266,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/database/issues",
-                "source": "https://github.com/nette/database/tree/v4.0.0-RC1"
+                "source": "https://github.com/nette/database/tree/master"
             },
-            "time": "2024-08-29T04:58:31+00:00"
+            "time": "2026-01-13T15:08:48+00:00"
         },
         {
             "name": "nette/http",
@@ -355,16 +359,16 @@
         },
         {
             "name": "nette/mail",
-            "version": "v4.1.0",
+            "version": "v4.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/mail.git",
-                "reference": "f5353b9fc673bab4b20785f10ca43359e82cc6f3"
+                "reference": "e4b4c6eee1feabfe4a8f5a9239b06c700cb2d7b5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/mail/zipball/f5353b9fc673bab4b20785f10ca43359e82cc6f3",
-                "reference": "f5353b9fc673bab4b20785f10ca43359e82cc6f3",
+                "url": "https://api.github.com/repos/nette/mail/zipball/e4b4c6eee1feabfe4a8f5a9239b06c700cb2d7b5",
+                "reference": "e4b4c6eee1feabfe4a8f5a9239b06c700cb2d7b5",
                 "shasum": ""
             },
             "require": {
@@ -426,9 +430,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/mail/issues",
-                "source": "https://github.com/nette/mail/tree/v4.1.0"
+                "source": "https://github.com/nette/mail/tree/v4.1.1"
             },
-            "time": "2026-03-27T02:03:02+00:00"
+            "time": "2026-04-23T22:27:58+00:00"
         },
         {
             "name": "nette/robot-loader",
@@ -801,7 +805,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.3",
+        "php": ">=8.5",
         "ext-mbstring": "*"
     },
     "platform-dev": {},

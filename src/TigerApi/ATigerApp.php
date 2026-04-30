@@ -144,7 +144,7 @@ abstract class ATigerApp implements IAmTigerApp {
    */
   public function __construct(IRequest|null $request = null, string $defaultTimeZone = 'Europe/Prague') {
     if ($request === null) {
-      $request = (new RequestFactory())->fromGlobals();
+      $request = new RequestFactory()->fromGlobals();
     }
     $this->request = $request;
     set_exception_handler([$this,'_exception_handler']);
@@ -166,45 +166,6 @@ abstract class ATigerApp implements IAmTigerApp {
     //$method->setAccessible(true); // from 8.1 everything is accessible
     $method->invokeArgs(null, [$this->_logBridge]);
     //$method->setAccessible(false); // from 8.1 everything is accessible
-  }
-
-  #[NoReturn]
-  private function doResponse4xxException(Base_4xx_RequestException $exception)
-  {
-    $json = json_encode([
-      'exception '.get_class($exception) => [
-        $exception->getMessage(),
-        'CDATA: '=> $exception->getCustomdata(),
-        'FILE: ' =>$exception->getFile()
-      ]
-    ]);
-    echo($json);
-    exit;
-  }
-
-  #[NoReturn]
-  private function doResponse5xxException(Base_5xx_RequestException $exception): void
-  {
-    $eventId = $exception->getSentryEventId();
-    if ($this->getEnvironment()->IsSetTo(Environment::ENV_DEVELOPMENT)) {
-      $json = json_encode([
-        'exception '.get_class($exception) => [
-          $exception->getMessage(),
-          'EventId: ' => $eventId,
-          'CDATA: '=> $exception->getCustomdata(),
-          'FILE: ' =>$exception->getFile(),
-          'TRACE: '=> $exception->getTrace()
-        ]
-      ]);
-    } else {
-      if ($eventId) {
-        $json = '{"EventId": "'.substr($exception->getSentryEventId(),0,10).'"}';
-      } else {
-        $json = '{"EventId": "NA"}';
-      }
-    }
-    echo($json);
-    exit;
   }
 
   /**

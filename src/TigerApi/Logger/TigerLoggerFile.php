@@ -13,7 +13,7 @@ use TigerCore\SafeFileStream;
 class TigerLoggerFile implements IAmBaseLogger {
 
 
-  public function __construct(private string $pathToLogFolder) {
+  public function __construct(private readonly string $pathToLogFolder) {
 
   }
 
@@ -35,7 +35,7 @@ class TigerLoggerFile implements IAmBaseLogger {
   }
 
   private function formatLogData(BaseLogData $data): string {
-    return PHP_EOL.(new DateTime())->format('h:i:s d.m.Y').PHP_EOL.$data->getMessage().PHP_EOL.'FILE: '.$data->getFile().PHP_EOL.'CLASS: '.$data->getClass().PHP_EOL.'FUNCTION: '.$data->getMethodOrFunction().PHP_EOL.'LINE: '.$data->getLine().PHP_EOL.'DATA: '.print_r($data->getCustomData(),true);
+    return PHP_EOL. new DateTime()->format('h:i:s d.m.Y').PHP_EOL.$data->getMessage().PHP_EOL.'FILE: '.$data->getFile().PHP_EOL.'CLASS: '.$data->getClass().PHP_EOL.'FUNCTION: '.$data->getMethodOrFunction().PHP_EOL.'LINE: '.$data->getLine().PHP_EOL.'DATA: '.print_r($data->getCustomData(),true);
   }
 
   /**
@@ -46,7 +46,7 @@ class TigerLoggerFile implements IAmBaseLogger {
    * @throws CanNotWriteToFileException
    */
   public function logError(LogDataError $logData):void {
-    $this->addToFile('Error_'.(new DateTime())->format('Ymd').'.log', $this->formatLogData($logData));
+    $this->addToFile('Error_'. new DateTime()->format('Ymd').'.log', $this->formatLogData($logData));
   }
 
   /**
@@ -57,7 +57,7 @@ class TigerLoggerFile implements IAmBaseLogger {
    * @throws CanNotWriteToFileException
    */
   public function logException(LogDataException $logData):void {
-    $this->addToFile('Exception_'.(new DateTime())->format('Ymd').'.log', $this->formatLogData($logData));
+    $this->addToFile('Exception_'. new DateTime()->format('Ymd').'.log', $this->formatLogData($logData));
   }
 
   /**
@@ -66,7 +66,7 @@ class TigerLoggerFile implements IAmBaseLogger {
    */
   public function logNotice(LogDataNotice $logData):void {
     try {
-      $this->addToFile('Notice_' . (new DateTime())->format('Ymd') . '.log', $this->formatLogData($logData));
+      $this->addToFile('Notice_' . new DateTime()->format('Ymd') . '.log', $this->formatLogData($logData));
     } catch (CanNotWriteToFileException|CanNotCloseFileException|CanNotOpenFileException) {
       // u Notice nic nelogujeme
     }
@@ -80,6 +80,6 @@ class TigerLoggerFile implements IAmBaseLogger {
    * @throws CanNotWriteToFileException
    */
   public function logWarning(LogDataWarning $logData):void {
-    $this->addToFile('Warning_'.(new DateTime())->format('Ymd').'.log', $this->formatLogData($logData));
+    $this->addToFile('Warning_'. new DateTime()->format('Ymd').'.log', $this->formatLogData($logData));
   }
 }

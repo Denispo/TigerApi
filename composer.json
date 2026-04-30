@@ -7,10 +7,11 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "php": ">=8.3",
+    "php": ">=8.5",
     "denispo/tigercore": "dev-master",
     "nette/utils": "^v4.0",
-    "ext-mbstring": "*"
+    "ext-mbstring": "*",
+    "ext-pdo": "*"
   },
   "require-dev": {
     "nette/tester": "^2.5"

@@ -11,13 +11,13 @@ use TigerCore\ICanGetValueAsTimestamp;
 class BaseLogData implements IAmBaseLogData, IAmFileLineClass {
 
   public function __construct(
-    private string          $message = "",
-    private array           $customData = [],
-    private \Throwable|null $exception = null,
-    private string          $file = '',
-    private int             $line = 0,
-    private string          $class = '',
-    private string          $methodOrFunction = ''
+    private readonly string          $message = "",
+    private array                    $customData = [],
+    private readonly \Throwable|null $exception = null,
+    private readonly string          $file = '',
+    private readonly int             $line = 0,
+    private readonly string          $class = '',
+    private readonly string $methodOrFunction = ''
   ) {
      foreach ($customData as $key => $value) {
         if ($value instanceof ICanGetValueAsInit) {

@@ -6,43 +6,57 @@ namespace TigerApi\Logger;
 class TigerLoggerSentry implements IAmBaseLogger {
 
 
-   private const SEVERITY_NOTICE = 'notice';
-   private const SEVERITY_WARNING = 'warning';
-   private const SEVERITY_ERROR = 'error';
+   private const string SEVERITY_NOTICE = 'notice';
+   private const string SEVERITY_WARNING = 'warning';
+   private const string SEVERITY_ERROR = 'error';
 
   public function __construct() {
 
   }
 
-  /**
-   * @param LogDataException $logData
-   * @return void
-   */
-  public function logException(LogDataException $logData):void {
-     if (function_exists('\Sentry\captureException') && class_exists('\Sentry\EventHint')) {
-        \Sentry\captureException($logData->getException(),\Sentry\EventHint::fromArray(['extra' => $logData->getCustomData()]));
-     }
-  }
+   /**
+    * @param LogDataException $logData
+    * @return void
+    */
+   public function logException(LogDataException $logData): void
+   {
+      $captureExceptionFunction = '\Sentry\captureException';
+      $eventHintClass   = '\Sentry\EventHint';
 
-   private function sentryMessage(BaseLogData $logData, string $severity)
+      // Sentry je volitelná závislost → voláme dynamicky, aby statická analýza neřvala
+      if (function_exists($captureExceptionFunction) && class_exists($eventHintClass)) {
+         $captureExceptionFunction(
+            $logData->getException(),
+            $eventHintClass::fromArray(['extra' => $logData->getCustomData()])
+         );
+      }
+   }
+
+   private function sentryMessage(BaseLogData $logData, string $severity):void
    {
       $extra['customData'] = $logData->getCustomData();
       $extra['file'] = $logData->getFile();
       $extra['line'] = $logData->getLine();
       $extra['class'] = $logData->getClass();
       $extra['method'] = $logData->getMethodOrFunction();
-      if (class_exists('\Sentry\Severity')) {
+
+      $captureExceptionFunction = '\Sentry\captureException';
+      $eventHintClass   = '\Sentry\EventHint';
+      $severityClass   = '\Sentry\Severity';
+
+      // Sentry je volitelná závislost → voláme dynamicky, aby statická analýza neřvala
+      if (class_exists($severityClass)) {
          switch ($severity) {
             case self::SEVERITY_WARNING:{
-               $severity = new \Sentry\Severity(\Sentry\Severity::WARNING);
+               $severity = new $severityClass($severityClass::WARNING);
                break;
             }
             case self::SEVERITY_NOTICE:{
-               $severity = new \Sentry\Severity(\Sentry\Severity::INFO);
+               $severity = new $severityClass($severityClass::INFO);
                break;
             }
             case self::SEVERITY_ERROR:{
-               $severity = new \Sentry\Severity(\Sentry\Severity::ERROR);
+               $severity = new $severityClass($severityClass::ERROR);
                break;
             }
             default:{
@@ -50,8 +64,8 @@ class TigerLoggerSentry implements IAmBaseLogger {
             }
          }
       }
-      if (function_exists('\Sentry\captureMessage') && class_exists('\Sentry\EventHint')) {
-         \Sentry\captureMessage($logData->getMessage(), $severity, \Sentry\EventHint::fromArray(['extra' => $extra]));
+      if (function_exists($captureExceptionFunction) && class_exists($eventHintClass)) {
+         $captureExceptionFunction($logData->getMessage(), $severity, $eventHintClass::fromArray(['extra' => $extra]));
       }
 
    }

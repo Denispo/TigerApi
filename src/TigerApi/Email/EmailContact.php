@@ -7,8 +7,8 @@ use TigerCore\ValueObject\VO_Email;
 class EmailContact
 {
   public function __construct(
-    private VO_Email $emailAddress,
-    private string $contactName = ''
+    private readonly VO_Email $emailAddress,
+    private readonly string $contactName = ''
   )
   {
 
