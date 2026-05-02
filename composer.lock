@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "34b8953e35ecb65b99354041b1bfe5ea",
+    "content-hash": "0ddc613ab020b1bb76fc3c1d7cc4a74b",
     "packages": [
         {
             "name": "denispo/tigercore",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Denispo/TigerCore.git",
-                "reference": "76fa1388edfb707c445689f9af0635cd2b3fb9ed"
+                "reference": "2dcca9cf84fd38a00eb71dea890ff393371f8ae1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Denispo/TigerCore/zipball/76fa1388edfb707c445689f9af0635cd2b3fb9ed",
-                "reference": "76fa1388edfb707c445689f9af0635cd2b3fb9ed",
+                "url": "https://api.github.com/repos/Denispo/TigerCore/zipball/2dcca9cf84fd38a00eb71dea890ff393371f8ae1",
+                "reference": "2dcca9cf84fd38a00eb71dea890ff393371f8ae1",
                 "shasum": ""
             },
             "require": {
@@ -29,7 +29,7 @@
                 "nette/safe-stream": "^3.0",
                 "nette/utils": "^4.0",
                 "nikic/fast-route": "^1.3",
-                "php": ">=8.3"
+                "php": ">=8.5"
             },
             "require-dev": {
                 "nette/tester": "^2.5"
@@ -47,7 +47,7 @@
                 "issues": "https://github.com/Denispo/TigerCore/issues",
                 "source": "https://github.com/Denispo/TigerCore/tree/master"
             },
-            "time": "2026-04-03T10:45:31+00:00"
+            "time": "2026-04-30T14:59:48+00:00"
         },
         {
             "name": "firebase/php-jwt",
@@ -806,7 +806,8 @@
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.5",
-        "ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "ext-pdo": "*"
     },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"
