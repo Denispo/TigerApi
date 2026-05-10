@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Denispo/TigerCore.git",
-                "reference": "73ebe120b52d94b16c35cc9bcb8fe6f0592a86ee"
+                "reference": "bb7ac5658f8f55a28704ba33fc7310a2a30c686d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Denispo/TigerCore/zipball/73ebe120b52d94b16c35cc9bcb8fe6f0592a86ee",
-                "reference": "73ebe120b52d94b16c35cc9bcb8fe6f0592a86ee",
+                "url": "https://api.github.com/repos/Denispo/TigerCore/zipball/bb7ac5658f8f55a28704ba33fc7310a2a30c686d",
+                "reference": "bb7ac5658f8f55a28704ba33fc7310a2a30c686d",
                 "shasum": ""
             },
             "require": {
@@ -47,7 +47,7 @@
                 "issues": "https://github.com/Denispo/TigerCore/issues",
                 "source": "https://github.com/Denispo/TigerCore/tree/master"
             },
-            "time": "2026-05-06T15:28:00+00:00"
+            "time": "2026-05-10T23:20:28+00:00"
         },
         {
             "name": "firebase/php-jwt",
